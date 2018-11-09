@@ -36,8 +36,31 @@ public class LinearCraterSide extends LinearOpMode {
 
         //START PERIOD
 
-        //drive to crater
-        encoderDrive(0.25, 35, 35, 15);
+        //drive to crater, push center mineral
+        encoderDrive(0.5, 30, 30, 15);
+
+        //back to in front of minerals
+        encoderDrive(0.5 ,-10, -10, 10);
+
+        //turn 90 degrees
+        encoderTurn(0.25, 90, false, 10);
+
+        //move towards the game wall
+        encoderDrive(0.5, 40, 40, 10);
+
+        //turn so that the robot is parallel to the wall
+        encoderTurn(0.25, 45, false, 5);
+
+        //move to the depot
+        encoderDrive(0.5, 48, 48, 10);
+
+        //release team marker
+        robot.markerDropper.setPosition(robot.markerDropperForward);
+        sleep(1500);
+        robot.markerDropper.setPosition(robot.markerDropperBack);
+
+        encoderDrive(0.5, -78, -78, 10);
+
 
         //OLD non-encoder procedure
 /*

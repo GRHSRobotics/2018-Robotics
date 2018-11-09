@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -13,7 +14,7 @@ public class HardwareDefinitions {
     static final double COUNTS_PER_ROTATION = 1120 ;    // REV HD Hex Motor 40:1
     static final double WHEEL_CIRCUMFERENCE_INCHES = 9.42 ;
     static final double COUNTS_PER_INCH = (COUNTS_PER_ROTATION) / (WHEEL_CIRCUMFERENCE_INCHES);
-    static final double ROBOT_DIAMETER = 17; //in inches
+    static final double ROBOT_DIAMETER = 18; //in inches
 
     // OLD AUTONOMOUS CONSTANTS
 /*    int toTheBalls;
@@ -103,7 +104,9 @@ public class HardwareDefinitions {
         intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        //REVERSE RIGHT DRIVE MOTORS
+        //REVERSE LEFT DRIVE MOTORS
+        motorL1.setDirection(DcMotor.Direction.FORWARD);
+        motorL2.setDirection(DcMotor.Direction.FORWARD);
         motorR1.setDirection(DcMotor.Direction.REVERSE);
         motorR2.setDirection(DcMotor.Direction.REVERSE);
 

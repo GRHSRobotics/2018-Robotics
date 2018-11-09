@@ -49,14 +49,14 @@ public class DriverControlled extends OpMode{
     public void loop(){
 
         //TANK DRIVE
-        robot.motorL1.setPower(-gamepad1.right_stick_y);
-        robot.motorL2.setPower(-gamepad1.right_stick_y);
+        robot.motorL1.setPower(-gamepad1.right_stick_y); //up on the stick is negative, so for up=forwards we need to
+        robot.motorL2.setPower(-gamepad1.right_stick_y); //take the negative value of the stick
         robot.motorR1.setPower(-gamepad1.left_stick_y);
         robot.motorR2.setPower(-gamepad1.left_stick_y);
 
         //INTAKE SYSTEM TOGGLE
         if(gamepad1.dpad_up){
-            robot.intakeMotor.setPower(-1); //INKAKE
+            robot.intakeMotor.setPower(-1); //INTAKE
         }
         if(gamepad1.dpad_down){
             robot.intakeMotor.setPower(0); //TURN OFF

@@ -35,18 +35,27 @@ public class LinearDepotSide extends LinearOpMode {
         //START PERIOD
 
         //move to depot and push mineral in
-        encoderDrive(0.25, 52, 52, 15);
+        encoderDrive(0.5, 50, 50, 15);
 
         //release team marker
         robot.markerDropper.setPosition(robot.markerDropperForward);
         sleep(1500);
         robot.markerDropper.setPosition(robot.markerDropperBack);
 
-        //move back from depot to allow alliance partner to score
-        encoderDrive(0.25, -10, -10, 10);
+        //move back from depot to clear marker
+        encoderDrive(0.5, -36, -36, 10);
 
-        encoderTurn(0.25, 135, false, 10);
+        //turn towards crater
+        encoderTurn(0.25, 90, false, 10);
 
+        //drive towards wall
+        encoderDrive(0.5, 35, 35, 10);
+
+        //turn so that the robot is parallel to the wall
+        encoderTurn(0.25, 120, false, 5);
+
+        //move forward towards the crater
+        encoderDrive(0.5, 36, 36, 10);
 
         //OLD non-encoder procedure
 /*
