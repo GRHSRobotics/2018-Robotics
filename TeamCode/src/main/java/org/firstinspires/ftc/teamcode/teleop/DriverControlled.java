@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.HardwareDefinitions;
 //See Google Drive for TODO
 
 @TeleOp(name="DriverControlled", group="Teleop")
-public class DriverControlled extends OpMode{
+public class DriverControlled extends HardwareDefinitions{
 
     //LIFT SERVO VARIABLES
     boolean opener1Changed = false;
@@ -22,65 +22,54 @@ public class DriverControlled extends OpMode{
     boolean opener2Changed = false;
     boolean opener2On = false;
 
-    //DEFINE ROBOT HARDWARE
-    HardwareDefinitions robot = new HardwareDefinitions();
-
 
     @Override
-    public void init(){
-        robot.init(hardwareMap);
+    public void runOpMode(){
+        init(hardwareMap);
         telemetry.addData("Robot is initialized", "");
-    }
 
-    @Override
-    public void init_loop() {
-    }
-
-    @Override
-    public void start() {
+        waitForStart();
         telemetry.addData("Robot is started", "" );
-    }
 
-    @Override
-    public void loop(){
 
+        while(opModeIsActive()){
         //TANK DRIVE
-        robot.motorL1.setPower(-gamepad1.right_stick_y); //up on the stick is negative, so for up=forwards we need to
-        robot.motorL2.setPower(-gamepad1.right_stick_y); //take the negative value of the stick
-        robot.motorR1.setPower(-gamepad1.left_stick_y);
-        robot.motorR2.setPower(-gamepad1.left_stick_y);
+        motorL1.setPower(-gamepad1.right_stick_y); //up on the stick is negative, so for up=forwards we need to
+        motorL2.setPower(-gamepad1.right_stick_y); //take the negative value of the stick
+        motorR1.setPower(-gamepad1.left_stick_y);
+        motorR2.setPower(-gamepad1.left_stick_y);
 
         //INTAKE SYSTEM TOGGLE
         if(gamepad1.dpad_up){
-            robot.intakeMotor.setPower(-1); //INTAKE
+            intakeMotor.setPower(-1); //INTAKE
         }
         if(gamepad1.dpad_down){
-            robot.intakeMotor.setPower(0); //TURN OFF
+            intakeMotor.setPower(0); //TURN OFF
         }
         if(gamepad1.dpad_left){
-            robot.intakeMotor.setPower(1); //REVERSE
+            intakeMotor.setPower(1); //REVERSE
         }
 
         //MARKER DROPPER SYSTEM
         if(gamepad1.x){
-            robot.markerDropper.setPosition(robot.markerDropperBack);
+            markerDropper.setPosition(markerDropperBack);
         }
         if(gamepad1.y){
-            robot.markerDropper.setPosition(robot.markerDropperForward);
+            markerDropper.setPosition(markerDropperForward);
         }
 
         //LIFT MOTOR
         if(gamepad1.left_trigger > 0){
-            robot.liftMotor.setPower(-Range.clip(gamepad1.left_trigger, 0, 1)); //clip method limits value to between 0 and 1
+            liftMotor.setPower(-Range.clip(gamepad1.left_trigger, 0, 1)); //clip method limits value to between 0 and 1
         } else if(gamepad1.right_trigger > 0){
-            robot.liftMotor.setPower(Range.clip(gamepad1.right_trigger, 0, 1));
+            liftMotor.setPower(Range.clip(gamepad1.right_trigger, 0, 1));
         } else {
-            robot.liftMotor.setPower(0);
+            liftMotor.setPower(0);
         }
 
         //DOOR OPENER 1 SYSTEM
         if(gamepad1.left_bumper && !opener1Changed) {
-            robot.opener1.setPosition(opener1On ? robot.opener1Open : robot.opener1Closed);
+            opener1.setPosition(opener1On ? opener1Open : opener1Closed);
             opener1On = !opener1On;
             opener1Changed = true;
         } else if(!gamepad1.left_bumper) {
@@ -89,7 +78,7 @@ public class DriverControlled extends OpMode{
 
         //DOOR OPENER 2 SYSTEM
         if(gamepad1.right_bumper && !opener2Changed) {
-            robot.opener2.setPosition(opener2On ? robot.opener2Open : robot.opener2Closed); //this is a shorthand if/else statement, (condition ? if true : if false)
+            opener2.setPosition(opener2On ? opener2Open : opener2Closed); //this is a shorthand if/else statement, (condition ? if true : if false)
             opener2On = !opener2On;
             opener2Changed = true;
         } else if(!gamepad1.right_bumper) {
@@ -97,10 +86,7 @@ public class DriverControlled extends OpMode{
         }
 
     }
-
-    @Override
-    public void stop() {
-        robot.stopRobot();
+        stopRobot();
         telemetry.addData("Robot is stopped", "" );
     }
 }
