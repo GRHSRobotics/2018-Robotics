@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-public class HardwareDefinitions {
+public class HardwareDefinitions extends LinearOpMode{
 
     //CONSTANTS
     static final double COUNTS_PER_ROTATION = 1120 ;    // REV HD Hex Motor 40:1
@@ -29,14 +29,14 @@ public class HardwareDefinitions {
     int depot_toTheDepot;
 */
     //SERVO POSITION CONSTANTS
-    double opener1Closed = 1;
-    double opener1Open = 0;
+    public final double opener1Closed = 1;
+    public final double opener1Open = 0;
 
-    double opener2Closed = 0;
-    double opener2Open = 1;
+    public final double opener2Closed = 0;
+    public final double opener2Open = 1;
 
-    double markerDropperBack = 1;
-    double markerDropperForward = 0;
+    public final double markerDropperBack = 1;
+    public final double markerDropperForward = 0;
 
     //INSTANTIATE MOTORS
     public DcMotor motorL1;
@@ -104,7 +104,7 @@ public class HardwareDefinitions {
         intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        //REVERSE LEFT DRIVE MOTORS
+        //REVERSE RIGHT DRIVE MOTORS
         motorL1.setDirection(DcMotor.Direction.FORWARD);
         motorL2.setDirection(DcMotor.Direction.FORWARD);
         motorR1.setDirection(DcMotor.Direction.REVERSE);
@@ -119,7 +119,7 @@ public class HardwareDefinitions {
 
     }
 
-    public void stop(){
+    public void stopRobot(){
 
         //END GAME, TURN OFF MOTORS
         motorL1.setPower(0);
@@ -135,6 +135,7 @@ public class HardwareDefinitions {
 
     }
 
+    ElapsedTime runtime = new ElapsedTime();
     public void setDriveEncoderMode(DcMotor.RunMode RunMode){
 
         //RESET ENCODERS
@@ -143,6 +144,97 @@ public class HardwareDefinitions {
         motorR1.setMode(RunMode);
         motorR2.setMode(RunMode);
 
+    }
+
+    public void encoderDrive(double speed,
+                             double leftInches, double rightInches,
+                             double maxTimeS) {
+
+
+        // Ensure that the opmode is still active
+        if (opModeIsActive()) {
+
+            // Determine new target position
+            int newL1Target = motorL1.getCurrentPosition() + (int) Math.round(leftInches * COUNTS_PER_INCH);
+            int newL2Target = motorL2.getCurrentPosition() + (int) Math.round(leftInches * COUNTS_PER_INCH);
+            int newR1Target = motorR1.getCurrentPosition() + (int) Math.round(rightInches * COUNTS_PER_INCH);
+            int newR2Target = motorR2.getCurrentPosition() + (int) Math.round(rightInches * COUNTS_PER_INCH);
+
+            //give new target position to motors
+            motorL1.setTargetPosition(newL1Target);
+            motorL2.setTargetPosition(newL2Target);
+            motorR1.setTargetPosition(newR1Target);
+            motorR2.setTargetPosition(newR2Target);
+
+            // Turn On RUN_TO_POSITION
+            motorL1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            motorL2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            motorR1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            motorR2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            // reset the timeout time and start motion.
+            runtime.reset();
+            motorL1.setPower(Math.abs(speed));
+            motorL2.setPower(Math.abs(speed));
+            motorR1.setPower(Math.abs(speed));
+            motorR2.setPower(Math.abs(speed));
+
+            // keep looping while we are still active, and there is time left, and both motors are running.
+            // Note: We use (isBusy() && isBusy()) in the loop test, which means that when EITHER motor hits
+            // its target position, the motion will stopRobot.  This is "safer" in the event that the robot will
+            // always end the motion as soon as possible.
+            // However, if you require that BOTH motors have finished their moves before the robot continues
+            // onto the next step, use (isBusy() || isBusy()) in the loop test.
+            while (opModeIsActive() &&
+                    (runtime.seconds() < maxTimeS) &&
+                    (motorL1.isBusy() && motorL2.isBusy() && motorR1.isBusy() && motorR2.isBusy())) {
+
+                // Display it for the driver.
+                telemetry.addData("Path1", "Running to %7d :%7d :%7d :%7d", newL1Target, newL2Target, newR1Target, newR2Target);
+                telemetry.addData("Path2", "Running at %7d :%7d :%7d :%7d",
+                        motorL1.getCurrentPosition(),
+                        motorL2.getCurrentPosition(),
+                        motorR1.getCurrentPosition(),
+                        motorR2.getCurrentPosition());
+                telemetry.update();
+            }
+
+            // Stop all motion;
+            motorL1.setPower(0);
+            motorL2.setPower(0);
+            motorR1.setPower(0);
+            motorR2.setPower(0);
+
+            // Turn off RUN_TO_POSITION
+            motorL1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            motorL2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            motorR1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            motorR2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+            sleep(400);
+        }
+    }
+
+    public void encoderTurn(double speed, double angle, boolean clockwise, double maxTimeS){
+
+        //determine inches to travel for each side using formula (pi * ROBOT_DIAMETER * angle)/360
+        double leftInches = (ROBOT_DIAMETER * angle * Math.PI) / 360;
+        double rightInches = (ROBOT_DIAMETER * angle * Math.PI) / 360;
+
+        //Make sure that each motor is moving the right way
+        if(clockwise){ //if the robot is turning clockwise, the left motors need to turn backwards
+            leftInches = -leftInches;
+        } else{ //if the robot is turning counterclockwise, the right motors need to turn backwards
+            rightInches = -rightInches;
+        }
+
+        //plug the tread movement distances into the encoderDrive method
+        encoderDrive(speed, leftInches, rightInches, maxTimeS);
+    }
+
+    @Override
+    public void runOpMode(){
+        this.init(hardwareMap);
     }
 
 }

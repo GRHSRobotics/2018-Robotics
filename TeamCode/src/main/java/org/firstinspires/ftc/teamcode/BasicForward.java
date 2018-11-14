@@ -4,14 +4,9 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-import com.qualcomm.robotcore.robot.Robot;
-import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.util.Hardware;
-import com.qualcomm.robotcore.hardware.DcMotor;
 //import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.Servo;
 //import com.qualcomm.robotcore.hardware.GyroSensor;
-import com.qualcomm.robotcore.util.ElapsedTime;
+
 
 @Disabled
 @Autonomous(name = "BasicForward", group = "Autonomous")
@@ -61,7 +56,7 @@ public class BasicForward extends OpMode {
 
     @Override
     public void stop(){
-        robot.stop();
+        robot.stopRobot();
         telemetry.addData("Robot is stopped", "" );
     }
 
