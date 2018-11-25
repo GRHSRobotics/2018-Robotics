@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -7,6 +8,10 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 
 public class HardwareDefinitions extends LinearOpMode{
 
@@ -53,6 +58,11 @@ public class HardwareDefinitions extends LinearOpMode{
     public Servo opener1;
     public Servo opener2;
 
+    //INSTANTIATE IMU
+    public BNO055IMU imu;
+
+    public double gyroHeading;
+
     //CREATE AND DEFINE NEW HardwareMap
     HardwareMap robotMap;
     public void init(HardwareMap robotMap){
@@ -71,6 +81,9 @@ public class HardwareDefinitions extends LinearOpMode{
         //DEFINE OPENER SERVOS
         opener1 = robotMap.get(Servo.class, "opener1");
         opener2 = robotMap.get(Servo.class, "opener2");
+
+        //DEFINE REV HUB IMU
+        imu = robotMap.get(BNO055IMU.class, "hub4imu");
 
         //SET MOTOR POWER TO 0
         motorL1.setPower(0);
@@ -117,6 +130,28 @@ public class HardwareDefinitions extends LinearOpMode{
         opener1.setPosition(opener1Closed);
         opener2.setPosition(opener2Closed);
 
+        //SET IMU PARAMETERS
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.loggingEnabled = false;
+
+        //INIT IMU
+        imu.initialize(parameters);
+
+        telemetry.addData("Mode", "Calibrating Gyro");
+
+        // make sure the imu gyro is calibrated before continuing.
+        while (!isStopRequested() && !imu.isGyroCalibrated()) {
+            sleep(50);
+            idle();
+        }
+
+        gyroHeading = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
+
+        telemetry.addData("imu calib status", imu.getCalibrationStatus().toString());
+        telemetry.addData("Mode", "Waiting for Start");
+
     }
 
     public void stopRobot(){
@@ -130,8 +165,8 @@ public class HardwareDefinitions extends LinearOpMode{
         liftMotor.setPower(0);
 
         //SET OPENER SERVOS TO DEFAULT POSITIONS
-        opener1.setPosition(opener1Closed);
-        opener2.setPosition(opener2Closed);
+        opener1.setPosition(opener1Open);
+        opener2.setPosition(opener2Open);
 
     }
 
@@ -230,6 +265,45 @@ public class HardwareDefinitions extends LinearOpMode{
 
         //plug the tread movement distances into the encoderDrive method
         encoderDrive(speed, leftInches, rightInches, maxTimeS);
+    }
+
+    public void gyroTurn(double speed, double angle, double maxTimeS){
+
+        gyroHeading = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
+
+        double targetHeading = gyroHeading + angle;
+
+        motorL1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorL2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorR1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorR2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        while(opModeIsActive() && (Math.abs(targetHeading - gyroHeading) > 3)){
+
+            if(angle > 0){ //if turn is left
+                motorL1.setPower(-0.25);
+                motorL2.setPower(-0.25);
+                motorR1.setPower(0.25);
+                motorR2.setPower(0.25);
+            }
+            else if(angle < 0){ //if turn is right
+                motorL1.setPower(0.25);
+                motorL2.setPower(0.25);
+                motorR1.setPower(-0.25);
+                motorR2.setPower(-0.25);
+            }
+
+            //turn off motor power when turn is done
+            motorL1.setPower(0);
+            motorL2.setPower(0);
+            motorR1.setPower(0);
+            motorR2.setPower(0);
+
+            sleep(250);
+
+        }
+
+
     }
 
     @Override
