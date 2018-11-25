@@ -170,7 +170,7 @@ public class HardwareDefinitions extends LinearOpMode{
 
     }
 
-    ElapsedTime runtime = new ElapsedTime();
+
     public void setDriveEncoderMode(DcMotor.RunMode RunMode){
 
         //RESET ENCODERS
@@ -188,6 +188,8 @@ public class HardwareDefinitions extends LinearOpMode{
 
         // Ensure that the opmode is still active
         if (opModeIsActive()) {
+
+            ElapsedTime runtime = new ElapsedTime();
 
             // Determine new target position
             int newL1Target = motorL1.getCurrentPosition() + (int) Math.round(leftInches * COUNTS_PER_INCH);
@@ -269,6 +271,8 @@ public class HardwareDefinitions extends LinearOpMode{
 
     public void gyroTurn(double speed, double angle, double maxTimeS){
 
+        ElapsedTime runtime = new ElapsedTime();
+
         gyroHeading = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
 
         double targetHeading = gyroHeading + angle;
@@ -278,7 +282,9 @@ public class HardwareDefinitions extends LinearOpMode{
         motorR1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorR2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        while(opModeIsActive() && (Math.abs(targetHeading - gyroHeading) > 3)){
+        runtime.reset();
+
+        while(opModeIsActive() && (Math.abs(targetHeading - gyroHeading) > 3) && (runtime.seconds() < maxTimeS)){
 
             if(angle > 0){ //if turn is left
                 motorL1.setPower(-0.25);
@@ -293,16 +299,15 @@ public class HardwareDefinitions extends LinearOpMode{
                 motorR2.setPower(-0.25);
             }
 
-            //turn off motor power when turn is done
-            motorL1.setPower(0);
-            motorL2.setPower(0);
-            motorR1.setPower(0);
-            motorR2.setPower(0);
-
-            sleep(250);
-
         }
 
+        //turn off motor power when turn is done
+        motorL1.setPower(0);
+        motorL2.setPower(0);
+        motorR1.setPower(0);
+        motorR2.setPower(0);
+
+        sleep(250);
 
     }
 
