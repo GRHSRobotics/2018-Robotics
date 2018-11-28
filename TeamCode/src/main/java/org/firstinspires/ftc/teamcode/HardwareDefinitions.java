@@ -63,14 +63,15 @@ public class HardwareDefinitions extends LinearOpMode{
     //INSTANTIATE OPENER SERVOS
     public Servo opener1;
     public Servo opener2;
-
+/*
     //INSTANTIATE IMU
     public BNO055IMU imu;
-
+*/
+/*
     //MAGNETIC LIMIT SWITCHES
     public DigitalChannel topLimit;
     public DigitalChannel bottomLimit;
-
+*/
     //CREATE AND DEFINE NEW HardwareMap
     HardwareMap robotMap;
     public void init(HardwareMap robotMap){
@@ -91,14 +92,15 @@ public class HardwareDefinitions extends LinearOpMode{
         //DEFINE OPENER SERVOS
         opener1 = robotMap.get(Servo.class, "opener1");
         opener2 = robotMap.get(Servo.class, "opener2");
-
+/*
         //DEFINE REV HUB IMU
         imu = robotMap.get(BNO055IMU.class, "hub4imu");
-
+*/
+/*
         //DEFINE MAGNETIC LIMIt SWITCHES
         topLimit = robotMap.get(DigitalChannel.class, "topLimitSwitch");
         bottomLimit = robotMap.get(DigitalChannel.class, "bottomLimitSwitch");
-
+*/
         //SET MOTOR POWER TO 0
         motorL1.setPower(0);
         motorL2.setPower(0);
@@ -149,11 +151,12 @@ public class HardwareDefinitions extends LinearOpMode{
         //SET SERVO START POSITIONS
         opener1.setPosition(opener1Closed);
         opener2.setPosition(opener2Closed);
-
+/*
         //SET MAGNETIC LIMIT SWITCH MODES
         topLimit.setMode(DigitalChannel.Mode.INPUT);
         bottomLimit.setMode(DigitalChannel.Mode.INPUT);
-
+*/
+/*
         //SET IMU PARAMETERS
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
@@ -175,7 +178,7 @@ public class HardwareDefinitions extends LinearOpMode{
 
         telemetry.addData("imu calib status", imu.getCalibrationStatus().toString());
         telemetry.addData("Mode", "Waiting for Start");
-
+*/
     }
 
     public void stopRobot(){
@@ -292,7 +295,7 @@ public class HardwareDefinitions extends LinearOpMode{
         //plug the tread movement distances into the encoderDrive method
         encoderDrive(speed, leftInches, rightInches, maxTimeS);
     }
-
+/*
     public void gyroTurnAbsolute(double speed, double angle, double maxTimeS){
 
         ElapsedTime runtime = new ElapsedTime();
@@ -342,22 +345,55 @@ public class HardwareDefinitions extends LinearOpMode{
         gyroHeading = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
         gyroTurnAbsolute(speed, (gyroHeading + target), maxTimeS);
     }
-
+*/
     public void dropFromLander(){
 
-        boolean bottomReached = false;
+        landerMotor1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        landerMotor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        while (opModeIsActive() && !bottomReached){
-            landerMotor1.setPower(0.1);
-            landerMotor2.setPower(0.1);
+        int counts_per_rotation = 288; //using Core Hex Motors
+        double rotationsUp = 6; //modify this one, will most likely be the same as rotationsDown
 
-            if(bottomLimit.getState()){
-                bottomReached = true;
-            }
+        int targetPosition1Up = landerMotor1.getCurrentPosition() + (int)(counts_per_rotation * rotationsUp);
+        int targetPosition2Up = landerMotor1.getCurrentPosition() + (int)(counts_per_rotation * rotationsUp);
+
+        landerMotor1.setTargetPosition(targetPosition1Up);
+        landerMotor2.setTargetPosition(targetPosition2Up);
+
+        //raise the lift and undo the passive latch
+        landerMotor1.setPower(0.4);
+        landerMotor2.setPower(0.4);
+
+        while(opModeIsActive() && (landerMotor1.isBusy() || landerMotor2.isBusy())){
+            //let the motors keep spinning
         }
 
-        //add stuff to undo the hook thing
+        landerMotor1.setPower(0);
+        landerMotor2.setPower(0);
 
+        //move away from the lander
+        encoderDrive(0.25, 3,3,5);
+
+        //bring the lift back down
+        double rotationsDown = 6;
+
+        int targetPosition1Down = landerMotor1.getCurrentPosition() - (int)(counts_per_rotation * rotationsDown);
+        int targetPosition2Down = landerMotor2.getCurrentPosition() - (int)(counts_per_rotation * rotationsDown);
+
+        landerMotor1.setTargetPosition(targetPosition1Down);
+        landerMotor2.setTargetPosition(targetPosition2Down);
+
+        landerMotor1.setPower(0.4);
+        landerMotor2.setPower(0.4);
+
+        while(opModeIsActive() && (landerMotor1.isBusy() || landerMotor2.isBusy())){
+            //let the motors keep spinning
+        }
+
+        landerMotor1.setPower(0);
+        landerMotor2.setPower(0);
+
+        telemetry.addData("Landing sequence:", "Complete");
     }
 
     @Override
