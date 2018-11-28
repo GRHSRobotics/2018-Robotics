@@ -49,7 +49,7 @@ public class DriverControlled extends HardwareDefinitions{
         if(gamepad1.dpad_left){
             intakeMotor.setPower(1); //REVERSE
         }
-
+/*
         //MARKER DROPPER SYSTEM
         if(gamepad1.x){
             markerDropper.setPosition(markerDropperBack);
@@ -57,7 +57,7 @@ public class DriverControlled extends HardwareDefinitions{
         if(gamepad1.y){
             markerDropper.setPosition(markerDropperForward);
         }
-
+*/
         //LIFT MOTOR
         if(gamepad1.left_trigger > 0){
             liftMotor.setPower(-Range.clip(gamepad1.left_trigger, 0, 1)); //clip method limits value to between 0 and 1
@@ -85,6 +85,10 @@ public class DriverControlled extends HardwareDefinitions{
             opener2Changed = false;
         }
 
+        //LANDING SYSTEM
+        if(gamepad1.x){
+
+        }
     }
         stopRobot();
         telemetry.addData("Robot is stopped", "" );

@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -43,6 +44,9 @@ public class HardwareDefinitions extends LinearOpMode{
     public final double markerDropperBack = 1;
     public final double markerDropperForward = 0;
 
+    //GYRO HEADING
+    public double gyroHeading;
+
     //INSTANTIATE MOTORS
     public DcMotor motorL1;
     public DcMotor motorL2;
@@ -50,6 +54,8 @@ public class HardwareDefinitions extends LinearOpMode{
     public DcMotor motorR2;
     public DcMotor intakeMotor;
     public DcMotor liftMotor;
+    public DcMotor landerMotor1;
+    public DcMotor landerMotor2;
 
     //INSTANTIANTE TEAM MARKER SERVO
     public Servo markerDropper;
@@ -61,7 +67,9 @@ public class HardwareDefinitions extends LinearOpMode{
     //INSTANTIATE IMU
     public BNO055IMU imu;
 
-    public double gyroHeading;
+    //MAGNETIC LIMIT SWITCHES
+    public DigitalChannel topLimit;
+    public DigitalChannel bottomLimit;
 
     //CREATE AND DEFINE NEW HardwareMap
     HardwareMap robotMap;
@@ -74,6 +82,8 @@ public class HardwareDefinitions extends LinearOpMode{
         motorR2 = robotMap.get(DcMotor.class, "motorR2");
         intakeMotor = robotMap.get(DcMotor.class, "intakeMotor");
         liftMotor = robotMap.get(DcMotor.class, "liftMotor");
+        landerMotor1 = robotMap.get(DcMotor.class, "landerMotor1");
+        landerMotor2 = robotMap.get(DcMotor.class, "landerMotor2");
 
         //DEFINE TEAM MARKER SERVO
         markerDropper = robotMap.get(Servo.class, "markerDropper");
@@ -84,6 +94,10 @@ public class HardwareDefinitions extends LinearOpMode{
 
         //DEFINE REV HUB IMU
         imu = robotMap.get(BNO055IMU.class, "hub4imu");
+
+        //DEFINE MAGNETIC LIMIt SWITCHES
+        topLimit = robotMap.get(DigitalChannel.class, "topLimitSwitch");
+        bottomLimit = robotMap.get(DigitalChannel.class, "bottomLimitSwitch");
 
         //SET MOTOR POWER TO 0
         motorL1.setPower(0);
@@ -100,6 +114,8 @@ public class HardwareDefinitions extends LinearOpMode{
         motorR2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         intakeMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        landerMotor1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        landerMotor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         // SET MOTOR MODE
         motorL1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -108,6 +124,8 @@ public class HardwareDefinitions extends LinearOpMode{
         motorR2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         intakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         liftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        landerMotor1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        landerMotor2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         // SET MOTOR ZeroPowerBehavior
         motorL1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
@@ -116,6 +134,8 @@ public class HardwareDefinitions extends LinearOpMode{
         motorR2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        landerMotor1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        landerMotor2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         //REVERSE RIGHT DRIVE MOTORS
         motorL1.setDirection(DcMotor.Direction.FORWARD);
@@ -129,6 +149,10 @@ public class HardwareDefinitions extends LinearOpMode{
         //SET SERVO START POSITIONS
         opener1.setPosition(opener1Closed);
         opener2.setPosition(opener2Closed);
+
+        //SET MAGNETIC LIMIT SWITCH MODES
+        topLimit.setMode(DigitalChannel.Mode.INPUT);
+        bottomLimit.setMode(DigitalChannel.Mode.INPUT);
 
         //SET IMU PARAMETERS
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
@@ -269,13 +293,11 @@ public class HardwareDefinitions extends LinearOpMode{
         encoderDrive(speed, leftInches, rightInches, maxTimeS);
     }
 
-    public void gyroTurn(double speed, double angle, double maxTimeS){
+    public void gyroTurnAbsolute(double speed, double angle, double maxTimeS){
 
         ElapsedTime runtime = new ElapsedTime();
 
         gyroHeading = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
-
-        double targetHeading = gyroHeading + angle;
 
         motorL1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorL2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -284,7 +306,9 @@ public class HardwareDefinitions extends LinearOpMode{
 
         runtime.reset();
 
-        while(opModeIsActive() && (Math.abs(targetHeading - gyroHeading) > 3) && (runtime.seconds() < maxTimeS)){
+        gyroHeading = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
+
+        while(opModeIsActive() && (Math.abs(gyroHeading - angle) > 3) && (runtime.seconds() < maxTimeS)){
 
             if(angle > 0){ //if turn is left
                 motorL1.setPower(-0.25);
@@ -299,6 +323,9 @@ public class HardwareDefinitions extends LinearOpMode{
                 motorR2.setPower(-0.25);
             }
 
+            //update gyro position variable
+            gyroHeading = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
+
         }
 
         //turn off motor power when turn is done
@@ -308,6 +335,28 @@ public class HardwareDefinitions extends LinearOpMode{
         motorR2.setPower(0);
 
         sleep(250);
+
+    }
+
+    public void gyroTurn(double speed, double target, double maxTimeS){
+        gyroHeading = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
+        gyroTurnAbsolute(speed, (gyroHeading + target), maxTimeS);
+    }
+
+    public void dropFromLander(){
+
+        boolean bottomReached = false;
+
+        while (opModeIsActive() && !bottomReached){
+            landerMotor1.setPower(0.1);
+            landerMotor2.setPower(0.1);
+
+            if(bottomLimit.getState()){
+                bottomReached = true;
+            }
+        }
+
+        //add stuff to undo the hook thing
 
     }
 
