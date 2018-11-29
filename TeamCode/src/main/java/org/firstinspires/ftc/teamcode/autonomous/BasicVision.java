@@ -1,11 +1,12 @@
 package org.firstinspires.ftc.teamcode.autonomous;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.HardwareDefinitions;
 
-
+@Disabled
 @Autonomous(name="BasicVision", group="Autonomous")
 public class BasicVision extends HardwareDefinitions {
 
@@ -17,8 +18,7 @@ public class BasicVision extends HardwareDefinitions {
 
         setDriveEncoderMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         setDriveEncoderMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        landerMotor1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        landerMotor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        landerMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         telemetry.addData("Robot is initialized", "");
         telemetry.update();

@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.teleop;
 
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.Range;
 
@@ -87,7 +86,11 @@ public class DriverControlled extends HardwareDefinitions{
 
         //LANDING SYSTEM
         if(gamepad1.x){
-
+            landerMotor.setPower(-1); //bring the lift down
+        } else if(gamepad1.y){
+            landerMotor.setPower(1); //bring the lift up
+        } else {
+            landerMotor.setPower(0); //stop the lift
         }
     }
         stopRobot();

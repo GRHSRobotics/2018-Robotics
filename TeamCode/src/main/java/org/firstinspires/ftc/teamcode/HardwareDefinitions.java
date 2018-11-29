@@ -1,18 +1,10 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 
 public class HardwareDefinitions extends LinearOpMode{
 
@@ -43,10 +35,10 @@ public class HardwareDefinitions extends LinearOpMode{
 
     public final double markerDropperBack = 1;
     public final double markerDropperForward = 0;
-
+/*
     //GYRO HEADING
     public double gyroHeading;
-
+*/
     //INSTANTIATE MOTORS
     public DcMotor motorL1;
     public DcMotor motorL2;
@@ -54,8 +46,7 @@ public class HardwareDefinitions extends LinearOpMode{
     public DcMotor motorR2;
     public DcMotor intakeMotor;
     public DcMotor liftMotor;
-    public DcMotor landerMotor1;
-    public DcMotor landerMotor2;
+    public DcMotor landerMotor;
 
     //INSTANTIANTE TEAM MARKER SERVO
     public Servo markerDropper;
@@ -83,8 +74,7 @@ public class HardwareDefinitions extends LinearOpMode{
         motorR2 = robotMap.get(DcMotor.class, "motorR2");
         intakeMotor = robotMap.get(DcMotor.class, "intakeMotor");
         liftMotor = robotMap.get(DcMotor.class, "liftMotor");
-        landerMotor1 = robotMap.get(DcMotor.class, "landerMotor1");
-        landerMotor2 = robotMap.get(DcMotor.class, "landerMotor2");
+        landerMotor = robotMap.get(DcMotor.class, "landerMotor");
 
         //DEFINE TEAM MARKER SERVO
         markerDropper = robotMap.get(Servo.class, "markerDropper");
@@ -116,8 +106,7 @@ public class HardwareDefinitions extends LinearOpMode{
         motorR2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         intakeMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        landerMotor1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        landerMotor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        landerMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         // SET MOTOR MODE
         motorL1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -126,8 +115,7 @@ public class HardwareDefinitions extends LinearOpMode{
         motorR2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         intakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         liftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        landerMotor1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        landerMotor2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        landerMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         // SET MOTOR ZeroPowerBehavior
         motorL1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
@@ -136,8 +124,7 @@ public class HardwareDefinitions extends LinearOpMode{
         motorR2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        landerMotor1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        landerMotor2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        landerMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         //REVERSE RIGHT DRIVE MOTORS
         motorL1.setDirection(DcMotor.Direction.FORWARD);
@@ -348,50 +335,43 @@ public class HardwareDefinitions extends LinearOpMode{
 */
     public void dropFromLander(){
 
-        landerMotor1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        landerMotor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        landerMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         int counts_per_rotation = 288; //using Core Hex Motors
         double rotationsUp = 6; //modify this one, will most likely be the same as rotationsDown
 
-        int targetPosition1Up = landerMotor1.getCurrentPosition() + (int)(counts_per_rotation * rotationsUp);
-        int targetPosition2Up = landerMotor1.getCurrentPosition() + (int)(counts_per_rotation * rotationsUp);
+        int targetPositionUp = landerMotor.getCurrentPosition() + (int)(counts_per_rotation * rotationsUp);
 
-        landerMotor1.setTargetPosition(targetPosition1Up);
-        landerMotor2.setTargetPosition(targetPosition2Up);
+        landerMotor.setTargetPosition(targetPositionUp);
 
         //raise the lift and undo the passive latch
-        landerMotor1.setPower(0.4);
-        landerMotor2.setPower(0.4);
+        landerMotor.setPower(0.4);
 
-        while(opModeIsActive() && (landerMotor1.isBusy() || landerMotor2.isBusy())){
+        while(opModeIsActive() && landerMotor.isBusy()){
             //let the motors keep spinning
         }
 
-        landerMotor1.setPower(0);
-        landerMotor2.setPower(0);
+        landerMotor.setPower(0);
 
-        //move away from the lander
-        encoderDrive(0.25, 3,3,5);
+        encoderTurn(0.1, 45, true, 5);
 
         //bring the lift back down
         double rotationsDown = 6;
 
-        int targetPosition1Down = landerMotor1.getCurrentPosition() - (int)(counts_per_rotation * rotationsDown);
-        int targetPosition2Down = landerMotor2.getCurrentPosition() - (int)(counts_per_rotation * rotationsDown);
+        int targetPositionDown = landerMotor.getCurrentPosition() - (int)(counts_per_rotation * rotationsDown);
 
-        landerMotor1.setTargetPosition(targetPosition1Down);
-        landerMotor2.setTargetPosition(targetPosition2Down);
 
-        landerMotor1.setPower(0.4);
-        landerMotor2.setPower(0.4);
+        landerMotor.setTargetPosition(targetPositionDown);
 
-        while(opModeIsActive() && (landerMotor1.isBusy() || landerMotor2.isBusy())){
+        landerMotor.setPower(0.4);
+
+        while(opModeIsActive() && landerMotor.isBusy()){
             //let the motors keep spinning
         }
 
-        landerMotor1.setPower(0);
-        landerMotor2.setPower(0);
+        landerMotor.setPower(0);
+
+        encoderTurn(0.1, 45, false, 5);
 
         telemetry.addData("Landing sequence:", "Complete");
     }
