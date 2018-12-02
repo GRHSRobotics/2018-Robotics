@@ -1,12 +1,7 @@
 package org.firstinspires.ftc.teamcode.autonomous;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.HardwareDefinitions;
 
@@ -30,12 +25,16 @@ public class LinearCraterSide extends HardwareDefinitions {
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
+        markerDropperOuter.setPosition(markerDropperOuterHold);
+        markerDropperInner.setPosition(markerDropperInnerHold);
+
+        dropFromLander();
 
         //START PERIOD
 
         //drive to crater, push center mineral
-        encoderDrive(0.5, 35, 35, 15);
-
+        encoderDrive(0.5, -33, -33, 15);
+/*
         //back to in front of minerals
         encoderDrive(0.5 ,-23, -23, 10);
 
@@ -52,18 +51,25 @@ public class LinearCraterSide extends HardwareDefinitions {
         encoderDrive(0.5, 50, 50, 10);
 
         //release team marker
-        markerDropper.setPosition(markerDropperForward);
+        markerDropperOuter.setPosition(markerDropperOuterRelease);
+        sleep(1000);
+        markerDropperInner.setPosition(markerDropperInnerRelease);
         sleep(1500);
-        markerDropper.setPosition(markerDropperBack);
+        markerDropperInner.setPosition(markerDropperInnerHold);
+        sleep(1000);
+        markerDropperOuter.setPosition(markerDropperOuterHold);
+
 
         //make sure that we don't hit crater side ball/mineral
         encoderTurn(0.25, 8, false, 5);
 
         encoderDrive(0.5, -78, -78, 10);
 
-
+*/
         telemetry.addData("Completed Autonomous","");
 
     }
+
+
 }
 

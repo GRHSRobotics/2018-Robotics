@@ -18,7 +18,7 @@ public class BasicVision extends HardwareDefinitions {
 
         setDriveEncoderMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         setDriveEncoderMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        landerMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        landerMotor1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         telemetry.addData("Robot is initialized", "");
         telemetry.update();
@@ -29,7 +29,7 @@ public class BasicVision extends HardwareDefinitions {
 
         //START PERIOD
 
-        dropFromLander();
+       // dropFromLander();
 
 
 

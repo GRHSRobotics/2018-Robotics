@@ -12,8 +12,8 @@ import org.firstinspires.ftc.teamcode.HardwareDefinitions;
 
 //See Google Drive for TODO
 
-@TeleOp(name="DriverControlled", group="Teleop")
-public class DriverControlled extends HardwareDefinitions{
+@TeleOp(name="DriverControlled2", group="Teleop")
+public class DriverControlled2 extends HardwareDefinitions{
 
     //LIFT SERVO VARIABLES
     boolean opener1Changed = false;
@@ -109,12 +109,68 @@ public class DriverControlled extends HardwareDefinitions{
                 landerMotor2.setPower(0);
             }
 
-
-
+            if(gamepad1.dpad_right){
+                dropFromLander();
+            }
         }
         stopRobot();
         telemetry.addData("Robot is stopped", "" );
     }
 
+    public void dropFromLander(){
 
+
+        landerMotor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        landerMotor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        int counts_per_rotation = 288; //using Core Hex Motors
+        double rotationsUp = 3.63; //modify this one, will most likely be the same as rotationsDown
+
+        int targetPositionUp1 = landerMotor1.getCurrentPosition() + (int)(counts_per_rotation * rotationsUp);
+        int targetPositionUp2 = landerMotor2.getCurrentPosition() + (int)(counts_per_rotation * rotationsUp);
+
+        landerMotor1.setTargetPosition(targetPositionUp1);
+        landerMotor2.setTargetPosition(targetPositionUp2);
+
+        landerMotor1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        landerMotor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        //raise the lift and undo the passive latch
+        landerMotor1.setPower(0.4);
+        landerMotor2.setPower(0.4);
+
+        while(opModeIsActive() && (landerMotor1.isBusy() || landerMotor2.isBusy())){
+            //let the motors keep spinning
+        }
+
+        landerMotor1.setPower(0);
+        landerMotor2.setPower(0);
+
+        encoderTurn(0.4, 45, true, 5);
+
+        //bring the lift back down
+        double rotationsDown = 3.63; //modify this one
+
+        int targetPositionDown1 = landerMotor1.getCurrentPosition() - (int)(counts_per_rotation * rotationsDown);
+        int targetPositionDown2 = landerMotor2.getCurrentPosition() - (int)(counts_per_rotation * rotationsDown);
+
+
+        landerMotor1.setTargetPosition(targetPositionDown1);
+        landerMotor2.setTargetPosition(targetPositionDown2);
+
+        landerMotor1.setPower(0.4);
+        landerMotor2.setPower(0.4);
+
+        while(opModeIsActive() && (landerMotor1.isBusy() || landerMotor2.isBusy())){
+            //let the motors keep spinning
+        }
+
+        landerMotor1.setPower(0);
+        landerMotor2.setPower(0);
+
+        encoderTurn(0.4, 45, false, 5);
+
+        telemetry.addData("Landing sequence:", "Complete");
+
+    }
 }

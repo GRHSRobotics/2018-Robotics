@@ -60,9 +60,9 @@ public class BasicDepotSide extends OpMode {
         //robot.sleep(1000);
 
         //RELEASE TEAM MARKER
-        robot.markerDropper.setPosition(robot.markerDropperForward);
+        robot.markerDropperOuter.setPosition(robot.markerDropperOuterRelease);
         //robot.sleep(1000);
-        robot.markerDropper.setPosition(robot.markerDropperBack);
+        robot.markerDropperOuter.setPosition(robot.markerDropperOuterHold);
 
 
         telemetry.addData("Robot has completed autonomous", "");

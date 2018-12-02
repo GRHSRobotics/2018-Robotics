@@ -1,9 +1,7 @@
 package org.firstinspires.ftc.teamcode.autonomous;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.HardwareDefinitions;
 
@@ -28,16 +26,27 @@ public class LinearDepotSide extends HardwareDefinitions {
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
+
+        markerDropperOuter.setPosition(markerDropperOuterHold);
+        markerDropperInner.setPosition(markerDropperInnerHold);
+
+        dropFromLander();
+
         //START PERIOD
 
         //move to depot and push mineral in
-        encoderDrive(0.5, 50, 50, 15);
+        encoderDrive(0.5, -50, -50, 15);
 
-        //release team marker
-        markerDropper.setPosition(markerDropperForward);
+        encoderTurn(0.25, 100, false, 5);
+
+        markerDropperInner.setPosition(markerDropperInnerRelease);
+        sleep(1000);
+        markerDropperOuter.setPosition(markerDropperOuterRelease);
         sleep(1500);
-        markerDropper.setPosition(markerDropperBack);
-
+        markerDropperOuter.setPosition(markerDropperOuterHold);
+        sleep(1000);
+        markerDropperInner.setPosition(markerDropperInnerHold);
+/*
         //move back from depot to clear marker
         encoderDrive(0.5, -36, -36, 10);
 
@@ -52,7 +61,7 @@ public class LinearDepotSide extends HardwareDefinitions {
 
         //move forward towards the crater
         encoderDrive(0.5, 36, 36, 10);
-
+*/
 
 
         telemetry.addData("Completed Autonomous","");

@@ -5,9 +5,9 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.HardwareDefinitions;
 
 import java.util.List;
 
-@Autonomous(name = "TensorFlow Object Mineral Detection ", group = "Test")
+@Autonomous(name = "Mineral Detection", group = "Test")
 
 
 
@@ -65,7 +65,7 @@ public class MineralDetection extends HardwareDefinitions {
                 tfod.activate();
             }
 
-            while (opModeIsActive() /*&& runtime.seconds() < 5*/) {
+            while (opModeIsActive() && runtime.seconds() < 5) {
                 if (tfod != null) {
                     List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
                     if (updatedRecognitions != null) {
@@ -152,5 +152,64 @@ public class MineralDetection extends HardwareDefinitions {
         tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
         tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_GOLD_MINERAL, LABEL_SILVER_MINERAL);
     }
+
+    public void dropFromLander(){
+
+
+        landerMotor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        landerMotor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        int counts_per_rotation = 288; //using Core Hex Motors
+        double rotationsUp = 3.63; //modify this one, will most likely be the same as rotationsDown
+
+        int targetPositionUp1 = landerMotor1.getCurrentPosition() + (int)(counts_per_rotation * rotationsUp);
+        int targetPositionUp2 = landerMotor2.getCurrentPosition() + (int)(counts_per_rotation * rotationsUp);
+
+        landerMotor1.setTargetPosition(targetPositionUp1);
+        landerMotor2.setTargetPosition(targetPositionUp2);
+
+        landerMotor1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        landerMotor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        //raise the lift and undo the passive latch
+        landerMotor1.setPower(0.4);
+        landerMotor2.setPower(0.4);
+
+        while(opModeIsActive() && (landerMotor1.isBusy() || landerMotor2.isBusy())){
+            //let the motors keep spinning
+        }
+
+        landerMotor1.setPower(0);
+        landerMotor2.setPower(0);
+
+        encoderTurn(0.1, 45, true, 5);
+
+        //bring the lift back down
+        double rotationsDown = 3.63; //modify this one
+
+        int targetPositionDown1 = landerMotor1.getCurrentPosition() - (int)(counts_per_rotation * rotationsDown);
+        int targetPositionDown2 = landerMotor2.getCurrentPosition() - (int)(counts_per_rotation * rotationsDown);
+
+
+        landerMotor1.setTargetPosition(targetPositionDown1);
+        landerMotor2.setTargetPosition(targetPositionDown2);
+
+        landerMotor1.setPower(0.4);
+        landerMotor2.setPower(0.4);
+
+        while(opModeIsActive() && (landerMotor1.isBusy() || landerMotor2.isBusy())){
+            //let the motors keep spinning
+        }
+
+        landerMotor1.setPower(0);
+        landerMotor2.setPower(0);
+
+        encoderTurn(0.1, 45, false, 5);
+
+        telemetry.addData("Landing sequence:", "Complete");
+
+    }
+
+
 }
 

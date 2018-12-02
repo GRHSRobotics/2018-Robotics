@@ -33,8 +33,11 @@ public class HardwareDefinitions extends LinearOpMode{
     public final double opener2Closed = 0;
     public final double opener2Open = 1;
 
-    public final double markerDropperBack = 1;
-    public final double markerDropperForward = 0;
+    public final double markerDropperOuterHold = 0.5;
+    public final double markerDropperOuterRelease = 0.25;
+
+    public final double markerDropperInnerHold = 0.5;
+    public final double markerDropperInnerRelease = 0;
 /*
     //GYRO HEADING
     public double gyroHeading;
@@ -46,10 +49,12 @@ public class HardwareDefinitions extends LinearOpMode{
     public DcMotor motorR2;
     public DcMotor intakeMotor;
     public DcMotor liftMotor;
-    public DcMotor landerMotor;
+    public DcMotor landerMotor1;
+    public DcMotor landerMotor2;
 
     //INSTANTIANTE TEAM MARKER SERVO
-    public Servo markerDropper;
+    public Servo markerDropperOuter;
+    public Servo markerDropperInner;
 
     //INSTANTIATE OPENER SERVOS
     public Servo opener1;
@@ -74,10 +79,12 @@ public class HardwareDefinitions extends LinearOpMode{
         motorR2 = robotMap.get(DcMotor.class, "motorR2");
         intakeMotor = robotMap.get(DcMotor.class, "intakeMotor");
         liftMotor = robotMap.get(DcMotor.class, "liftMotor");
-        landerMotor = robotMap.get(DcMotor.class, "landerMotor");
+        landerMotor1 = robotMap.get(DcMotor.class, "landerMotor1");
+        landerMotor2 = robotMap.get(DcMotor.class, "landerMotor2");
 
         //DEFINE TEAM MARKER SERVO
-        markerDropper = robotMap.get(Servo.class, "markerDropper");
+        markerDropperOuter = robotMap.get(Servo.class, "markerDropperOuter");
+        markerDropperInner = robotMap.get(Servo.class, "markerDropperInner");
 
         //DEFINE OPENER SERVOS
         opener1 = robotMap.get(Servo.class, "opener1");
@@ -106,7 +113,8 @@ public class HardwareDefinitions extends LinearOpMode{
         motorR2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         intakeMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        landerMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        landerMotor1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        landerMotor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         // SET MOTOR MODE
         motorL1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -115,7 +123,8 @@ public class HardwareDefinitions extends LinearOpMode{
         motorR2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         intakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         liftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        landerMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        landerMotor1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        landerMotor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         // SET MOTOR ZeroPowerBehavior
         motorL1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
@@ -124,7 +133,8 @@ public class HardwareDefinitions extends LinearOpMode{
         motorR2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        landerMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        landerMotor1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        landerMotor2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         //REVERSE RIGHT DRIVE MOTORS
         motorL1.setDirection(DcMotor.Direction.FORWARD);
@@ -133,7 +143,8 @@ public class HardwareDefinitions extends LinearOpMode{
         motorR2.setDirection(DcMotor.Direction.REVERSE);
 
         //SET TEAM MARKER SERVO START POSITION
-        markerDropper.setPosition(markerDropperBack);
+        markerDropperOuter.setPosition(markerDropperOuterRelease);
+        markerDropperInner.setPosition(markerDropperInnerHold);
 
         //SET SERVO START POSITIONS
         opener1.setPosition(opener1Closed);
@@ -178,10 +189,6 @@ public class HardwareDefinitions extends LinearOpMode{
         intakeMotor.setPower(0);
         liftMotor.setPower(0);
 
-        //SET OPENER SERVOS TO DEFAULT POSITIONS
-        opener1.setPosition(opener1Open);
-        opener2.setPosition(opener2Open);
-
     }
 
 
@@ -202,6 +209,11 @@ public class HardwareDefinitions extends LinearOpMode{
 
         // Ensure that the opmode is still active
         if (opModeIsActive()) {
+
+            motorL1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            motorL2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            motorR1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            motorR2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
             ElapsedTime runtime = new ElapsedTime();
 
@@ -282,98 +294,71 @@ public class HardwareDefinitions extends LinearOpMode{
         //plug the tread movement distances into the encoderDrive method
         encoderDrive(speed, leftInches, rightInches, maxTimeS);
     }
-/*
-    public void gyroTurnAbsolute(double speed, double angle, double maxTimeS){
 
-        ElapsedTime runtime = new ElapsedTime();
-
-        gyroHeading = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
-
-        motorL1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motorL2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motorR1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motorR2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        runtime.reset();
-
-        gyroHeading = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
-
-        while(opModeIsActive() && (Math.abs(gyroHeading - angle) > 3) && (runtime.seconds() < maxTimeS)){
-
-            if(angle > 0){ //if turn is left
-                motorL1.setPower(-0.25);
-                motorL2.setPower(-0.25);
-                motorR1.setPower(0.25);
-                motorR2.setPower(0.25);
-            }
-            else if(angle < 0){ //if turn is right
-                motorL1.setPower(0.25);
-                motorL2.setPower(0.25);
-                motorR1.setPower(-0.25);
-                motorR2.setPower(-0.25);
-            }
-
-            //update gyro position variable
-            gyroHeading = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
-
-        }
-
-        //turn off motor power when turn is done
-        motorL1.setPower(0);
-        motorL2.setPower(0);
-        motorR1.setPower(0);
-        motorR2.setPower(0);
-
-        sleep(250);
-
-    }
-
-    public void gyroTurn(double speed, double target, double maxTimeS){
-        gyroHeading = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
-        gyroTurnAbsolute(speed, (gyroHeading + target), maxTimeS);
-    }
-*/
     public void dropFromLander(){
 
-        landerMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        moveLanderWithEncoder(6);
 
-        int counts_per_rotation = 288; //using Core Hex Motors
-        double rotationsUp = 6; //modify this one, will most likely be the same as rotationsDown
+        encoderTurn(0.4, 30, true, 5);
 
-        int targetPositionUp = landerMotor.getCurrentPosition() + (int)(counts_per_rotation * rotationsUp);
+        moveLanderWithEncoder(-6);
 
-        landerMotor.setTargetPosition(targetPositionUp);
-
-        //raise the lift and undo the passive latch
-        landerMotor.setPower(0.4);
-
-        while(opModeIsActive() && landerMotor.isBusy()){
-            //let the motors keep spinning
-        }
-
-        landerMotor.setPower(0);
-
-        encoderTurn(0.1, 45, true, 5);
-
-        //bring the lift back down
-        double rotationsDown = 6;
-
-        int targetPositionDown = landerMotor.getCurrentPosition() - (int)(counts_per_rotation * rotationsDown);
-
-
-        landerMotor.setTargetPosition(targetPositionDown);
-
-        landerMotor.setPower(0.4);
-
-        while(opModeIsActive() && landerMotor.isBusy()){
-            //let the motors keep spinning
-        }
-
-        landerMotor.setPower(0);
-
-        encoderTurn(0.1, 45, false, 5);
+        encoderTurn(0.4, 30, false, 5);
 
         telemetry.addData("Landing sequence:", "Complete");
+
+    }
+
+    public void moveLanderWithEncoder(double rotations){ //rotations should be 3.63
+        // Ensure that the opmode is still active
+        if (opModeIsActive()) {
+
+            int counts_per_rotation = 288; //using Core Hex Motors
+            double rotationsUp = rotations; //modify this one, will most likely be the same as rotationsDown
+
+            ElapsedTime runtime = new ElapsedTime();
+
+            int targetPositionUp1 = landerMotor1.getCurrentPosition() + (int)(counts_per_rotation * rotationsUp);
+            int targetPositionUp2 = landerMotor2.getCurrentPosition() + (int)(counts_per_rotation * rotationsUp);
+
+            landerMotor1.setTargetPosition(targetPositionUp1);
+            landerMotor2.setTargetPosition(targetPositionUp2);
+
+            // Turn On RUN_TO_POSITION
+            landerMotor1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            landerMotor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            // reset the timeout time and start motion.
+            runtime.reset();
+            landerMotor1.setPower(0.4);
+            landerMotor2.setPower(0.4);
+
+
+            // keep looping while we are still active, and there is time left, and both motors are running.
+            // Note: We use (isBusy() && isBusy()) in the loop test, which means that when EITHER motor hits
+            // its target position, the motion will stopRobot.  This is "safer" in the event that the robot will
+            // always end the motion as soon as possible.
+            // However, if you require that BOTH motors have finished their moves before the robot continues
+            // onto the next step, use (isBusy() || isBusy()) in the loop test.
+            while (opModeIsActive() &&
+                    (landerMotor1.isBusy() && landerMotor2.isBusy())) {
+
+                // Display it for the driver.
+                telemetry.addData("Path1", "Running to %7d :%7d", targetPositionUp1, targetPositionUp2);
+                telemetry.addData("Path2", "Running at %7d :%7d",
+                        landerMotor1.getCurrentPosition(),
+                        landerMotor2.getCurrentPosition()
+                );
+                telemetry.update();
+            }
+
+            // Stop all motion;
+            landerMotor1.setPower(0);
+            landerMotor2.setPower(0);
+
+            sleep(400);
+
+        }
     }
 
     @Override
