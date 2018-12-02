@@ -37,7 +37,7 @@ public class HardwareDefinitions extends LinearOpMode{
     public final double markerDropperOuterRelease = 0.25;
 
     public final double markerDropperInnerHold = 0.5;
-    public final double markerDropperInnerRelease = 0;
+    public final double markerDropperInnerRelease =  0;
 /*
     //GYRO HEADING
     public double gyroHeading;
