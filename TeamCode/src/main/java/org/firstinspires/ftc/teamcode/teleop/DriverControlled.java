@@ -43,8 +43,8 @@ public class DriverControlled extends HardwareDefinitions{
 
             //TANK DRIVE
 
-            rightPower = Range.clip(Math.pow(-gamepad1.right_stick_y, 3), -1, 1);
-            leftPower = Range.clip(Math.pow(-gamepad1.left_stick_y, 3), -1, 1);
+            leftPower = Range.clip(Math.pow(-gamepad1.right_stick_y, 3), -1, 1);
+            rightPower = Range.clip(Math.pow(-gamepad1.left_stick_y, 3), -1, 1);
 
             motorL1.setPower(leftPower); //up on the stick is negative, so for up=forwards we need to
             motorL2.setPower(leftPower); //take the negative value of the stick

@@ -11,7 +11,7 @@ public class ServoTest extends HardwareDefinitions {
 
     @Override
     public void runOpMode(){
-        
+
         init(hardwareMap);
         telemetry.addData("Robot is initialized", "");
 
@@ -40,6 +40,16 @@ public class ServoTest extends HardwareDefinitions {
             if(gamepad1.dpad_up){
 
                 markerDropperOuter.setPosition(markerDropperOuterRelease);
+            }
+
+            if(gamepad1.a){
+                markerDropperOuter.setPosition(markerDropperOuterRelease);
+                sleep(1000);
+                markerDropperInner.setPosition(markerDropperInnerRelease);
+                sleep(1500);
+                markerDropperInner.setPosition(markerDropperInnerHold);
+                sleep(1000);
+                markerDropperOuter.setPosition(markerDropperOuterHold);
             }
 
 

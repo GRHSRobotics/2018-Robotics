@@ -38,6 +38,8 @@ public class MineralDetection extends HardwareDefinitions {
     @Override
     public void runOpMode() {
 
+        init(hardwareMap);
+
         //open camera
         initVuforia();
 
@@ -48,16 +50,19 @@ public class MineralDetection extends HardwareDefinitions {
         }
 
 
-        telemetry.addData("caption: >", "value: Ready!!");
+        telemetry.addData("Robot is initialized", "");
         telemetry.update();
         waitForStart();
 
-        runtime.reset();
+
 
         //add movement to
 
-        //dropFromLander();
-        //encoderTurn(0.25, 100, false, 5);
+        dropFromLander();
+        encoderDrive(0.4 ,-11, -11, 5);
+        encoderTurn(0.25, 80, false, 5);
+
+        runtime.reset();
 
         if (opModeIsActive()) {
             /** Start Tensor Flow Object Detection. */
@@ -70,32 +75,28 @@ public class MineralDetection extends HardwareDefinitions {
                     List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
                     if (updatedRecognitions != null) {
                         telemetry.addData("# Object Detected", updatedRecognitions.size());
-                        if (updatedRecognitions.size() == 3) {
+                        if (updatedRecognitions.size() == 2) {
                             int goldMineralX = -1;
-                            int silverMineral1X = -1;
-                            int silverMineral2X = -1;
+                            int silverMineralX = -1;
                             for (Recognition recognition : updatedRecognitions) {
                                 if (recognition.getLabel().equals(LABEL_GOLD_MINERAL)) {
                                     goldMineralX = (int) recognition.getLeft();
-                                } else if (silverMineral1X == -1) {
-                                    silverMineral1X = (int) recognition.getLeft();
-                                } else {
-                                    silverMineral2X = (int) recognition.getLeft();
+                                } else if (silverMineralX == -1) {
+                                    silverMineralX = (int) recognition.getLeft();
                                 }
                             }
-                            if (goldMineralX != -1 && silverMineral1X != -1 && silverMineral2X != -1) {
-                                if (goldMineralX < silverMineral1X && goldMineralX < silverMineral2X) {
-                                    telemetry.addData("Gold Mineral Position", "Left");
-                                    //movement if gold mineral on the left
-                                    goldPosition = 1;
-                                } else if (goldMineralX > silverMineral1X && goldMineralX > silverMineral2X) {
-                                    telemetry.addData("Gold Mineral Position", "Right");
-                                    //movement if gold mineral on the right
+                            if (goldMineralX == -1) {
+                                telemetry.addData("Mineral Position:", "Left");
+                                goldPosition = 1;
+                            } else if (goldMineralX != -1){
+                                if(goldMineralX < silverMineralX){
+                                    telemetry.addData("Mineral Position:", "Center");
+                                    goldPosition = 2;
+                                } else if(goldMineralX > silverMineralX){
+                                    telemetry.addData("Mineral Position:", "Right");
                                     goldPosition = 3;
                                 } else {
-                                    telemetry.addData("Gold Mineral Position", "Middle");
-                                    //movement if gold mineral on the middle
-                                    goldPosition = 2;
+                                    telemetry.addData("Mineral Position:", "Confused");
                                 }
                             }
                         }
@@ -107,21 +108,21 @@ public class MineralDetection extends HardwareDefinitions {
 
         //movement stuff
 
-        encoderTurn(0.25, 100, true, 5);
+        encoderTurn(0.25, 80, true, 5);
 
         if(goldPosition == 1){ //gold is left
             encoderTurn(0.25, 45, false, 5); //turn left and drive towards the gold
-            encoderDrive(0.35, 20, 20, 10);
+            encoderDrive(0.35, -20, -20, 10);
 
         } else if (goldPosition == 2){ //gold is center
-            encoderDrive(0.35, 20, 20, 10); //drive straight towards the gold
+            encoderDrive(0.35, -20, -20, 10); //drive straight towards the gold
 
         } else if(goldPosition == 3){ //gold is right
             encoderTurn(0.25, 45, true, 5); //turn right and drive towards the gold
-            encoderDrive(0.35, 20, 20, 10);
+            encoderDrive(0.35, -20, -20, 10);
 
         } else { //Tensorflow doesn't know
-            encoderDrive(0.35, 20, 20, 10); //just go straight
+            encoderDrive(0.35, -20, -20, 10); //just go straight
 
         }
 
@@ -151,63 +152,6 @@ public class MineralDetection extends HardwareDefinitions {
         TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
         tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
         tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_GOLD_MINERAL, LABEL_SILVER_MINERAL);
-    }
-
-    public void dropFromLander(){
-
-
-        landerMotor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        landerMotor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        int counts_per_rotation = 288; //using Core Hex Motors
-        double rotationsUp = 3.63; //modify this one, will most likely be the same as rotationsDown
-
-        int targetPositionUp1 = landerMotor1.getCurrentPosition() + (int)(counts_per_rotation * rotationsUp);
-        int targetPositionUp2 = landerMotor2.getCurrentPosition() + (int)(counts_per_rotation * rotationsUp);
-
-        landerMotor1.setTargetPosition(targetPositionUp1);
-        landerMotor2.setTargetPosition(targetPositionUp2);
-
-        landerMotor1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        landerMotor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        //raise the lift and undo the passive latch
-        landerMotor1.setPower(0.4);
-        landerMotor2.setPower(0.4);
-
-        while(opModeIsActive() && (landerMotor1.isBusy() || landerMotor2.isBusy())){
-            //let the motors keep spinning
-        }
-
-        landerMotor1.setPower(0);
-        landerMotor2.setPower(0);
-
-        encoderTurn(0.1, 45, true, 5);
-
-        //bring the lift back down
-        double rotationsDown = 3.63; //modify this one
-
-        int targetPositionDown1 = landerMotor1.getCurrentPosition() - (int)(counts_per_rotation * rotationsDown);
-        int targetPositionDown2 = landerMotor2.getCurrentPosition() - (int)(counts_per_rotation * rotationsDown);
-
-
-        landerMotor1.setTargetPosition(targetPositionDown1);
-        landerMotor2.setTargetPosition(targetPositionDown2);
-
-        landerMotor1.setPower(0.4);
-        landerMotor2.setPower(0.4);
-
-        while(opModeIsActive() && (landerMotor1.isBusy() || landerMotor2.isBusy())){
-            //let the motors keep spinning
-        }
-
-        landerMotor1.setPower(0);
-        landerMotor2.setPower(0);
-
-        encoderTurn(0.1, 45, false, 5);
-
-        telemetry.addData("Landing sequence:", "Complete");
-
     }
 
 

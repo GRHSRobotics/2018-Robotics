@@ -59,6 +59,7 @@ public class HardwareDefinitions extends LinearOpMode{
     //INSTANTIATE OPENER SERVOS
     public Servo opener1;
     public Servo opener2;
+
 /*
     //INSTANTIATE IMU
     public BNO055IMU imu;
@@ -297,26 +298,26 @@ public class HardwareDefinitions extends LinearOpMode{
 
     public void dropFromLander(){
 
-        moveLanderWithEncoder(6);
+        moveLanderWithEncoder(9, 8);
 
         encoderTurn(0.4, 30, true, 5);
 
-        moveLanderWithEncoder(-6);
+        encoderDrive(0.4, -2, -2, 5);
 
-        encoderTurn(0.4, 30, false, 5);
+        //encoderTurn(0.4, 30, false, 5);
 
         telemetry.addData("Landing sequence:", "Complete");
 
     }
 
-    public void moveLanderWithEncoder(double rotations){ //rotations should be 3.63
+    public void moveLanderWithEncoder(double rotations, double maxTimeS){ //rotations should be 3.63
         // Ensure that the opmode is still active
         if (opModeIsActive()) {
 
             int counts_per_rotation = 288; //using Core Hex Motors
             double rotationsUp = rotations; //modify this one, will most likely be the same as rotationsDown
 
-            ElapsedTime runtime = new ElapsedTime();
+            ElapsedTime landerRuntime = new ElapsedTime();
 
             int targetPositionUp1 = landerMotor1.getCurrentPosition() + (int)(counts_per_rotation * rotationsUp);
             int targetPositionUp2 = landerMotor2.getCurrentPosition() + (int)(counts_per_rotation * rotationsUp);
@@ -329,7 +330,7 @@ public class HardwareDefinitions extends LinearOpMode{
             landerMotor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
             // reset the timeout time and start motion.
-            runtime.reset();
+            landerRuntime.reset();
             landerMotor1.setPower(0.4);
             landerMotor2.setPower(0.4);
 
@@ -341,7 +342,8 @@ public class HardwareDefinitions extends LinearOpMode{
             // However, if you require that BOTH motors have finished their moves before the robot continues
             // onto the next step, use (isBusy() || isBusy()) in the loop test.
             while (opModeIsActive() &&
-                    (landerMotor1.isBusy() && landerMotor2.isBusy())) {
+                    (landerMotor1.isBusy() && landerMotor2.isBusy())
+                    && landerRuntime.seconds() < maxTimeS) {
 
                 // Display it for the driver.
                 telemetry.addData("Path1", "Running to %7d :%7d", targetPositionUp1, targetPositionUp2);

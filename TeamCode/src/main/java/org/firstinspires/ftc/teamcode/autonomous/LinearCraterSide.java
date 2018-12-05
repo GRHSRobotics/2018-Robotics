@@ -33,7 +33,7 @@ public class LinearCraterSide extends HardwareDefinitions {
         //START PERIOD
 
         //drive to crater, push center mineral
-        encoderDrive(0.5, -33, -33, 15);
+        encoderDrive(0.5, -35, -35, 15);
 /*
         //back to in front of minerals
         encoderDrive(0.5 ,-23, -23, 10);

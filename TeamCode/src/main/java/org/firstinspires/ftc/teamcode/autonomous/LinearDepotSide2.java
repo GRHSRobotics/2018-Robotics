@@ -6,8 +6,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import org.firstinspires.ftc.teamcode.HardwareDefinitions;
 
 
-@Autonomous(name="LinearDepotSide", group="Autonomous")
-public class LinearDepotSide extends HardwareDefinitions {
+@Autonomous(name="LinearDepotSide2", group="Autonomous")
+public class LinearDepotSide2 extends HardwareDefinitions {
 
 
     @Override
@@ -46,6 +46,13 @@ public class LinearDepotSide extends HardwareDefinitions {
         markerDropperInner.setPosition(markerDropperInnerHold);
         sleep(1000);
         markerDropperOuter.setPosition(markerDropperOuterHold);
+
+
+        encoderDrive(0.4, -4, -4, 5);
+
+        encoderTurn(0.4, 45, false, 5);
+
+        encoderDrive(0.4, -45, -45, 10);
 
 /*
         //move back from depot to clear marker
