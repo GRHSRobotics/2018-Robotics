@@ -12,7 +12,7 @@ import org.firstinspires.ftc.teamcode.HardwareDefinitions;
 
 //See Google Drive for TODO
 
-@TeleOp(name="DriverControlled2", group="Teleop")
+@TeleOp(name="DriverControlled2", group="Test")
 public class DriverControlled2 extends HardwareDefinitions{
 
     //LIFT SERVO VARIABLES
@@ -45,6 +45,10 @@ public class DriverControlled2 extends HardwareDefinitions{
 
             rightPower = Range.clip(Math.pow(-gamepad1.right_stick_y, 3), -1, 1);
             leftPower = Range.clip(Math.pow(-gamepad1.left_stick_y, 3), -1, 1);
+
+            telemetry.addData("rightPower: ", rightPower);
+            telemetry.addData("leftPower:", leftPower);
+            telemetry.update();
 
             motorL1.setPower(leftPower); //up on the stick is negative, so for up=forwards we need to
             motorL2.setPower(leftPower); //take the negative value of the stick

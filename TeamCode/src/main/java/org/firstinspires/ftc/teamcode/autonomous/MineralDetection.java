@@ -1,11 +1,7 @@
 package org.firstinspires.ftc.teamcode.autonomous;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
@@ -15,7 +11,7 @@ import org.firstinspires.ftc.teamcode.HardwareDefinitions;
 
 import java.util.List;
 
-@Autonomous(name = "Mineral Detection", group = "Test")
+@Autonomous(name = "Mineral Detection", group = "Vision")
 
 
 
@@ -31,7 +27,7 @@ public class MineralDetection extends HardwareDefinitions {
 
     private TFObjectDetector tfod;
 
-    ElapsedTime runtime = new ElapsedTime();
+    ElapsedTime timer = new ElapsedTime();
 
     int goldPosition = 0; //1 is left, 2 is center, 3 is right
 
@@ -58,11 +54,12 @@ public class MineralDetection extends HardwareDefinitions {
 
         //add movement to
 
-        dropFromLander();
-        encoderDrive(0.4 ,-11, -11, 5);
-        encoderTurn(0.25, 80, false, 5);
+        //dropFromLander();
+        encoderDrive(0.4 ,17, 17, 5);
+        encoderTurn(0.25, 105, false, 5);
+        encoderDrive(0.4, 7, 7, 5);
 
-        runtime.reset();
+        timer.reset();
 
         if (opModeIsActive()) {
             /** Start Tensor Flow Object Detection. */
@@ -70,7 +67,7 @@ public class MineralDetection extends HardwareDefinitions {
                 tfod.activate();
             }
 
-            while (opModeIsActive() && runtime.seconds() < 5) {
+            while (opModeIsActive() && timer.seconds() < 5) {
                 if (tfod != null) {
                     List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
                     if (updatedRecognitions != null) {
@@ -86,15 +83,21 @@ public class MineralDetection extends HardwareDefinitions {
                                 }
                             }
                             if (goldMineralX == -1) {
-                                telemetry.addData("Mineral Position:", "Left");
-                                goldPosition = 1;
+                                //telemetry.addData("Mineral Position:", "Left");
+                                telemetry.addData("Mineral Position:", "Right");
+                                //goldPosition = 1;
+                                goldPosition = 3;
                             } else if (goldMineralX != -1){
                                 if(goldMineralX < silverMineralX){
-                                    telemetry.addData("Mineral Position:", "Center");
-                                    goldPosition = 2;
+                                    //telemetry.addData("Mineral Position:", "Center");
+                                    telemetry.addData("Mineral Position:", "Left");
+                                    //goldPosition = 2;
+                                    goldPosition = 1;
                                 } else if(goldMineralX > silverMineralX){
-                                    telemetry.addData("Mineral Position:", "Right");
-                                    goldPosition = 3;
+                                    //telemetry.addData("Mineral Position:", "Right");
+                                    telemetry.addData("Mineral Position:", "Center");
+                                    //goldPosition = 3;
+                                    goldPosition = 2;
                                 } else {
                                     telemetry.addData("Mineral Position:", "Confused");
                                 }
@@ -108,23 +111,63 @@ public class MineralDetection extends HardwareDefinitions {
 
         //movement stuff
 
-        encoderTurn(0.25, 80, true, 5);
 
         if(goldPosition == 1){ //gold is left
-            encoderTurn(0.25, 45, false, 5); //turn left and drive towards the gold
-            encoderDrive(0.35, -20, -20, 10);
+            encoderDrive(0.4, 4, 4, 5);
+            encoderTurn(0.25, 105, true, 5); //turn left and drive towards the gold
+            encoderDrive(0.35, 15, 15, 10);
+            encoderDrive(0.35, -12, -12, 10);
+            encoderTurn(0.25, 105, false, 5);
 
         } else if (goldPosition == 2){ //gold is center
-            encoderDrive(0.35, -20, -20, 10); //drive straight towards the gold
+            encoderDrive(0.35, -10, -10, 5); //drive straight towards the gold
+            encoderTurn(0.25, 105, true, 5);
+            encoderDrive(0.35, 15, 15, 10);
+            encoderDrive(0.35, -15, -15, 10);
+            encoderTurn(0.25, 105, false, 5);
+            encoderDrive(0.4, 14, 14, 10);
 
         } else if(goldPosition == 3){ //gold is right
-            encoderTurn(0.25, 45, true, 5); //turn right and drive towards the gold
-            encoderDrive(0.35, -20, -20, 10);
+            encoderDrive(0.4, -25, -25, 5);
+            encoderTurn(0.25, 105, true, 5); //turn right and drive towards the gold
+            encoderDrive(0.35, 15, 15, 10);
+            encoderDrive(0.35, -15, -15, 10);
+            encoderTurn(0.25, 105, false, 5);
+            encoderDrive(0.4, 29, 29, 10);
+
 
         } else { //Tensorflow doesn't know
-            encoderDrive(0.35, -20, -20, 10); //just go straight
+            encoderDrive(0.4, 4, 4, 5);
+            encoderTurn(0.25, 105, true, 5); //turn left and drive towards the gold
+            encoderDrive(0.35, 15, 15, 10);
+            encoderDrive(0.35, -15, -15, 10);
+            encoderTurn(0.25, 105, false, 5);
 
         }
+
+        //for crater side only TODO make depot side stuff
+        //this may or may not be worth it, HIGH RISK OF DESCORING ALLIANCE MINERAL
+        /*
+        encoderDrive(0.4, 25, 25, 5);
+        encoderTurn(0.35, 60, false, 5);
+        encoderDrive(0.5, 50, 50, 10);
+
+
+
+        encoderTurn(0.25, 100, false, 5);
+
+        markerDropperOuter.setPosition(markerDropperOuterRelease);
+        sleep(1000);
+        markerDropperInner.setPosition(markerDropperInnerRelease);
+        sleep(1500);
+        markerDropperInner.setPosition(markerDropperInnerHold);
+        sleep(1000);
+        markerDropperOuter.setPosition(markerDropperOuterHold);
+
+        encoderTurn(0.25, 100, true, 5);
+
+        encoderDrive(0.4, -60, -60, 10);
+        */
 
     }
 

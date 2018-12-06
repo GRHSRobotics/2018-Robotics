@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 public class HardwareDefinitions extends LinearOpMode{
 
     //CONSTANTS
-    static final double COUNTS_PER_ROTATION = 1120 ;    // REV HD Hex Motor 40:1
+    static final double COUNTS_PER_ROTATION = 560 ;    // REV HD Hex Motor 20:1
     static final double WHEEL_CIRCUMFERENCE_INCHES = 9.42 ;
     static final double COUNTS_PER_INCH = (COUNTS_PER_ROTATION) / (WHEEL_CIRCUMFERENCE_INCHES);
     static final double ROBOT_DIAMETER = 18; //in inches
@@ -287,9 +287,9 @@ public class HardwareDefinitions extends LinearOpMode{
 
         //Make sure that each motor is moving the right way
         if(clockwise){ //if the robot is turning clockwise, the left motors need to turn backwards
-            leftInches = -leftInches;
-        } else{ //if the robot is turning counterclockwise, the right motors need to turn backwards
             rightInches = -rightInches;
+        } else{ //if the robot is turning counterclockwise, the right motors need to turn backwards
+            leftInches = -leftInches;
         }
 
         //plug the tread movement distances into the encoderDrive method
@@ -304,7 +304,7 @@ public class HardwareDefinitions extends LinearOpMode{
 
         encoderDrive(0.4, -2, -2, 5);
 
-        //encoderTurn(0.4, 30, false, 5);
+        encoderTurn(0.4, 30, false, 5);
 
         telemetry.addData("Landing sequence:", "Complete");
 
