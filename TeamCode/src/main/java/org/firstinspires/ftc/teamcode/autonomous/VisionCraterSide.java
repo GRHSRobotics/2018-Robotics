@@ -11,12 +11,12 @@ import org.firstinspires.ftc.teamcode.HardwareDefinitions;
 
 import java.util.List;
 
-@Autonomous(name = "Mineral Detection", group = "Vision")
+@Autonomous(name = "VisionCraterSide", group = "Vision")
 
 
 
 //define
-public class MineralDetection extends HardwareDefinitions {
+public class VisionCraterSide extends HardwareDefinitions {
     private static final String TFOD_MODEL_ASSET = "RoverRuckus.tflite";
     private static final String LABEL_GOLD_MINERAL = "Gold Mineral";
     private static final String LABEL_SILVER_MINERAL = "Silver Mineral";
@@ -54,10 +54,14 @@ public class MineralDetection extends HardwareDefinitions {
 
         //add movement to
 
+        markerDropperOuter.setPosition(markerDropperOuterHold);
+
         //dropFromLander();
-        encoderDrive(0.4 ,17, 17, 5);
+        encoderDrive(0.4 ,14, 14, 5);
         encoderTurn(0.25, 105, false, 5);
-        encoderDrive(0.4, 7, 7, 5);
+        encoderDrive(0.4, 9, 9, 5);
+
+        markerDropperOuter.setPosition(markerDropperOuterRelease);
 
         timer.reset();
 
@@ -111,39 +115,45 @@ public class MineralDetection extends HardwareDefinitions {
 
         //movement stuff
 
+        markerDropperOuter.setPosition(markerDropperOuterHold);
 
         if(goldPosition == 1){ //gold is left
-            encoderDrive(0.4, 4, 4, 5);
+            encoderDrive(0.4, 3, 3, 5);
             encoderTurn(0.25, 105, true, 5); //turn left and drive towards the gold
-            encoderDrive(0.35, 15, 15, 10);
-            encoderDrive(0.35, -12, -12, 10);
-            encoderTurn(0.25, 105, false, 5);
+            encoderDrive(0.7, 26, 26, 10);
+            //encoderDrive(0.35, -12, -12, 10);
+            //encoderTurn(0.25, 105, false, 5);
 
         } else if (goldPosition == 2){ //gold is center
-            encoderDrive(0.35, -10, -10, 5); //drive straight towards the gold
+            encoderDrive(0.35, -12, -12, 5); //drive straight towards the gold
             encoderTurn(0.25, 105, true, 5);
-            encoderDrive(0.35, 15, 15, 10);
-            encoderDrive(0.35, -15, -15, 10);
-            encoderTurn(0.25, 105, false, 5);
-            encoderDrive(0.4, 14, 14, 10);
+            encoderDrive(0.7, 26, 26, 10);
+            //encoderDrive(0.35, -15, -15, 10);
+            //encoderTurn(0.25, 105, false, 5);
+            //encoderDrive(0.4, 14, 14, 10);
 
         } else if(goldPosition == 3){ //gold is right
             encoderDrive(0.4, -25, -25, 5);
             encoderTurn(0.25, 105, true, 5); //turn right and drive towards the gold
-            encoderDrive(0.35, 15, 15, 10);
-            encoderDrive(0.35, -15, -15, 10);
-            encoderTurn(0.25, 105, false, 5);
-            encoderDrive(0.4, 29, 29, 10);
+            encoderDrive(0.7, 26, 26, 10);
+            //encoderDrive(0.35, -15, -15, 10);
+            //encoderTurn(0.25, 105, false, 5);
+            //encoderDrive(0.4, 29, 29, 10);
 
 
         } else { //Tensorflow doesn't know
-            encoderDrive(0.4, 4, 4, 5);
+            encoderDrive(0.4, 3, 3, 5);
             encoderTurn(0.25, 105, true, 5); //turn left and drive towards the gold
-            encoderDrive(0.35, 15, 15, 10);
-            encoderDrive(0.35, -15, -15, 10);
-            encoderTurn(0.25, 105, false, 5);
+            encoderDrive(0.7, 26, 26, 10);
+            //encoderDrive(0.35, -15, -15, 10);
+            //encoderTurn(0.25, 105, false, 5);
 
         }
+
+        //finesse the robot over the crater boundary
+        intakeMotor.setPower(1);
+        sleep(1000);
+        intakeMotor.setPower(0);
 
         //for crater side only TODO make depot side stuff
         //this may or may not be worth it, HIGH RISK OF DESCORING ALLIANCE MINERAL
