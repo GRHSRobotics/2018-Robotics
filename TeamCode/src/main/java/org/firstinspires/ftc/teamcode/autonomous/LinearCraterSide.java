@@ -25,6 +25,8 @@ public class LinearCraterSide extends HardwareDefinitions {
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
+        moveBoxMechanism(3,3);
+
         markerDropperOuter.setPosition(markerDropperOuterHold);
         markerDropperInner.setPosition(markerDropperInnerHold);
 

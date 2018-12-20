@@ -35,6 +35,9 @@ public class DriverControlled extends HardwareDefinitions{
         waitForStart();
         telemetry.addData("Robot is started", "" );
 
+        markerDropperInner.setPosition(0.8);
+
+        liftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         landerMotor1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         landerMotor2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 

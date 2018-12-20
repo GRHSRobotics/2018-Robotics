@@ -3,8 +3,18 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+
+import org.firstinspires.ftc.robotcore.external.Func;
+import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.robotcore.external.navigation.Position;
+import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
 
 public class HardwareDefinitions extends LinearOpMode{
 
@@ -38,10 +48,10 @@ public class HardwareDefinitions extends LinearOpMode{
 
     public final double markerDropperInnerHold = 0.5;
     public final double markerDropperInnerRelease =  0;
-/*
+
     //GYRO HEADING
     public double gyroHeading;
-*/
+
     //INSTANTIATE MOTORS
     public DcMotor motorL1;
     public DcMotor motorL2;
@@ -147,9 +157,6 @@ public class HardwareDefinitions extends LinearOpMode{
         markerDropperOuter.setPosition(markerDropperOuterRelease);
         markerDropperInner.setPosition(markerDropperInnerHold);
 
-        //SET SERVO START POSITIONS
-        opener1.setPosition(opener1Closed);
-        opener2.setPosition(opener2Closed);
 /*
         //SET MAGNETIC LIMIT SWITCH MODES
         topLimit.setMode(DigitalChannel.Mode.INPUT);
@@ -176,7 +183,7 @@ public class HardwareDefinitions extends LinearOpMode{
         gyroHeading = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
 
         telemetry.addData("imu calib status", imu.getCalibrationStatus().toString());
-        telemetry.addData("Mode", "Waiting for Start");
+        telemetry.addData("Hardware Initialized", "");
 */
     }
 
@@ -298,13 +305,15 @@ public class HardwareDefinitions extends LinearOpMode{
 
     public void dropFromLander(){
 
-        moveLanderWithEncoder(9, 8);
+        moveLanderWithEncoder((100*4), 8);
 
-        encoderTurn(0.4, 30, true, 5);
+        encoderTurn(0.4, 70, false, 5);
 
-        encoderDrive(0.4, -2, -2, 5);
+        //encoderDrive(0.4, 2, 2, 5);
 
-        encoderTurn(0.4, 30, false, 5);
+        moveLanderWithEncoder((-20*4), 8);
+
+        encoderTurn(0.4, 70, true, 5);
 
         telemetry.addData("Landing sequence:", "Complete");
 
@@ -314,7 +323,7 @@ public class HardwareDefinitions extends LinearOpMode{
         // Ensure that the opmode is still active
         if (opModeIsActive()) {
 
-            int counts_per_rotation = 288; //using Core Hex Motors
+            double counts_per_rotation = 145.6; //goBilda 1,150 RPM 5.2:1 gearbox motor
             double rotationsUp = rotations; //modify this one, will most likely be the same as rotationsDown
 
             ElapsedTime landerRuntime = new ElapsedTime();
@@ -361,6 +370,58 @@ public class HardwareDefinitions extends LinearOpMode{
             sleep(400);
 
         }
+    }
+
+    public void moveBoxMechanism(double rotations, double maxTimeS){
+        // Ensure that the opmode is still active
+        if (opModeIsActive()) {
+
+            double counts_per_rotation = 288; //core hex motor
+            double rotationsUp = rotations; //modify this one, will most likely be the same as rotationsDown
+
+            ElapsedTime liftRuntime = new ElapsedTime();
+
+            int liftTarget = liftMotor.getCurrentPosition() + (int)(counts_per_rotation * rotationsUp);
+
+            liftMotor.setTargetPosition(liftTarget);
+
+
+            // Turn On RUN_TO_POSITION
+            liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            // reset the timeout time and start motion.
+            liftRuntime.reset();
+            liftMotor.setPower(0.4);
+
+
+
+            // keep looping while we are still active, and there is time left, and both motors are running.
+            // Note: We use (isBusy() && isBusy()) in the loop test, which means that when EITHER motor hits
+            // its target position, the motion will stopRobot.  This is "safer" in the event that the robot will
+            // always end the motion as soon as possible.
+            // However, if you require that BOTH motors have finished their moves before the robot continues
+            // onto the next step, use (isBusy() || isBusy()) in the loop test.
+            while (opModeIsActive() &&
+                    liftMotor.isBusy()
+                    && liftRuntime.seconds() < maxTimeS) {
+
+                // Display it for the driver.
+                telemetry.addData("Path1", "Running to %7d", liftTarget);
+                telemetry.addData("Path2", "Running at %7d",
+                        liftMotor.getCurrentPosition()
+
+                );
+                telemetry.update();
+            }
+
+            // Stop all motion;
+            liftMotor.setPower(0);
+
+
+            sleep(400);
+
+        }
+
     }
 
     @Override

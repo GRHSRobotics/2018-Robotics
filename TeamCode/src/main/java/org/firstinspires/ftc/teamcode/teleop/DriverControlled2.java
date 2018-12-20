@@ -113,6 +113,10 @@ public class DriverControlled2 extends HardwareDefinitions{
                 landerMotor2.setPower(0);
             }
 
+            if(gamepad1.b){
+                moveBoxMechanism(3,3);
+            }
+
             if(gamepad1.dpad_right){
                 dropFromLander();
             }

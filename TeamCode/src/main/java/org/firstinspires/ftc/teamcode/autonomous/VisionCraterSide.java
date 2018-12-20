@@ -58,8 +58,9 @@ public class VisionCraterSide extends HardwareDefinitions {
 
         //dropFromLander();
         encoderDrive(0.4 ,14, 14, 5);
+        //moveLanderWithEncoder((38*4), 8);
         encoderTurn(0.25, 105, false, 5);
-        encoderDrive(0.4, 9, 9, 5);
+        encoderDrive(0.4, 7, 7, 5);
 
         markerDropperOuter.setPosition(markerDropperOuterRelease);
 
@@ -118,14 +119,15 @@ public class VisionCraterSide extends HardwareDefinitions {
         markerDropperOuter.setPosition(markerDropperOuterHold);
 
         if(goldPosition == 1){ //gold is left
-            encoderDrive(0.4, 3, 3, 5);
-            encoderTurn(0.25, 105, true, 5); //turn left and drive towards the gold
+            //encoderDrive(0.4, 3, 3, 5);
+            encoderTurn(0.25, 70, true, 5); //turn left and drive towards the gold
             encoderDrive(0.7, 26, 26, 10);
+            encoderDrive(0.4, 15, 0, 8);
             //encoderDrive(0.35, -12, -12, 10);
             //encoderTurn(0.25, 105, false, 5);
 
         } else if (goldPosition == 2){ //gold is center
-            encoderDrive(0.35, -12, -12, 5); //drive straight towards the gold
+            encoderDrive(0.35, -5, -5, 5); //drive straight towards the gold
             encoderTurn(0.25, 105, true, 5);
             encoderDrive(0.7, 26, 26, 10);
             //encoderDrive(0.35, -15, -15, 10);
@@ -133,26 +135,28 @@ public class VisionCraterSide extends HardwareDefinitions {
             //encoderDrive(0.4, 14, 14, 10);
 
         } else if(goldPosition == 3){ //gold is right
-            encoderDrive(0.4, -25, -25, 5);
-            encoderTurn(0.25, 105, true, 5); //turn right and drive towards the gold
+            encoderDrive(0.4, -20, -20, 5);
+            encoderTurn(0.25, 115, true, 5); //turn right and drive towards the gold
             encoderDrive(0.7, 26, 26, 10);
+            encoderDrive(0.4, 0, 10, 5);
             //encoderDrive(0.35, -15, -15, 10);
             //encoderTurn(0.25, 105, false, 5);
             //encoderDrive(0.4, 29, 29, 10);
 
 
         } else { //Tensorflow doesn't know
-            encoderDrive(0.4, 3, 3, 5);
-            encoderTurn(0.25, 105, true, 5); //turn left and drive towards the gold
+            //encoderDrive(0.4, 3, 3, 5);
+            encoderTurn(0.25, 70, true, 5); //turn left and drive towards the gold
             encoderDrive(0.7, 26, 26, 10);
-            //encoderDrive(0.35, -15, -15, 10);
+            encoderDrive(0.4, 15, 0, 8);
+            //encoderDrive(0.35, -12, -12, 10);
             //encoderTurn(0.25, 105, false, 5);
 
         }
 
         //finesse the robot over the crater boundary
         intakeMotor.setPower(1);
-        sleep(1000);
+        sleep(3000);
         intakeMotor.setPower(0);
 
         //for crater side only TODO make depot side stuff
