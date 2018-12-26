@@ -18,12 +18,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
 
 public class HardwareDefinitions extends LinearOpMode{
 
-    //CONSTANTS
-    static final double COUNTS_PER_ROTATION = 560 ;    // REV HD Hex Motor 20:1
-    static final double WHEEL_CIRCUMFERENCE_INCHES = 9.42 ;
-    static final double COUNTS_PER_INCH = (COUNTS_PER_ROTATION) / (WHEEL_CIRCUMFERENCE_INCHES);
-    static final double ROBOT_DIAMETER = 18; //in inches
-
     // OLD AUTONOMOUS CONSTANTS
 /*    int toTheBalls;
     int ninetyDegreeTurn;
@@ -70,10 +64,9 @@ public class HardwareDefinitions extends LinearOpMode{
     public Servo opener1;
     public Servo opener2;
 
-/*
+
     //INSTANTIATE IMU
     public BNO055IMU imu;
-*/
 /*
     //MAGNETIC LIMIT SWITCHES
     public DigitalChannel topLimit;
@@ -100,10 +93,9 @@ public class HardwareDefinitions extends LinearOpMode{
         //DEFINE OPENER SERVOS
         opener1 = robotMap.get(Servo.class, "opener1");
         opener2 = robotMap.get(Servo.class, "opener2");
-/*
-        //DEFINE REV HUB IMU
-        imu = robotMap.get(BNO055IMU.class, "hub4imu");
-*/
+
+
+
 /*
         //DEFINE MAGNETIC LIMIt SWITCHES
         topLimit = robotMap.get(DigitalChannel.class, "topLimitSwitch");
@@ -162,7 +154,15 @@ public class HardwareDefinitions extends LinearOpMode{
         topLimit.setMode(DigitalChannel.Mode.INPUT);
         bottomLimit.setMode(DigitalChannel.Mode.INPUT);
 */
-/*
+
+        telemetry.addData("Hardware Initialized", "");
+
+    }
+
+    public void initIMU(HardwareMap robotMap){ //we do this one separately so we don't waste time initializing the IMU for teleop when we don't need it
+        //DEFINE REV HUB IMU
+        imu = robotMap.get(BNO055IMU.class, "hub1imu");
+
         //SET IMU PARAMETERS
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
@@ -183,8 +183,6 @@ public class HardwareDefinitions extends LinearOpMode{
         gyroHeading = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
 
         telemetry.addData("imu calib status", imu.getCalibrationStatus().toString());
-        telemetry.addData("Hardware Initialized", "");
-*/
     }
 
     public void stopRobot(){
@@ -207,220 +205,6 @@ public class HardwareDefinitions extends LinearOpMode{
         motorL2.setMode(RunMode);
         motorR1.setMode(RunMode);
         motorR2.setMode(RunMode);
-
-    }
-
-    public void encoderDrive(double speed,
-                             double leftInches, double rightInches,
-                             double maxTimeS) {
-
-
-        // Ensure that the opmode is still active
-        if (opModeIsActive()) {
-
-            motorL1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            motorL2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            motorR1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            motorR2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-            ElapsedTime runtime = new ElapsedTime();
-
-            // Determine new target position
-            int newL1Target = motorL1.getCurrentPosition() + (int) Math.round(leftInches * COUNTS_PER_INCH);
-            int newL2Target = motorL2.getCurrentPosition() + (int) Math.round(leftInches * COUNTS_PER_INCH);
-            int newR1Target = motorR1.getCurrentPosition() + (int) Math.round(rightInches * COUNTS_PER_INCH);
-            int newR2Target = motorR2.getCurrentPosition() + (int) Math.round(rightInches * COUNTS_PER_INCH);
-
-            //give new target position to motors
-            motorL1.setTargetPosition(newL1Target);
-            motorL2.setTargetPosition(newL2Target);
-            motorR1.setTargetPosition(newR1Target);
-            motorR2.setTargetPosition(newR2Target);
-
-            // Turn On RUN_TO_POSITION
-            motorL1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            motorL2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            motorR1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            motorR2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-            // reset the timeout time and start motion.
-            runtime.reset();
-            motorL1.setPower(Math.abs(speed));
-            motorL2.setPower(Math.abs(speed));
-            motorR1.setPower(Math.abs(speed));
-            motorR2.setPower(Math.abs(speed));
-
-            // keep looping while we are still active, and there is time left, and both motors are running.
-            // Note: We use (isBusy() && isBusy()) in the loop test, which means that when EITHER motor hits
-            // its target position, the motion will stopRobot.  This is "safer" in the event that the robot will
-            // always end the motion as soon as possible.
-            // However, if you require that BOTH motors have finished their moves before the robot continues
-            // onto the next step, use (isBusy() || isBusy()) in the loop test.
-            while (opModeIsActive() &&
-                    (runtime.seconds() < maxTimeS) &&
-                    (motorL1.isBusy() && motorL2.isBusy() && motorR1.isBusy() && motorR2.isBusy())) {
-
-                // Display it for the driver.
-                telemetry.addData("Path1", "Running to %7d :%7d :%7d :%7d", newL1Target, newL2Target, newR1Target, newR2Target);
-                telemetry.addData("Path2", "Running at %7d :%7d :%7d :%7d",
-                        motorL1.getCurrentPosition(),
-                        motorL2.getCurrentPosition(),
-                        motorR1.getCurrentPosition(),
-                        motorR2.getCurrentPosition());
-                telemetry.update();
-            }
-
-            // Stop all motion;
-            motorL1.setPower(0);
-            motorL2.setPower(0);
-            motorR1.setPower(0);
-            motorR2.setPower(0);
-
-            // Turn off RUN_TO_POSITION
-            motorL1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            motorL2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            motorR1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            motorR2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-            sleep(400);
-        }
-    }
-
-    public void encoderTurn(double speed, double angle, boolean clockwise, double maxTimeS){
-
-        //determine inches to travel for each side using formula (pi * ROBOT_DIAMETER * angle)/360
-        double leftInches = (ROBOT_DIAMETER * angle * Math.PI) / 360;
-        double rightInches = (ROBOT_DIAMETER * angle * Math.PI) / 360;
-
-        //Make sure that each motor is moving the right way
-        if(clockwise){ //if the robot is turning clockwise, the left motors need to turn backwards
-            rightInches = -rightInches;
-        } else{ //if the robot is turning counterclockwise, the right motors need to turn backwards
-            leftInches = -leftInches;
-        }
-
-        //plug the tread movement distances into the encoderDrive method
-        encoderDrive(speed, leftInches, rightInches, maxTimeS);
-    }
-
-    public void dropFromLander(){
-
-        moveLanderWithEncoder((100*4), 8);
-
-        encoderTurn(0.4, 70, false, 5);
-
-        //encoderDrive(0.4, 2, 2, 5);
-
-        moveLanderWithEncoder((-20*4), 8);
-
-        encoderTurn(0.4, 70, true, 5);
-
-        telemetry.addData("Landing sequence:", "Complete");
-
-    }
-
-    public void moveLanderWithEncoder(double rotations, double maxTimeS){ //rotations should be 3.63
-        // Ensure that the opmode is still active
-        if (opModeIsActive()) {
-
-            double counts_per_rotation = 145.6; //goBilda 1,150 RPM 5.2:1 gearbox motor
-            double rotationsUp = rotations; //modify this one, will most likely be the same as rotationsDown
-
-            ElapsedTime landerRuntime = new ElapsedTime();
-
-            int targetPositionUp1 = landerMotor1.getCurrentPosition() + (int)(counts_per_rotation * rotationsUp);
-            int targetPositionUp2 = landerMotor2.getCurrentPosition() + (int)(counts_per_rotation * rotationsUp);
-
-            landerMotor1.setTargetPosition(targetPositionUp1);
-            landerMotor2.setTargetPosition(targetPositionUp2);
-
-            // Turn On RUN_TO_POSITION
-            landerMotor1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            landerMotor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-            // reset the timeout time and start motion.
-            landerRuntime.reset();
-            landerMotor1.setPower(0.4);
-            landerMotor2.setPower(0.4);
-
-
-            // keep looping while we are still active, and there is time left, and both motors are running.
-            // Note: We use (isBusy() && isBusy()) in the loop test, which means that when EITHER motor hits
-            // its target position, the motion will stopRobot.  This is "safer" in the event that the robot will
-            // always end the motion as soon as possible.
-            // However, if you require that BOTH motors have finished their moves before the robot continues
-            // onto the next step, use (isBusy() || isBusy()) in the loop test.
-            while (opModeIsActive() &&
-                    (landerMotor1.isBusy() && landerMotor2.isBusy())
-                    && landerRuntime.seconds() < maxTimeS) {
-
-                // Display it for the driver.
-                telemetry.addData("Path1", "Running to %7d :%7d", targetPositionUp1, targetPositionUp2);
-                telemetry.addData("Path2", "Running at %7d :%7d",
-                        landerMotor1.getCurrentPosition(),
-                        landerMotor2.getCurrentPosition()
-                );
-                telemetry.update();
-            }
-
-            // Stop all motion;
-            landerMotor1.setPower(0);
-            landerMotor2.setPower(0);
-
-            sleep(400);
-
-        }
-    }
-
-    public void moveBoxMechanism(double rotations, double maxTimeS){
-        // Ensure that the opmode is still active
-        if (opModeIsActive()) {
-
-            double counts_per_rotation = 288; //core hex motor
-            double rotationsUp = rotations; //modify this one, will most likely be the same as rotationsDown
-
-            ElapsedTime liftRuntime = new ElapsedTime();
-
-            int liftTarget = liftMotor.getCurrentPosition() + (int)(counts_per_rotation * rotationsUp);
-
-            liftMotor.setTargetPosition(liftTarget);
-
-
-            // Turn On RUN_TO_POSITION
-            liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-            // reset the timeout time and start motion.
-            liftRuntime.reset();
-            liftMotor.setPower(0.4);
-
-
-
-            // keep looping while we are still active, and there is time left, and both motors are running.
-            // Note: We use (isBusy() && isBusy()) in the loop test, which means that when EITHER motor hits
-            // its target position, the motion will stopRobot.  This is "safer" in the event that the robot will
-            // always end the motion as soon as possible.
-            // However, if you require that BOTH motors have finished their moves before the robot continues
-            // onto the next step, use (isBusy() || isBusy()) in the loop test.
-            while (opModeIsActive() &&
-                    liftMotor.isBusy()
-                    && liftRuntime.seconds() < maxTimeS) {
-
-                // Display it for the driver.
-                telemetry.addData("Path1", "Running to %7d", liftTarget);
-                telemetry.addData("Path2", "Running at %7d",
-                        liftMotor.getCurrentPosition()
-
-                );
-                telemetry.update();
-            }
-
-            // Stop all motion;
-            liftMotor.setPower(0);
-
-
-            sleep(400);
-
-        }
 
     }
 
