@@ -186,13 +186,13 @@ public class TFLiteHandler extends HardwareDefinitions{
 
         timer.reset();
 
-        if (opModeIsActive() && timer.seconds() < maxTimeS) {
+        if (opModeIsActive()) {
             /** Activate Tensor Flow Object Detection. */
             if (tfod != null) {
                 tfod.activate();
             }
 
-            while (opModeIsActive()) {
+            while (opModeIsActive() && timer.seconds() < maxTimeS) {
                 if (tfod != null) {
                     // getUpdatedRecognitions() will return null if no new information is available since
                     // the last time that call was made.
