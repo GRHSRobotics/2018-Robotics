@@ -18,18 +18,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
 
 public class HardwareDefinitions extends LinearOpMode{
 
-    // OLD AUTONOMOUS CONSTANTS
-/*    int toTheBalls;
-    int ninetyDegreeTurn;
-
-    int crater_toTheWall;
-    int crater_setParallelToWall;
-    int crater_toTheDepot;
-
-    int depot_toTheWall;
-    int depot_setParallelToWall;
-    int depot_toTheDepot;
-*/
     //SERVO POSITION CONSTANTS
     public final double opener1Closed = 1;
     public final double opener1Open = 0;
@@ -93,8 +81,6 @@ public class HardwareDefinitions extends LinearOpMode{
         //DEFINE OPENER SERVOS
         opener1 = robotMap.get(Servo.class, "opener1");
         opener2 = robotMap.get(Servo.class, "opener2");
-
-
 
 /*
         //DEFINE MAGNETIC LIMIt SWITCHES

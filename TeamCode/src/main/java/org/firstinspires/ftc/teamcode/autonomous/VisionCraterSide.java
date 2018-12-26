@@ -48,7 +48,7 @@ public class VisionCraterSide extends AutonomousDefinitions {
         markerDropperOuter.setPosition(markerDropperOuterHold);
 
 
-        switch(TF.getMineralPosition()){
+        switch(TF.getMineralPosition(true)){
 
             case 1:
 

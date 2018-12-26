@@ -47,7 +47,7 @@ public class VisionDepotSide extends AutonomousDefinitions {
         markerDropperOuter.setPosition(markerDropperOuterHold);
 
 
-        switch(TF.getMineralPosition()){
+        switch(TF.getMineralPosition(true)){
             case 1:
                 //encoderDrive(0.4, 7, 7, 5);
                 encoderTurn(0.25, 70, true, 5); //turn left and drive towards the gold

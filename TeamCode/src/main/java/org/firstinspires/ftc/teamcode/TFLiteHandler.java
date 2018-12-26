@@ -6,8 +6,8 @@ import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class TFLiteHandler extends HardwareDefinitions{
@@ -25,7 +25,9 @@ public class TFLiteHandler extends HardwareDefinitions{
 
     ElapsedTime timer = new ElapsedTime();
 
-    int goldPosition = 0; //1 is left, 2 is center, 3 is right
+    int currentDetectionValue = 0; //1 is left, 2 is center, 3 is right. Holds the current guess on the position of the mineral
+
+    List<Integer> detectionValues = new ArrayList<>();
 
 
     public void initVuforia() {
@@ -93,19 +95,19 @@ public class TFLiteHandler extends HardwareDefinitions{
                             if (goldMineralX == -1) {
                                 //telemetry.addData("Mineral Position:", "Left");
                                 telemetry.addData("Mineral Position:", "Right");
-                                //goldPosition = 1;
-                                goldPosition = 3;
+                                //currentDetectionValue = 1;
+                                currentDetectionValue = 3;
                             } else if (goldMineralX != -1){
                                 if(goldMineralX < silverMineralX){
                                     //telemetry.addData("Mineral Position:", "Center");
                                     telemetry.addData("Mineral Position:", "Left");
-                                    //goldPosition = 2;
-                                    goldPosition = 1;
+                                    //currentDetectionValue = 2;
+                                    currentDetectionValue = 1;
                                 } else if(goldMineralX > silverMineralX){
                                     //telemetry.addData("Mineral Position:", "Right");
                                     telemetry.addData("Mineral Position:", "Center");
-                                    //goldPosition = 3;
-                                    goldPosition = 2;
+                                    //currentDetectionValue = 3;
+                                    currentDetectionValue = 2;
                                 } else {
                                     telemetry.addData("Mineral Position:", "Confused");
                                 }
@@ -113,6 +115,10 @@ public class TFLiteHandler extends HardwareDefinitions{
                         }
                         telemetry.update();
                     }
+                }
+
+                if(timer.seconds() >= 2){ //give the robot a little bit of time to come to a stop before recording values
+                    detectionValues.add(currentDetectionValue);
                 }
             }
         }
@@ -148,14 +154,14 @@ public class TFLiteHandler extends HardwareDefinitions{
                             }
                             if (goldMineralX == -1) {
                                 telemetry.addData("Mineral Position:", "Left");
-                                goldPosition = 1;
+                                currentDetectionValue = 1;
                             } else if (goldMineralX != -1){
                                 if(goldMineralX > silverMineralX){
                                     telemetry.addData("Mineral Position:", "Center");
-                                    goldPosition = 2;
+                                    currentDetectionValue = 2;
                                 } else if(goldMineralX < silverMineralX){
                                     telemetry.addData("Mineral Position:", "Right");
-                                    goldPosition = 3;
+                                    currentDetectionValue = 3;
                                 } else {
                                     telemetry.addData("Mineral Position:", "Confused");
                                 }
@@ -163,6 +169,10 @@ public class TFLiteHandler extends HardwareDefinitions{
                         }
                         telemetry.update();
                     }
+                }
+
+                if(timer.seconds() >= 2){ //give the robot a little bit of time to come to a stop before recording values
+                    detectionValues.add(currentDetectionValue);
                 }
             }
         }
@@ -205,18 +215,22 @@ public class TFLiteHandler extends HardwareDefinitions{
                             if (goldMineralX != -1 && silverMineral1X != -1 && silverMineral2X != -1) {
                                 if (goldMineralX < silverMineral1X && goldMineralX < silverMineral2X) {
                                     telemetry.addData("Gold Mineral Position", "Left");
-                                    goldPosition = 1;
+                                    currentDetectionValue = 1;
                                 } else if (goldMineralX > silverMineral1X && goldMineralX > silverMineral2X) {
                                     telemetry.addData("Gold Mineral Position", "Right");
-                                    goldPosition = 3;
+                                    currentDetectionValue = 3;
                                 } else {
                                     telemetry.addData("Gold Mineral Position", "Center");
-                                    goldPosition = 2;
+                                    currentDetectionValue = 2;
                                 }
                             }
                         }
                         telemetry.update();
                     }
+                }
+
+                if(timer.seconds() >= 2 && currentDetectionValue != 0){ //give the robot a little bit of time to come to a stop before recording values
+                    detectionValues.add(currentDetectionValue);
                 }
             }
         }
@@ -225,8 +239,36 @@ public class TFLiteHandler extends HardwareDefinitions{
         }
     }
 
-    public int getMineralPosition(){
+    public int getMineralPosition(boolean useAveragingSystem){
 
-        return goldPosition;
+        if(!useAveragingSystem){
+            return currentDetectionValue;
+
+        } else { //average all detection values to try to lower the chance of a fluke reading messing up the final result
+
+            int detectionSum = 0;
+            for(int i = 0; i < detectionValues.size(); i++){
+                detectionSum += detectionValues.get(i);
+            }
+
+            double detectionAverage = detectionSum / detectionValues.size(); //should come out to a decimal between 1 and 3
+
+            telemetry.addData("List Size: ", detectionValues.size()); //allows us to manually check if things are working properly
+            telemetry.addData("List Sum: ", detectionSum);
+            telemetry.addData("Calculated Average: ", detectionAverage);
+            telemetry.update();
+
+            if(detectionAverage < 1.5){
+                return 1;
+
+            } else if(detectionAverage > 2.5){
+                return 3;
+
+            } else {
+                return 2;
+
+            }
+
+        }
     }
 }
