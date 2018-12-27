@@ -5,10 +5,6 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import org.firstinspires.ftc.teamcode.TFLiteHandler;
 
 @Autonomous(name = "VisionDepotSide", group = "Vision")
-
-
-
-//define
 public class VisionDepotSide extends AutonomousDefinitions {
 
 
