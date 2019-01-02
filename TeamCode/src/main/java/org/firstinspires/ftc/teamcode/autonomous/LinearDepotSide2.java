@@ -30,11 +30,11 @@ public class LinearDepotSide2 extends AutonomousDefinitions {
         markerDropperInner.setPosition(markerDropperInnerHold);
 
 
-        gyroTurn(0.3, 90, 5);
+        //gyroTurn(0.3, 90, 5);
 
         sleep(3000);
 
-        gyroTurn(0.3, -90, 5);
+        //gyroTurn(0.3, -90, 5);
 
 
         //dropFromLander();
