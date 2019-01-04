@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.teamcode.autonomous.AutonomousDefinitions;
+import org.firstinspires.ftc.teamcode.HardwareDefinitions;
 
 //import com.qualcomm.robotcore.hardware.CRServo;
 //import com.qualcomm.robotcore.hardware.GyroSensor;
@@ -16,7 +16,7 @@ import org.firstinspires.ftc.teamcode.autonomous.AutonomousDefinitions;
 //See Google Drive for TODO
 
 @TeleOp(name="DriverControlledTest", group="Test")
-public class DriverControlledTest extends AutonomousDefinitions{
+public class DriverControlledTest extends HardwareDefinitions {
 
     //LIFT SERVO VARIABLES
     boolean opener1Changed = false;
