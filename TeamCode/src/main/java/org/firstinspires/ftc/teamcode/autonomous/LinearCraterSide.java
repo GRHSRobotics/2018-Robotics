@@ -3,11 +3,11 @@ package org.firstinspires.ftc.teamcode.autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-
+import org.firstinspires.ftc.teamcode.HardwareDefinitions;
 
 
 @Autonomous(name="LinearCraterSide", group="Autonomous")
-public class LinearCraterSide extends AutonomousDefinitions {
+public class LinearCraterSide extends HardwareDefinitions {
 
     @Override
     public void runOpMode() {

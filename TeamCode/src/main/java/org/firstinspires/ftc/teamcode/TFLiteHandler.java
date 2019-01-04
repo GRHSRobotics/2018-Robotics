@@ -13,6 +13,8 @@ import java.util.List;
 public class TFLiteHandler extends HardwareDefinitions{
 
 
+    //making an instance of this class makes error messages, so just copy paste the needed methods + the definition stuff
+
     private static final String TFOD_MODEL_ASSET = "RoverRuckus.tflite";
     private static final String LABEL_GOLD_MINERAL = "Gold Mineral";
     private static final String LABEL_SILVER_MINERAL = "Silver Mineral";

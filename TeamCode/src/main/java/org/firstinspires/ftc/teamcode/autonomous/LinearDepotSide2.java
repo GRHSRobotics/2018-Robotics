@@ -3,9 +3,11 @@ package org.firstinspires.ftc.teamcode.autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+import org.firstinspires.ftc.teamcode.HardwareDefinitions;
+
 
 @Autonomous(name="LinearDepotSide2", group="Autonomous")
-public class LinearDepotSide2 extends AutonomousDefinitions {
+public class LinearDepotSide2 extends HardwareDefinitions {
 
 
     @Override
@@ -30,11 +32,11 @@ public class LinearDepotSide2 extends AutonomousDefinitions {
         markerDropperInner.setPosition(markerDropperInnerHold);
 
 
-        //gyroTurn(0.3, 90, 5);
+        gyroTurn(0.3, 90, 5);
 
         sleep(3000);
 
-        //gyroTurn(0.3, -90, 5);
+        gyroTurn(0.3, -90, 5);
 
 
         //dropFromLander();
