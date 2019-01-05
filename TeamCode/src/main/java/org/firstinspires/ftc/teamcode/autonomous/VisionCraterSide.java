@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.TFLiteHandler;
 import java.util.ArrayList;
 import java.util.List;
 
-@Autonomous(name = "VisionCraterSide", group = "Vision")
+@Autonomous(name = "VisionCraterSide - With Landing", group = "Vision")
 public class VisionCraterSide extends HardwareDefinitions {
 
 
@@ -52,15 +52,15 @@ public class VisionCraterSide extends HardwareDefinitions {
 
         markerDropperOuter.setPosition(markerDropperOuterHold);
 
-        //dropFromLander();
+        dropFromLander();
         encoderDrive(0.4 ,14, 14, 5);
         //moveLanderWithEncoder((38*4), 8);
         encoderTurn(0.25, 105, false, 5);
-        encoderDrive(0.4, 7, 7, 5);
+        //encoderDrive(0.4, 7, 7, 5);
 
         markerDropperOuter.setPosition(markerDropperOuterRelease);
 
-        detectGold_inferRight(5);
+        detectGold_inferRight(2);
 
         //movement stuff
 
@@ -210,7 +210,7 @@ public class VisionCraterSide extends HardwareDefinitions {
                     }
                 }
 
-                if(timer.seconds() >= 2){ //give the robot a little bit of time to come to a stop before recording values
+                if(timer.seconds() >= 0.5){ //give the robot a little bit of time to come to a stop before recording values
                     detectionValues.add(currentDetectionValue);
                 }
             }

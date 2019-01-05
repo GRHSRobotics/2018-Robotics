@@ -32,6 +32,9 @@ public class HardwareDefinitions extends LinearOpMode{
     public final double markerDropperInnerHold = 0.5;
     public final double markerDropperInnerRelease =  0;
 
+    public final double landerLockHold = 0.5;
+    public final double landerLockRelease = 1;
+
     //CONSTANTS FOR DRIVE METHODS
     static final double COUNTS_PER_ROTATION = 560 ;    // REV HD Hex Motor 20:1
     static final double WHEEL_CIRCUMFERENCE_INCHES = 9.42 ;
@@ -65,6 +68,9 @@ public class HardwareDefinitions extends LinearOpMode{
     public Servo opener1;
     public Servo opener2;
 
+    //INSTATIATE LANDER LOCK SERVO
+    public Servo landerLock;
+
 
     //INSTANTIATE IMU
     public BNO055IMU imu;
@@ -94,6 +100,9 @@ public class HardwareDefinitions extends LinearOpMode{
         //DEFINE OPENER SERVOS
         opener1 = robotMap.get(Servo.class, "opener1");
         opener2 = robotMap.get(Servo.class, "opener2");
+
+        //DEFINE LANDER SERVO
+        landerLock = robotMap.get(Servo.class, "landerLock");
 
 /*
         //DEFINE MAGNETIC LIMIt SWITCHES
@@ -303,15 +312,19 @@ public class HardwareDefinitions extends LinearOpMode{
 
     public void dropFromLander(){
 
-        moveLanderWithEncoder((100*4), 8);
+        landerLock.setPosition(landerLockRelease);
 
-        encoderTurn(0.4, 70, false, 5);
+        sleep(1000);
+
+        moveLanderWithEncoder(82, 8);
+
+        encoderTurn(0.4, 80, false, 5);
 
         //encoderDrive(0.4, 2, 2, 5);
 
-        moveLanderWithEncoder((-20*4), 8);
+        //moveLanderWithEncoder(-10, 8);
 
-        encoderTurn(0.4, 70, true, 5);
+        encoderTurn(0.4, 55, true, 5);
 
         telemetry.addData("Landing sequence:", "Complete");
 
@@ -321,7 +334,7 @@ public class HardwareDefinitions extends LinearOpMode{
         // Ensure that the opmode is still active
         if (opModeIsActive()) {
 
-            double counts_per_rotation = 145.6; //goBilda 1,150 RPM 5.2:1 gearbox motor
+            double counts_per_rotation = 36.4; //goBilda 1,150 RPM 5.2:1 gearbox motor
             double rotationsUp = rotations; //modify this one, will most likely be the same as rotationsDown
 
             ElapsedTime landerRuntime = new ElapsedTime();
@@ -338,8 +351,8 @@ public class HardwareDefinitions extends LinearOpMode{
 
             // reset the timeout time and start motion.
             landerRuntime.reset();
-            landerMotor1.setPower(0.4);
-            landerMotor2.setPower(0.4);
+            landerMotor1.setPower(1);
+            landerMotor2.setPower(1);
 
 
             // keep looping while we are still active, and there is time left, and both motors are running.

@@ -14,6 +14,7 @@ public class TFLiteHandler extends HardwareDefinitions{
 
 
     //making an instance of this class makes error messages, so just copy paste the needed methods + the definition stuff
+    //if it seems sketchy, that's because it is
 
     private static final String TFOD_MODEL_ASSET = "RoverRuckus.tflite";
     private static final String LABEL_GOLD_MINERAL = "Gold Mineral";
@@ -119,7 +120,7 @@ public class TFLiteHandler extends HardwareDefinitions{
                     }
                 }
 
-                if(timer.seconds() >= 2){ //give the robot a little bit of time to come to a stop before recording values
+                if(timer.seconds() >= 0.5){ //give the robot a little bit of time to come to a stop before recording values
                     detectionValues.add(currentDetectionValue);
                 }
             }
@@ -173,7 +174,7 @@ public class TFLiteHandler extends HardwareDefinitions{
                     }
                 }
 
-                if(timer.seconds() >= 2){ //give the robot a little bit of time to come to a stop before recording values
+                if(timer.seconds() >= 0.5){ //give the robot a little bit of time to come to a stop before recording values
                     detectionValues.add(currentDetectionValue);
                 }
             }
@@ -231,7 +232,7 @@ public class TFLiteHandler extends HardwareDefinitions{
                     }
                 }
 
-                if(timer.seconds() >= 2 && currentDetectionValue != 0){ //give the robot a little bit of time to come to a stop before recording values
+                if(timer.seconds() >= 0.5 && currentDetectionValue != 0){ //give the robot a little bit of time to come to a stop before recording values
                     detectionValues.add(currentDetectionValue);
                 }
             }

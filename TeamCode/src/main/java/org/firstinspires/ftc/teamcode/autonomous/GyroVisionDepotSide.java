@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import org.firstinspires.ftc.teamcode.HardwareDefinitions;
 import org.firstinspires.ftc.teamcode.TFLiteHandler;
 @Disabled
-@Autonomous(name = "VisionDepotSide", group = "Vision")
+@Autonomous(name = "GyroVisionDepotSide", group = "Vision")
 public class GyroVisionDepotSide extends HardwareDefinitions {
 
 

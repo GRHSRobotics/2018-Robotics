@@ -24,17 +24,19 @@ public class ServoTest extends HardwareDefinitions {
 
             if(gamepad1.x){
 
-                markerDropperInner.setPosition(markerDropperInnerHold);
+                landerLock.setPosition(landerLockHold);
+                telemetry.addData("position:", landerLockHold);
             }
 
             if(gamepad1.y){
 
-                markerDropperInner.setPosition(markerDropperInnerRelease);
+                landerLock.setPosition(landerLockRelease);
+                telemetry.addData("position: ", landerLockRelease);
             }
 
             if(gamepad1.dpad_left){
 
-                markerDropperOuter.setPosition(markerDropperOuterHold);
+
             }
 
             if(gamepad1.dpad_up){

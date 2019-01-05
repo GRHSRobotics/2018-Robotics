@@ -8,13 +8,12 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.firstinspires.ftc.teamcode.HardwareDefinitions;
-import org.firstinspires.ftc.teamcode.TFLiteHandler;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Autonomous(name = "VisionDepotSide - With Landing", group = "Vision")
-public class VisionDepotSide extends HardwareDefinitions {
+@Autonomous(name = "VisionDepotSide - No Landing", group = "Vision")
+public class VisionDepotSideNoLand extends HardwareDefinitions {
 
     private static final String TFOD_MODEL_ASSET = "RoverRuckus.tflite";
     private static final String LABEL_GOLD_MINERAL = "Gold Mineral";
@@ -50,15 +49,15 @@ public class VisionDepotSide extends HardwareDefinitions {
 
         markerDropperOuter.setPosition(markerDropperOuterHold);
 
-        dropFromLander();
+        //dropFromLander();
         encoderDrive(0.4 ,14, 14, 5);
         //moveLanderWithEncoder((38*4), 8);
         encoderTurn(0.25, 105, false, 5);
-        //encoderDrive(0.4, 7, 7, 5);
+        encoderDrive(0.4, 7, 7, 5);
 
         markerDropperOuter.setPosition(markerDropperOuterRelease);
 
-        detectGold_inferRight(2);
+        detectGold_inferRight(5);
 
         //movement stuff
 
@@ -77,7 +76,7 @@ public class VisionDepotSide extends HardwareDefinitions {
                 //drop the marker
                 moveBoxMechanism(2, 2);
                 dropMarker();
-                //moveBoxMechanism(-2, 3);
+                moveBoxMechanism(-2, 2);
 
 
                 //encoderTurn(0.25, 100, false, 5);
@@ -94,7 +93,7 @@ public class VisionDepotSide extends HardwareDefinitions {
                 //drop the marker
                 moveBoxMechanism(2, 2);
                 dropMarker();
-                //moveBoxMechanism(-2, 3);
+                moveBoxMechanism(-2, 2);
 
                 encoderDrive(0.4, 10, 10, 5);
 
@@ -114,7 +113,7 @@ public class VisionDepotSide extends HardwareDefinitions {
                 //drop the marker
                 moveBoxMechanism(2, 2);
                 dropMarker();
-                //moveBoxMechanism(-2, 3);
+                moveBoxMechanism(-2, 2);
 
                 encoderDrive(0.4, 10, 10, 5);
 
@@ -132,7 +131,7 @@ public class VisionDepotSide extends HardwareDefinitions {
                 //drop the marker
                 moveBoxMechanism(2, 2);
                 dropMarker();
-                //moveBoxMechanism(-2, 3);
+                moveBoxMechanism(-2, 2);
 
                 break;
         }
