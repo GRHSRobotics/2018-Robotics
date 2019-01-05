@@ -737,6 +737,7 @@ public class HardwareDefinitions extends LinearOpMode{
         return Range.clip(error * PCoeff, -1, 1);
     }
 
+    //kinda redundant method because I was too dumb to figure out how to include this functionality in the encoderDrive method
     public void moveRightTread(double speed,
                                double rightInches,
                              double maxTimeS) {
