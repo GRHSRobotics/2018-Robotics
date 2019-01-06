@@ -227,7 +227,7 @@ public class VisionDepotSideNoLand extends HardwareDefinitions {
                     }
                 }
 
-                if(timer.seconds() >= 0.5){ //give the robot a little bit of time to come to a stop before recording values
+                if(timer.seconds() >= 2){ //give the robot a little bit of time to come to a stop before recording values
                     detectionValues.add(currentDetectionValue);
                 }
             }

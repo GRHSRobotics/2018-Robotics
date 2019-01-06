@@ -1,11 +1,12 @@
 package org.firstinspires.ftc.teamcode.autonomous;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.HardwareDefinitions;
 
-
+@Disabled
 @Autonomous(name="LinearDepotSide2", group="Autonomous")
 public class LinearDepotSide2 extends HardwareDefinitions {
 
