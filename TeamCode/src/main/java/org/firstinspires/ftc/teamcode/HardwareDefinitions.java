@@ -402,7 +402,7 @@ public class HardwareDefinitions extends LinearOpMode{
 
             // reset the timeout time and start motion.
             liftRuntime.reset();
-            liftMotor.setPower(0.4);
+            liftMotor.setPower(0.8);
 
 
 

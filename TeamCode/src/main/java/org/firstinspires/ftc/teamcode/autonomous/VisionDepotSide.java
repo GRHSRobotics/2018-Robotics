@@ -54,7 +54,7 @@ public class VisionDepotSide extends HardwareDefinitions {
         encoderDrive(0.4 ,14, 14, 5);
         //moveLanderWithEncoder((38*4), 8);
         encoderTurn(0.25, 105, false, 5);
-        //encoderDrive(0.4, 7, 7, 5);
+        encoderDrive(0.4, 6, 6, 5);
 
         markerDropperOuter.setPosition(markerDropperOuterRelease);
 
@@ -65,7 +65,7 @@ public class VisionDepotSide extends HardwareDefinitions {
         markerDropperOuter.setPosition(markerDropperOuterHold);
 
 
-        switch(getMineralPosition(true)){
+        switch(getMineralPosition(false)){
             case 1:
                 //encoderDrive(0.4, 7, 7, 5);
                 encoderTurn(0.25, 70, true, 5); //turn left and drive towards the gold

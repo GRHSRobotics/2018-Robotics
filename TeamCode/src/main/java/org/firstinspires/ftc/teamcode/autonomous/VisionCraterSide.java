@@ -53,10 +53,11 @@ public class VisionCraterSide extends HardwareDefinitions {
         markerDropperOuter.setPosition(markerDropperOuterHold);
 
         dropFromLander();
+        encoderTurn(0.4, 5, true, 3);
         encoderDrive(0.4 ,14, 14, 5);
         //moveLanderWithEncoder((38*4), 8);
         encoderTurn(0.25, 105, false, 5);
-        //encoderDrive(0.4, 7, 7, 5);
+        encoderDrive(0.4, 6.5, 6.5, 5);
 
         markerDropperOuter.setPosition(markerDropperOuterRelease);
 
@@ -67,7 +68,7 @@ public class VisionCraterSide extends HardwareDefinitions {
         markerDropperOuter.setPosition(markerDropperOuterHold);
 
 
-        switch(getMineralPosition(true)){
+        switch(getMineralPosition(false)){
 
             case 1:
 
@@ -82,7 +83,7 @@ public class VisionCraterSide extends HardwareDefinitions {
 
             case 2:
 
-                encoderDrive(0.35, -5, -5, 5); //drive straight towards the gold
+                encoderDrive(0.35, -9, -9, 5); //drive straight towards the gold
                 encoderTurn(0.25, 105, true, 5);
                 encoderDrive(0.7, 26, 26, 10);
                 //encoderDrive(0.35, -15, -15, 10);
@@ -94,7 +95,7 @@ public class VisionCraterSide extends HardwareDefinitions {
             case 3:
 
                 encoderDrive(0.4, -20, -20, 5);
-                encoderTurn(0.25, 115, true, 5); //turn right and drive towards the gold
+                encoderTurn(0.25, 128, true, 5); //turn right and drive towards the gold
                 encoderDrive(0.7, 26, 26, 10);
                 moveRightTread(0.4, 10, 5);
                 //encoderDrive(0.35, -15, -15, 10);
@@ -116,7 +117,7 @@ public class VisionCraterSide extends HardwareDefinitions {
         }
 
         //finesse the robot over the crater boundary
-        intakeMotor.setPower(1);
+        intakeMotor.setPower(-1);
         sleep(3000);
         intakeMotor.setPower(0);
 

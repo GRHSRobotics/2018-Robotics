@@ -93,7 +93,7 @@ public class VisionDepotSideNoLand extends HardwareDefinitions {
                 //drop the marker
                 moveBoxMechanism(2, 2);
                 dropMarker();
-                moveBoxMechanism(-2, 2);
+                moveBoxMechanism(-2, 1);
 
                 encoderDrive(0.4, 10, 10, 5);
 
@@ -113,7 +113,7 @@ public class VisionDepotSideNoLand extends HardwareDefinitions {
                 //drop the marker
                 moveBoxMechanism(2, 2);
                 dropMarker();
-                moveBoxMechanism(-2, 2);
+                moveBoxMechanism(-2, 1);
 
                 encoderDrive(0.4, 10, 10, 5);
 
@@ -131,7 +131,7 @@ public class VisionDepotSideNoLand extends HardwareDefinitions {
                 //drop the marker
                 moveBoxMechanism(2, 2);
                 dropMarker();
-                moveBoxMechanism(-2, 2);
+                moveBoxMechanism(-2, 1);
 
                 break;
         }
