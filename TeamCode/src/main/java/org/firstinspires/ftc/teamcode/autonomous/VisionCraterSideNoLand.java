@@ -8,13 +8,13 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.firstinspires.ftc.teamcode.HardwareDefinitions;
-import org.firstinspires.ftc.teamcode.TFLiteHandler;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Autonomous(name = "VisionDepotSide - With Landing", group = "Vision")
-public class VisionDepotSide extends HardwareDefinitions {
+@Autonomous(name = "VisionCraterSide - No Landing", group = "Vision")
+public class VisionCraterSideNoLand extends HardwareDefinitions {
+
 
     private static final String TFOD_MODEL_ASSET = "RoverRuckus.tflite";
     private static final String LABEL_GOLD_MINERAL = "Gold Mineral";
@@ -40,6 +40,7 @@ public class VisionDepotSide extends HardwareDefinitions {
 
         initTFodAndVuforia();
 
+
         telemetry.addData("Robot is initialized", "");
         telemetry.update();
         waitForStart();
@@ -50,93 +51,73 @@ public class VisionDepotSide extends HardwareDefinitions {
 
         markerDropperOuter.setPosition(markerDropperOuterHold);
 
-        dropFromLander();
+        //dropFromLander();
         encoderDrive(0.4 ,14, 14, 5);
         //moveLanderWithEncoder((38*4), 8);
         encoderTurn(0.25, 105, false, 5);
-        encoderDrive(0.4, 6, 6, 5);
+        encoderDrive(0.4, 7, 7, 5);
 
         markerDropperOuter.setPosition(markerDropperOuterRelease);
 
-        detectGold_inferRight(2);
+        detectGold_inferRight(5);
 
         //movement stuff
 
         markerDropperOuter.setPosition(markerDropperOuterHold);
 
 
-        switch(getMineralPosition(false)){
+        switch(getMineralPosition(true)){
+
             case 1:
-                //encoderDrive(0.4, 7, 7, 5);
+
+                //encoderDrive(0.4, 3, 3, 5);
                 encoderTurn(0.25, 70, true, 5); //turn left and drive towards the gold
-                encoderDrive(0.4, 27, 27, 10);
-                encoderTurn(0.25, 70, true, 5);
-                encoderDrive(0.4, 25, 21, 5);
-                encoderTurn(0.25, 130, false, 5);
-
-                //drop the marker
-                moveBoxMechanism(2, 2);
-                dropMarker();
-                //moveBoxMechanism(-2, 3);
-
-
-                //encoderTurn(0.25, 100, false, 5);
+                encoderDrive(0.7, 26, 26, 10);
+                moveLeftTread(0.4, 15, 8);
+                //encoderDrive(0.35, -12, -12, 10);
+                //encoderTurn(0.25, 105, false, 5);
 
                 break;
 
             case 2:
 
-                encoderDrive(0.35, -5.5, -5.5, 5); //drive straight towards the gold
+                encoderDrive(0.35, -5, -5, 5); //drive straight towards the gold
                 encoderTurn(0.25, 105, true, 5);
-                encoderDrive(0.35, 46, 46, 10);
-                encoderTurn(0.25, 105, false, 5);
-
-                //drop the marker
-                moveBoxMechanism(2, 2);
-                dropMarker();
-                //moveBoxMechanism(-2, 3);
-
-                encoderDrive(0.4, 10, 10, 5);
+                encoderDrive(0.7, 26, 26, 10);
+                //encoderDrive(0.35, -15, -15, 10);
+                //encoderTurn(0.25, 105, false, 5);
+                //encoderDrive(0.4, 14, 14, 10);
 
                 break;
 
-
             case 3:
 
-                encoderDrive(0.4, -17, -17, 5);
-                encoderTurn(0.25, 130, true, 5); //turn right and drive towards the gold
-                encoderDrive(0.35, 28, 28, 10);
-                encoderTurn(0.25, 75, false, 5);
-
-                encoderDrive(0.4, 29, 29, 5);
-                encoderTurn(0.25, 80, false, 5);
-
-                //drop the marker
-                moveBoxMechanism(2, 2);
-                dropMarker();
-                //moveBoxMechanism(-2, 3);
-
-                encoderDrive(0.4, 10, 10, 5);
+                encoderDrive(0.4, -20, -20, 5);
+                encoderTurn(0.25, 115, true, 5); //turn right and drive towards the gold
+                encoderDrive(0.7, 26, 26, 10);
+                moveRightTread(0.4, 10, 5);
+                //encoderDrive(0.35, -15, -15, 10);
+                //encoderTurn(0.25, 105, false, 5);
+                //encoderDrive(0.4, 29, 29, 10);
 
                 break;
 
             default:
 
-                encoderDrive(0.4, 7, 7, 5);
-                encoderTurn(0.25, 90, true, 5); //turn left and drive towards the gold
-                encoderDrive(0.35, 23, 23, 10);
-                encoderTurn(0.25, 75, true, 5);
-                encoderDrive(0.4, 21, 21, 5);
-                encoderTurn(0.25, 105, false, 5);
-
-                //drop the marker
-                moveBoxMechanism(2, 2);
-                dropMarker();
-                //moveBoxMechanism(-2, 3);
+                //encoderDrive(0.4, 3, 3, 5);
+                encoderTurn(0.25, 70, true, 5); //turn left and drive towards the gold
+                encoderDrive(0.7, 26, 26, 10);
+                moveLeftTread(0.4, 15, 8);
+                //encoderDrive(0.35, -12, -12, 10);
+                //encoderTurn(0.25, 105, false, 5);
 
                 break;
         }
 
+        //finesse the robot over the crater boundary
+        intakeMotor.setPower(1);
+        sleep(3000);
+        intakeMotor.setPower(0);
 
 
     }
@@ -228,7 +209,7 @@ public class VisionDepotSide extends HardwareDefinitions {
                     }
                 }
 
-                if(timer.seconds() >= 0.5){ //give the robot a little bit of time to come to a stop before recording values
+                if(timer.seconds() >= 2){ //give the robot a little bit of time to come to a stop before recording values
                     detectionValues.add(currentDetectionValue);
                 }
             }

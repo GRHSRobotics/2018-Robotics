@@ -1,20 +1,20 @@
-package org.firstinspires.ftc.teamcode.autonomous;
+package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
-import org.firstinspires.ftc.teamcode.HardwareDefinitions;
-import org.firstinspires.ftc.teamcode.TFLiteHandler;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Autonomous(name = "VisionDepotSide - With Landing", group = "Vision")
-public class VisionDepotSide extends HardwareDefinitions {
+public class TFLiteHandler extends HardwareDefinitions{
+
+
+    //making an instance of this class makes error messages, so just copy paste the needed methods + the definition stuff
+    //if it seems sketchy, that's because it is
 
     private static final String TFOD_MODEL_ASSET = "RoverRuckus.tflite";
     private static final String LABEL_GOLD_MINERAL = "Gold Mineral";
@@ -32,114 +32,6 @@ public class VisionDepotSide extends HardwareDefinitions {
 
     List<Integer> detectionValues = new ArrayList<>();
 
-    @Override
-    public void runOpMode() {
-
-        init(hardwareMap);
-        //initIMU(hardwareMap);
-
-        initTFodAndVuforia();
-
-        telemetry.addData("Robot is initialized", "");
-        telemetry.update();
-        waitForStart();
-
-
-
-        //add movement to
-
-        markerDropperOuter.setPosition(markerDropperOuterHold);
-
-        dropFromLander();
-        encoderDrive(0.4 ,14, 14, 5);
-        //moveLanderWithEncoder((38*4), 8);
-        encoderTurn(0.25, 105, false, 5);
-        encoderDrive(0.4, 6, 6, 5);
-
-        markerDropperOuter.setPosition(markerDropperOuterRelease);
-
-        detectGold_inferRight(2);
-
-        //movement stuff
-
-        markerDropperOuter.setPosition(markerDropperOuterHold);
-
-
-        switch(getMineralPosition(false)){
-            case 1:
-                //encoderDrive(0.4, 7, 7, 5);
-                encoderTurn(0.25, 70, true, 5); //turn left and drive towards the gold
-                encoderDrive(0.4, 27, 27, 10);
-                encoderTurn(0.25, 70, true, 5);
-                encoderDrive(0.4, 25, 21, 5);
-                encoderTurn(0.25, 130, false, 5);
-
-                //drop the marker
-                moveBoxMechanism(2, 2);
-                dropMarker();
-                //moveBoxMechanism(-2, 3);
-
-
-                //encoderTurn(0.25, 100, false, 5);
-
-                break;
-
-            case 2:
-
-                encoderDrive(0.35, -5.5, -5.5, 5); //drive straight towards the gold
-                encoderTurn(0.25, 105, true, 5);
-                encoderDrive(0.35, 46, 46, 10);
-                encoderTurn(0.25, 105, false, 5);
-
-                //drop the marker
-                moveBoxMechanism(2, 2);
-                dropMarker();
-                //moveBoxMechanism(-2, 3);
-
-                encoderDrive(0.4, 10, 10, 5);
-
-                break;
-
-
-            case 3:
-
-                encoderDrive(0.4, -17, -17, 5);
-                encoderTurn(0.25, 130, true, 5); //turn right and drive towards the gold
-                encoderDrive(0.35, 28, 28, 10);
-                encoderTurn(0.25, 75, false, 5);
-
-                encoderDrive(0.4, 29, 29, 5);
-                encoderTurn(0.25, 80, false, 5);
-
-                //drop the marker
-                moveBoxMechanism(2, 2);
-                dropMarker();
-                //moveBoxMechanism(-2, 3);
-
-                encoderDrive(0.4, 10, 10, 5);
-
-                break;
-
-            default:
-
-                encoderDrive(0.4, 7, 7, 5);
-                encoderTurn(0.25, 90, true, 5); //turn left and drive towards the gold
-                encoderDrive(0.35, 23, 23, 10);
-                encoderTurn(0.25, 75, true, 5);
-                encoderDrive(0.4, 21, 21, 5);
-                encoderTurn(0.25, 105, false, 5);
-
-                //drop the marker
-                moveBoxMechanism(2, 2);
-                dropMarker();
-                //moveBoxMechanism(-2, 3);
-
-                break;
-        }
-
-
-
-    }
 
     public void initVuforia() {
         /*
@@ -238,6 +130,118 @@ public class VisionDepotSide extends HardwareDefinitions {
         }
     }
 
+    public void detectGold_inferLeft(double maxTimeS){
+
+        timer.reset();
+
+        if (opModeIsActive()) {
+            /** Start Tensor Flow Object Detection. */
+            if (tfod != null) {
+                tfod.activate();
+            }
+
+            while (opModeIsActive() && timer.seconds() < maxTimeS) {
+                if (tfod != null) {
+                    List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
+                    if (updatedRecognitions != null) {
+                        telemetry.addData("# Object Detected", updatedRecognitions.size());
+                        if (updatedRecognitions.size() == 2) {
+                            int goldMineralX = -1;
+                            int silverMineralX = -1;
+                            for (Recognition recognition : updatedRecognitions) {
+                                if (recognition.getLabel().equals(LABEL_GOLD_MINERAL)) {
+                                    goldMineralX = (int) recognition.getLeft();
+                                } else if (silverMineralX == -1) {
+                                    silverMineralX = (int) recognition.getLeft();
+                                }
+                            }
+                            if (goldMineralX == -1) {
+                                telemetry.addData("Mineral Position:", "Left");
+                                currentDetectionValue = 1;
+                            } else if (goldMineralX != -1){
+                                if(goldMineralX > silverMineralX){
+                                    telemetry.addData("Mineral Position:", "Center");
+                                    currentDetectionValue = 2;
+                                } else if(goldMineralX < silverMineralX){
+                                    telemetry.addData("Mineral Position:", "Right");
+                                    currentDetectionValue = 3;
+                                } else {
+                                    telemetry.addData("Mineral Position:", "Confused");
+                                }
+                            }
+                        }
+                        telemetry.update();
+                    }
+                }
+
+                if(timer.seconds() >= 0.5){ //give the robot a little bit of time to come to a stop before recording values
+                    detectionValues.add(currentDetectionValue);
+                }
+            }
+        }
+        if (tfod != null) {
+            tfod.shutdown();
+        }
+
+    }
+
+    public void detectGold_inferNone(double maxTimeS){
+
+        timer.reset();
+
+        if (opModeIsActive()) {
+            /** Activate Tensor Flow Object Detection. */
+            if (tfod != null) {
+                tfod.activate();
+            }
+
+            while (opModeIsActive() && timer.seconds() < maxTimeS) {
+                if (tfod != null) {
+                    // getUpdatedRecognitions() will return null if no new information is available since
+                    // the last time that call was made.
+                    List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
+                    if (updatedRecognitions != null) {
+                        telemetry.addData("# Object Detected", updatedRecognitions.size());
+                        if (updatedRecognitions.size() == 3) {
+                            int goldMineralX = -1;
+                            int silverMineral1X = -1;
+                            int silverMineral2X = -1;
+                            for (Recognition recognition : updatedRecognitions) {
+                                if (recognition.getLabel().equals(LABEL_GOLD_MINERAL)) {
+                                    goldMineralX = (int) recognition.getLeft();
+                                } else if (silverMineral1X == -1) {
+                                    silverMineral1X = (int) recognition.getLeft();
+                                } else {
+                                    silverMineral2X = (int) recognition.getLeft();
+                                }
+                            }
+                            if (goldMineralX != -1 && silverMineral1X != -1 && silverMineral2X != -1) {
+                                if (goldMineralX < silverMineral1X && goldMineralX < silverMineral2X) {
+                                    telemetry.addData("Gold Mineral Position", "Left");
+                                    currentDetectionValue = 1;
+                                } else if (goldMineralX > silverMineral1X && goldMineralX > silverMineral2X) {
+                                    telemetry.addData("Gold Mineral Position", "Right");
+                                    currentDetectionValue = 3;
+                                } else {
+                                    telemetry.addData("Gold Mineral Position", "Center");
+                                    currentDetectionValue = 2;
+                                }
+                            }
+                        }
+                        telemetry.update();
+                    }
+                }
+
+                if(timer.seconds() >= 0.5 && currentDetectionValue != 0){ //give the robot a little bit of time to come to a stop before recording values
+                    detectionValues.add(currentDetectionValue);
+                }
+            }
+        }
+        if (tfod != null) {
+            tfod.shutdown();
+        }
+    }
+
     public int getMineralPosition(boolean useAveragingSystem){
 
         if(!useAveragingSystem){
@@ -270,7 +274,4 @@ public class VisionDepotSide extends HardwareDefinitions {
 
         }
     }
-
-
 }
-

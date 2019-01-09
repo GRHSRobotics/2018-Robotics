@@ -1,11 +1,12 @@
 package org.firstinspires.ftc.teamcode.autonomous;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.HardwareDefinitions;
 
-
+@Disabled
 @Autonomous(name="LinearDepotSide2", group="Autonomous")
 public class LinearDepotSide2 extends HardwareDefinitions {
 
@@ -15,6 +16,7 @@ public class LinearDepotSide2 extends HardwareDefinitions {
 
         //INITIALIZATION PERIOD
         init(hardwareMap);
+        initIMU(hardwareMap);
 
         setDriveEncoderMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         setDriveEncoderMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -30,7 +32,15 @@ public class LinearDepotSide2 extends HardwareDefinitions {
         markerDropperOuter.setPosition(markerDropperOuterHold);
         markerDropperInner.setPosition(markerDropperInnerHold);
 
-        dropFromLander();
+
+        gyroTurn(0.3, 90, 5);
+
+        sleep(3000);
+
+        gyroTurn(0.3, -90, 5);
+
+
+        //dropFromLander();
 
         //START PERIOD
 
