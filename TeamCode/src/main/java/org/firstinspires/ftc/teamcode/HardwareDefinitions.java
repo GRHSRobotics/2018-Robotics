@@ -78,7 +78,8 @@ public class HardwareDefinitions extends LinearOpMode{
 
     //INSTANTIATE LED CONTROLLER
     public RevBlinkinLedDriver LEDController;
-    public RevBlinkinLedDriver.BlinkinPattern teleopLEDPattern;
+    public RevBlinkinLedDriver.BlinkinPattern redLEDPattern;
+    public RevBlinkinLedDriver.BlinkinPattern blueLEDPattern;
     public RevBlinkinLedDriver.BlinkinPattern endgameLEDPattern;
     public RevBlinkinLedDriver.BlinkinPattern autonLEDPattern;
 /*

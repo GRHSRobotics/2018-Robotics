@@ -31,6 +31,8 @@ public class DriverControlled extends HardwareDefinitions{
     // LED STUFF
     boolean switchedToEndgame = false;
     ElapsedTime timer = new ElapsedTime();
+    boolean LEDChanged = false;
+    boolean LEDOn = false; //don't worry about the awful variable names, it just works
 
 
     @Override
@@ -50,10 +52,10 @@ public class DriverControlled extends HardwareDefinitions{
         landerMotor2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         //LED Start stuff
-        teleopLEDPattern = RevBlinkinLedDriver.BlinkinPattern.DARK_BLUE;
-        endgameLEDPattern = RevBlinkinLedDriver.BlinkinPattern.DARK_RED;
+        blueLEDPattern = RevBlinkinLedDriver.BlinkinPattern.DARK_BLUE;
+        redLEDPattern = RevBlinkinLedDriver.BlinkinPattern.DARK_RED;
+        endgameLEDPattern = RevBlinkinLedDriver.BlinkinPattern.RAINBOW_WITH_GLITTER;
 
-        LEDController.setPattern(teleopLEDPattern);
         timer.reset();
 
         while(opModeIsActive()){
@@ -126,10 +128,31 @@ public class DriverControlled extends HardwareDefinitions{
                 landerMotor2.setPower(0);
             }
 
+            //LED STUFF
             if(timer.seconds() > 90 && !switchedToEndgame){
                 LEDController.setPattern(endgameLEDPattern);
                 switchedToEndgame = true;
+                telemetry.addData("Now in Endgame", "");
+
+
+            } else if(timer.seconds() < 90){
+
+                if(gamepad1.b && !LEDChanged) {
+                    LEDController.setPattern(LEDOn ? redLEDPattern : blueLEDPattern); //this is a shorthand if/else statement, (condition ? if true : if false)
+
+                    if(LEDOn){
+                        telemetry.addData("LED Color:", "Red");
+                    } else {
+                        telemetry.addData("LED Color:", "Blue");
+                    }
+
+                    LEDOn = !LEDOn;
+                    LEDChanged = true;
+                } else if(!gamepad1.b) {
+                    LEDChanged = false;
+                }
             }
+            telemetry.update();
 
         }
         stopRobot();
