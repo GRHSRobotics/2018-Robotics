@@ -1,7 +1,9 @@
 package org.firstinspires.ftc.teamcode.teleop;
 
+import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.HardwareDefinitions;
@@ -26,14 +28,20 @@ public class DriverControlled extends HardwareDefinitions{
     double rightPower;
     double leftPower;
 
+    // LED STUFF
+    boolean switchedToEndgame = false;
+    ElapsedTime timer = new ElapsedTime();
+
 
     @Override
     public void runOpMode(){
         init(hardwareMap);
         telemetry.addData("Robot is initialized", "");
+        telemetry.update();
 
         waitForStart();
         telemetry.addData("Robot is started", "" );
+        telemetry.update();
 
         markerDropperInner.setPosition(0.8);
 
@@ -41,6 +49,12 @@ public class DriverControlled extends HardwareDefinitions{
         landerMotor1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         landerMotor2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
+        //LED Start stuff
+        teleopLEDPattern = RevBlinkinLedDriver.BlinkinPattern.DARK_BLUE;
+        endgameLEDPattern = RevBlinkinLedDriver.BlinkinPattern.DARK_RED;
+
+        LEDController.setPattern(teleopLEDPattern);
+        timer.reset();
 
         while(opModeIsActive()){
 
@@ -61,7 +75,7 @@ public class DriverControlled extends HardwareDefinitions{
             if(gamepad1.dpad_down){
                 intakeMotor.setPower(0); //TURN OFF
             }
-            if(gamepad1.dpad_left){
+            if(gamepad1.dpad_right){
                 intakeMotor.setPower(1); //REVERSE
             }
 /*
@@ -112,11 +126,15 @@ public class DriverControlled extends HardwareDefinitions{
                 landerMotor2.setPower(0);
             }
 
-
+            if(timer.seconds() > 90 && !switchedToEndgame){
+                LEDController.setPattern(endgameLEDPattern);
+                switchedToEndgame = true;
+            }
 
         }
         stopRobot();
         telemetry.addData("Robot is stopped", "" );
+        telemetry.update();
     }
 
 

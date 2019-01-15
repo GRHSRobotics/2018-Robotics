@@ -30,7 +30,7 @@ public class LinearDepotSide extends HardwareDefinitions {
         markerDropperOuter.setPosition(markerDropperOuterHold);
         markerDropperInner.setPosition(markerDropperInnerHold);
 
-        dropFromLander();
+        dropFromLander(false);
 
         //START PERIOD
 

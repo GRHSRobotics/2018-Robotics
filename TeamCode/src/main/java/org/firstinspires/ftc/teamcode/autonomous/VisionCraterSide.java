@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.autonomous;
 
+import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -37,6 +38,7 @@ public class VisionCraterSide extends HardwareDefinitions {
     public void runOpMode() {
 
         init(hardwareMap);
+
         //initIMU(hardwareMap);
 
         initTFodAndVuforia();
@@ -46,18 +48,19 @@ public class VisionCraterSide extends HardwareDefinitions {
         telemetry.update();
         waitForStart();
 
-
+        autonLEDPattern = RevBlinkinLedDriver.BlinkinPattern.HOT_PINK;
+        LEDController.setPattern(autonLEDPattern);
 
         //add movement to
 
         markerDropperOuter.setPosition(markerDropperOuterHold);
 
-        dropFromLander();
-        encoderTurn(0.4, 5, true, 3);
+        dropFromLander(false);
+        encoderTurn(0.4, 10, true, 3);
         encoderDrive(0.4 ,14, 14, 5);
         //moveLanderWithEncoder((38*4), 8);
         encoderTurn(0.25, 105, false, 5);
-        encoderDrive(0.4, 6.5, 6.5, 5);
+        encoderDrive(0.4, 5, 5, 5);
 
         markerDropperOuter.setPosition(markerDropperOuterRelease);
 
@@ -83,7 +86,7 @@ public class VisionCraterSide extends HardwareDefinitions {
 
             case 2:
 
-                encoderDrive(0.35, -9, -9, 5); //drive straight towards the gold
+                encoderDrive(0.35, -5, -5, 5); //drive straight towards the gold
                 encoderTurn(0.25, 105, true, 5);
                 encoderDrive(0.7, 26, 26, 10);
                 //encoderDrive(0.35, -15, -15, 10);

@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -74,6 +75,12 @@ public class HardwareDefinitions extends LinearOpMode{
 
     //INSTANTIATE IMU
     public BNO055IMU imu;
+
+    //INSTANTIATE LED CONTROLLER
+    public RevBlinkinLedDriver LEDController;
+    public RevBlinkinLedDriver.BlinkinPattern teleopLEDPattern;
+    public RevBlinkinLedDriver.BlinkinPattern endgameLEDPattern;
+    public RevBlinkinLedDriver.BlinkinPattern autonLEDPattern;
 /*
     //MAGNETIC LIMIT SWITCHES
     public DigitalChannel topLimit;
@@ -103,6 +110,9 @@ public class HardwareDefinitions extends LinearOpMode{
 
         //DEFINE LANDER SERVO
         landerLock = robotMap.get(Servo.class, "landerLock");
+
+        //DEFINE LED CONTROLLER
+        LEDController = hardwareMap.get(RevBlinkinLedDriver.class, "LEDController");
 
 /*
         //DEFINE MAGNETIC LIMIt SWITCHES
@@ -310,7 +320,7 @@ public class HardwareDefinitions extends LinearOpMode{
         encoderDrive(speed, leftInches, rightInches, maxTimeS);
     }
 
-    public void dropFromLander(){
+    public void dropFromLander(boolean gyro){
 
         landerLock.setPosition(landerLockRelease);
 
@@ -324,7 +334,11 @@ public class HardwareDefinitions extends LinearOpMode{
 
         //moveLanderWithEncoder(-10, 8);
 
-        encoderTurn(0.4, 55, true, 5);
+        if(gyro){
+            gyroTurn(0.3, 0, 5);
+        } else {
+            encoderTurn(0.4, 55, true, 5);
+        }
 
         telemetry.addData("Landing sequence:", "Complete");
 
