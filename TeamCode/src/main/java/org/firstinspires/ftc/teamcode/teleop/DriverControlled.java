@@ -41,6 +41,12 @@ public class DriverControlled extends HardwareDefinitions{
         telemetry.addData("Robot is initialized", "");
         telemetry.update();
 
+        //LED init stuff
+        blueLEDPattern = RevBlinkinLedDriver.BlinkinPattern.DARK_BLUE;
+        redLEDPattern = RevBlinkinLedDriver.BlinkinPattern.DARK_RED;
+        endgameLEDPattern = RevBlinkinLedDriver.BlinkinPattern.RAINBOW_WITH_GLITTER;
+
+
         waitForStart();
         telemetry.addData("Robot is started", "" );
         telemetry.update();
@@ -51,10 +57,6 @@ public class DriverControlled extends HardwareDefinitions{
         landerMotor1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         landerMotor2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        //LED Start stuff
-        blueLEDPattern = RevBlinkinLedDriver.BlinkinPattern.DARK_BLUE;
-        redLEDPattern = RevBlinkinLedDriver.BlinkinPattern.DARK_RED;
-        endgameLEDPattern = RevBlinkinLedDriver.BlinkinPattern.RAINBOW_WITH_GLITTER;
 
         timer.reset();
 
