@@ -1,9 +1,11 @@
 package org.firstinspires.ftc.teamcode.teleop;
 
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.HardwareDefinitions;
 
+@TeleOp(name="LEDTest", group="Test")
 public class LEDTest extends HardwareDefinitions {
 
     @Override
