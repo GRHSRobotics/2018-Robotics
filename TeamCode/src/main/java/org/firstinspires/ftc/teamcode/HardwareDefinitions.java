@@ -42,6 +42,8 @@ public class HardwareDefinitions extends LinearOpMode{
     static final double COUNTS_PER_INCH = (COUNTS_PER_ROTATION) / (WHEEL_CIRCUMFERENCE_INCHES);
     static final double ROBOT_DIAMETER = 18; //in inches
 
+    static final double MIN_DRIVE_POWER = 0.1; //minimum threshold for drive power in accelerating drive method
+
     static final double HEADING_THRESHOLD = 1 ;      // As tight as we can make it with an integer gyro
     static final double P_TURN_COEFF = 0.1;     // Larger is more responsive, but also less stable
     static final double P_DRIVE_COEFF = 0.15;     // Larger is more responsive, but also less stable
@@ -319,6 +321,127 @@ public class HardwareDefinitions extends LinearOpMode{
 
         //plug the tread movement distances into the encoderDrive method
         encoderDrive(speed, leftInches, rightInches, maxTimeS);
+    }
+
+    public void encoderDriveAccel(double maxSpeed, double inches, double maxTimeS){
+
+        int positionDelta; //used to track how far the robot must go to complete the path, in encoder ticks
+        double percentComplete; //used to track what percentage of the path the robot has completed, as a decimal between 0 and 1
+        int initialPosition; //in encoder ticks
+
+        boolean accelDistanceChecked = false; //records whether the accel distance has been recorded
+        int accelDistance = 0; //in encoder ticks
+
+        double motorPower = MIN_DRIVE_POWER;
+        double powerIncrement = 0.05; //change in power per loop during accel/decel
+
+        // Ensure that the opmode is still active
+        if (opModeIsActive()) {
+
+            motorL1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            motorL2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            motorR1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            motorR2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+            ElapsedTime runtime = new ElapsedTime();
+
+            initialPosition = motorL1.getCurrentPosition();
+
+            // Determine new target position
+            int newL1Target = motorL1.getCurrentPosition() + (int) Math.round(inches * COUNTS_PER_INCH);
+            int newL2Target = motorL2.getCurrentPosition() + (int) Math.round(inches * COUNTS_PER_INCH);
+            int newR1Target = motorR1.getCurrentPosition() + (int) Math.round(inches * COUNTS_PER_INCH);
+            int newR2Target = motorR2.getCurrentPosition() + (int) Math.round(inches * COUNTS_PER_INCH);
+
+            //give new target position to motors
+            motorL1.setTargetPosition(newL1Target);
+            motorL2.setTargetPosition(newL2Target);
+            motorR1.setTargetPosition(newR1Target);
+            motorR2.setTargetPosition(newR2Target);
+
+            // Turn On RUN_TO_POSITION
+            motorL1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            motorL2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            motorR1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            motorR2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            // reset the timeout time and start motion.
+            runtime.reset();
+            motorL1.setPower(motorPower); //initially this power will be the minimum motor power
+            motorL2.setPower(motorPower);
+            motorR1.setPower(motorPower);
+            motorR2.setPower(motorPower);
+
+            // keep looping while we are still active, and there is time left, and both motors are running.
+            // Note: We use (isBusy() && isBusy()) in the loop test, which means that when EITHER motor hits
+            // its target position, the motion will stopRobot.  This is "safer" in the event that the robot will
+            // always end the motion as soon as possible.
+            // However, if you require that BOTH motors have finished their moves before the robot continues
+            // onto the next step, use (isBusy() || isBusy()) in the loop test.
+            while (opModeIsActive() &&
+                    (runtime.seconds() < maxTimeS) &&
+                    (motorL1.isBusy() && motorL2.isBusy() && motorR1.isBusy() && motorR2.isBusy())) {
+
+                positionDelta = newL1Target - motorL1.getCurrentPosition();// change = final - initial , gives how much left there is for the robot to travel
+
+                percentComplete = 1 - (positionDelta / (newL1Target - initialPosition) ); //gives the fraction of the path that the robot has completed
+
+                if(percentComplete < 0.5) {
+                    motorPower += powerIncrement;
+
+                    if(motorPower >= maxSpeed){ //make sure that the robot doesn't go over the max allowed speed
+                        motorPower = maxSpeed;
+                        if(!accelDistanceChecked){
+                            accelDistance = motorL1.getCurrentPosition() - initialPosition;
+                            accelDistanceChecked = true; //make it so that we only check when the robot has just finished accelerating
+                        }
+                    }
+
+                } else{
+
+                    if(!accelDistanceChecked || positionDelta <= accelDistance){
+                        //if the robot never got far enough to finish acceleration or is within the distance it took to accelerate
+                        motorPower -= powerIncrement; //decelerate
+
+                        if(motorPower <= MIN_DRIVE_POWER){
+                            motorPower = MIN_DRIVE_POWER;
+                        }
+
+                    } else {
+                        //do nothing
+                        //stay at current motor power
+                    }
+
+                }
+
+
+                sleep(50); //makes sure we don't increment too fast
+
+                // Display it for the driver.
+                telemetry.addData("Path1", "Running to %7d :%7d :%7d :%7d", newL1Target, newL2Target, newR1Target, newR2Target);
+                telemetry.addData("Path2", "Running at %7d :%7d :%7d :%7d",
+                        motorL1.getCurrentPosition(),
+                        motorL2.getCurrentPosition(),
+                        motorR1.getCurrentPosition(),
+                        motorR2.getCurrentPosition());
+                telemetry.update();
+            }
+
+            // Stop all motion;
+            motorL1.setPower(0);
+            motorL2.setPower(0);
+            motorR1.setPower(0);
+            motorR2.setPower(0);
+
+            // Turn off RUN_TO_POSITION
+            motorL1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            motorL2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            motorR1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            motorR2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+            sleep(400);
+        }
+
     }
 
     public void dropFromLander(boolean gyro){
