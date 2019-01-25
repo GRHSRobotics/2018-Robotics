@@ -1,8 +1,10 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
@@ -32,6 +34,31 @@ public class TFLiteHandler extends HardwareDefinitions{
 
     List<Integer> detectionValues = new ArrayList<>();
 
+    public HardwareMap hardwareMap;
+    public Telemetry telemetry;
+
+
+    //constructor to make sure that this class has access to telemetry and hardwaremap
+    public TFLiteHandler(HardwareMap hardwareMap, Telemetry telemetry){
+        this.hardwareMap = hardwareMap;
+        this.telemetry = telemetry;
+
+    }
+
+    //used as a parameter for the inferMineral method
+    public enum inferMineral {
+        LEFT,
+        RIGHT,
+        NONE
+    }
+
+    //may eventually be used instead of integers for mineral position tracking
+    public enum mineralPosition {
+        LEFT,
+        RIGHT,
+        CENTER,
+        UNKNOWN
+    }
 
     public void initVuforia() {
         /*
@@ -242,6 +269,132 @@ public class TFLiteHandler extends HardwareDefinitions{
         }
     }
 
+    public void detectGold(inferMineral infer ,double maxTimeS){
+
+        timer.reset();
+
+        if (opModeIsActive()) {
+            /** Activate Tensor Flow Object Detection. */
+            if (tfod != null) {
+                tfod.activate();
+            }
+
+            while (opModeIsActive() && timer.seconds() < maxTimeS) {
+                if (tfod != null) {
+                    // getUpdatedRecognitions() will return null if no new information is available since
+                    // the last time that call was made.
+                    List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
+                    if (updatedRecognitions != null) {
+                        telemetry.addData("# Object Detected", updatedRecognitions.size());
+
+                        switch(infer){
+                            case NONE:
+                                if (updatedRecognitions.size() == 3) {
+                                    int goldMineralX = -1;
+                                    int silverMineral1X = -1;
+                                    int silverMineral2X = -1;
+                                    for (Recognition recognition : updatedRecognitions) {
+                                        if (recognition.getLabel().equals(LABEL_GOLD_MINERAL)) {
+                                            goldMineralX = (int) recognition.getLeft();
+                                        } else if (silverMineral1X == -1) {
+                                            silverMineral1X = (int) recognition.getLeft();
+                                        } else {
+                                            silverMineral2X = (int) recognition.getLeft();
+                                        }
+                                    }
+                                    if (goldMineralX != -1 && silverMineral1X != -1 && silverMineral2X != -1) {
+                                        if (goldMineralX < silverMineral1X && goldMineralX < silverMineral2X) {
+                                            telemetry.addData("Gold Mineral Position", "Left");
+                                            currentDetectionValue = 1;
+                                        } else if (goldMineralX > silverMineral1X && goldMineralX > silverMineral2X) {
+                                            telemetry.addData("Gold Mineral Position", "Right");
+                                            currentDetectionValue = 3;
+                                        } else {
+                                            telemetry.addData("Gold Mineral Position", "Center");
+                                            currentDetectionValue = 2;
+                                        }
+                                    }
+                                }
+                                break;
+
+                            case LEFT:
+                                if (updatedRecognitions.size() == 2) {
+                                    int goldMineralX = -1;
+                                    int silverMineralX = -1;
+                                    for (Recognition recognition : updatedRecognitions) {
+                                        if (recognition.getLabel().equals(LABEL_GOLD_MINERAL)) {
+                                            goldMineralX = (int) recognition.getLeft();
+                                        } else if (silverMineralX == -1) {
+                                            silverMineralX = (int) recognition.getLeft();
+                                        }
+                                    }
+                                    if (goldMineralX == -1) {
+                                        telemetry.addData("Mineral Position:", "Left");
+                                        currentDetectionValue = 1;
+                                    } else if (goldMineralX != -1){
+                                        if(goldMineralX > silverMineralX){
+                                            telemetry.addData("Mineral Position:", "Center");
+                                            currentDetectionValue = 2;
+                                        } else if(goldMineralX < silverMineralX){
+                                            telemetry.addData("Mineral Position:", "Right");
+                                            currentDetectionValue = 3;
+                                        } else {
+                                            telemetry.addData("Mineral Position:", "Confused");
+                                        }
+                                    }
+                                }
+                                break;
+
+                            case RIGHT:
+                                if (updatedRecognitions.size() == 2) {
+                                    int goldMineralX = -1;
+                                    int silverMineralX = -1;
+                                    for (Recognition recognition : updatedRecognitions) {
+                                        if (recognition.getLabel().equals(LABEL_GOLD_MINERAL)) {
+                                            goldMineralX = (int) recognition.getLeft();
+                                        } else if (silverMineralX == -1) {
+                                            silverMineralX = (int) recognition.getLeft();
+                                        }
+                                    }
+                                    if (goldMineralX == -1) {
+                                        //telemetry.addData("Mineral Position:", "Left");
+                                        telemetry.addData("Mineral Position:", "Right");
+                                        //currentDetectionValue = 1;
+                                        currentDetectionValue = 3;
+                                    } else if (goldMineralX != -1){
+                                        if(goldMineralX < silverMineralX){
+                                            //telemetry.addData("Mineral Position:", "Center");
+                                            telemetry.addData("Mineral Position:", "Left");
+                                            //currentDetectionValue = 2;
+                                            currentDetectionValue = 1;
+                                        } else if(goldMineralX > silverMineralX){
+                                            //telemetry.addData("Mineral Position:", "Right");
+                                            telemetry.addData("Mineral Position:", "Center");
+                                            //currentDetectionValue = 3;
+                                            currentDetectionValue = 2;
+                                        } else {
+                                            telemetry.addData("Mineral Position:", "Confused");
+                                        }
+                                    }
+                                }
+                                break;
+
+                        }
+                        telemetry.update();
+                    }
+                }
+
+                if(timer.seconds() >= 0.5 && currentDetectionValue != 0){ //give the robot a little bit of time to come to a stop before recording values
+                    detectionValues.add(currentDetectionValue);
+                }
+            }
+        }
+        if (tfod != null) {
+            tfod.shutdown();
+        }
+
+    }
+
     public int getMineralPosition(boolean useAveragingSystem){
 
         if(!useAveragingSystem){
@@ -273,6 +426,22 @@ public class TFLiteHandler extends HardwareDefinitions{
             }
 
         }
+    }
+
+
+    /**
+     * in case other classes need to access the camera recognitions
+     * @return the list of all currently recognized objects
+     */
+    public List<Recognition> getUpdatedRecognitions(){
+        if (tfod != null) {
+            // getUpdatedRecognitions() will return null if no new information is available since
+            // the last time that call was made.
+            return tfod.getUpdatedRecognitions();
+        } else {
+            return null;
+        }
+
     }
 
 
