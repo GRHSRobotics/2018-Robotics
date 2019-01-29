@@ -15,9 +15,9 @@ public class TextToSpeechTest extends HardwareDefinitions {
 
 
     float pitch = 1;
-    float pitchIncrement = (float) 0.005;
+    float pitchIncrement = (float) 0.0005;
     float speechRate = 1;
-    float speechRateIncrement = (float) 0.005;
+    float speechRateIncrement = (float) 0.0005;
 
     int randomLine;
 

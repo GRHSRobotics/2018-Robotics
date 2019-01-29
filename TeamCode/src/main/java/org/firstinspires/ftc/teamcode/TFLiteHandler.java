@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -378,7 +379,6 @@ public class TFLiteHandler extends HardwareDefinitions{
                                     }
                                 }
 
-
                         }
                         telemetry.update();
                     }
@@ -444,6 +444,85 @@ public class TFLiteHandler extends HardwareDefinitions{
 
     }
 
+    public void driveToMinerals(double maxTimeS){
+
+        int CAMERA_MAX_LEFT = 0;
+        int CAMERA_MAX_RIGHT = 1920; //this should be the same as the horizontal number of pixels of the camera
+        int ERROR_THRESHOLD = 20; //maximum tolerance for the minerals being off center
+
+        boolean centered = false;
+
+        int mineral1XLeft;
+        int mineral2XRight;
+
+        int leftDifference;
+        int rightDifference;
+
+        timer.reset();
+
+        if (opModeIsActive()) {
+            /** Start Tensor Flow Object Detection. */
+            if (tfod != null) {
+                tfod.activate();
+            }
+
+            motorL1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            motorL2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            motorR1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            motorR2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+            motorL1.setPower(0.3);
+            motorL2.setPower(0.3);
+            motorR1.setPower(0.3);
+            motorR2.setPower(0.3);
+
+            while (opModeIsActive() && timer.seconds() < maxTimeS && !centered) {
+                if (tfod != null) {
+                    List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
+                    if (updatedRecognitions != null) {
+                        telemetry.addData("# Object Detected", updatedRecognitions.size());
+                        if (updatedRecognitions.size() == 2) {
+                            motorL1.setPower(0.1);
+                            motorL2.setPower(0.1);
+                            motorR1.setPower(0.1);
+                            motorR2.setPower(0.1);
+
+                            mineral1XLeft = (int) updatedRecognitions.get(0).getLeft();
+                            mineral2XRight = (int) updatedRecognitions.get(1).getRight();
+
+                            leftDifference = Math.abs(CAMERA_MAX_LEFT - mineral1XLeft);
+                            rightDifference = Math.abs(CAMERA_MAX_RIGHT - mineral2XRight);
+
+                            if(leftDifference > rightDifference &&
+                                    Math.abs(leftDifference - rightDifference) > ERROR_THRESHOLD){
+
+                                motorL1.setPower(0.1); //the minerals are too far right in the camera frame, so keep driving
+                                motorL2.setPower(0.1);
+                                motorR1.setPower(0.1);
+                                motorR2.setPower(0.1);
+                            } else if(leftDifference < rightDifference &&
+                                    Math.abs(leftDifference - rightDifference) > ERROR_THRESHOLD){
+
+                                motorL1.setPower(-0.1); //the minerals are too far left in the camera frame, so drive in reverse
+                                motorL2.setPower(-0.1);
+                                motorR1.setPower(-0.1);
+                                motorR2.setPower(-0.1);
+                            } else {
+                                motorL1.setPower(0); //the minerals are within the threshold, so stop movement
+                                motorL2.setPower(0);
+                                motorR1.setPower(0);
+                                motorR2.setPower(0);
+
+                                centered = true; //breaks loop
+
+                            }
+
+                        }
+                    }
+                }
+            }
+        }
+    }
 
 
 }
