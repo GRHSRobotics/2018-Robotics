@@ -38,9 +38,8 @@ public class GyroVisionDepotSide extends HardwareDefinitions {
         init(hardwareMap);
         initIMU(hardwareMap);
 
-        //initIMU(hardwareMap);
-
-        initTFodAndVuforia();
+        TFLiteHandler TF = new TFLiteHandler(hardwareMap, telemetry);
+        TF.initTFodAndVuforia();
 
         telemetry.addData("Robot is initialized", "");
         telemetry.update();
@@ -60,7 +59,7 @@ public class GyroVisionDepotSide extends HardwareDefinitions {
 
         markerDropperOuter.setPosition(markerDropperOuterRelease);
 
-        detectGold_inferRight(2);
+        TF.detectGold(TFLiteHandler.inferMineral.RIGHT, 2);
 
         //movement stuff
 

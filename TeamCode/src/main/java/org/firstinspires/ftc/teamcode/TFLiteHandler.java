@@ -269,7 +269,7 @@ public class TFLiteHandler extends HardwareDefinitions{
         }
     }
 
-    public void detectGold(inferMineral infer ,double maxTimeS){
+    public void detectGold(inferMineral infer, double maxTimeS){
 
         timer.reset();
 
@@ -315,7 +315,7 @@ public class TFLiteHandler extends HardwareDefinitions{
                                         }
                                     }
                                 }
-                                break;
+
 
                             case LEFT:
                                 if (updatedRecognitions.size() == 2) {
@@ -343,7 +343,7 @@ public class TFLiteHandler extends HardwareDefinitions{
                                         }
                                     }
                                 }
-                                break;
+
 
                             case RIGHT:
                                 if (updatedRecognitions.size() == 2) {
@@ -377,7 +377,7 @@ public class TFLiteHandler extends HardwareDefinitions{
                                         }
                                     }
                                 }
-                                break;
+
 
                         }
                         telemetry.update();
