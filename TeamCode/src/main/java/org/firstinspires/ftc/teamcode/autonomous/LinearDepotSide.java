@@ -7,7 +7,7 @@ import org.firstinspires.ftc.teamcode.HardwareDefinitions;
 
 
 @Autonomous(name="LinearDepotSide", group="Autonomous")
-public class LinearDepotSide extends HardwareDefinitions {
+public class LinearDepotSide extends AutonomousDefinitions {
 
 
     @Override

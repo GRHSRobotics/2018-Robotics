@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Autonomous(name = "GyroVisionCraterSide - With Landing", group = "Gyro Vision")
-public class GyroVisionCraterSide extends HardwareDefinitions {
+public class GyroVisionCraterSide extends AutonomousDefinitions {
 
 
     @Override

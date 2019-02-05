@@ -29,7 +29,7 @@ public class TFLiteHandler extends HardwareDefinitions{
 
     private TFObjectDetector tfod;
 
-    ElapsedTime timer = new ElapsedTime();
+
 
     int currentDetectionValue = 0; //1 is left, 2 is center, 3 is right. Holds the current guess on the position of the mineral
 
@@ -99,7 +99,7 @@ public class TFLiteHandler extends HardwareDefinitions{
     }
 
     public void detectGold_inferRight(double maxTimeS){ //looks at left and center mineral
-
+        ElapsedTime timer = new ElapsedTime();
         timer.reset();
 
         if (opModeIsActive()) {
@@ -159,7 +159,7 @@ public class TFLiteHandler extends HardwareDefinitions{
     }
 
     public void detectGold_inferLeft(double maxTimeS){
-
+        ElapsedTime timer = new ElapsedTime();
         timer.reset();
 
         if (opModeIsActive()) {
@@ -214,7 +214,7 @@ public class TFLiteHandler extends HardwareDefinitions{
     }
 
     public void detectGold_inferNone(double maxTimeS){
-
+        ElapsedTime timer = new ElapsedTime();
         timer.reset();
 
         if (opModeIsActive()) {
@@ -271,7 +271,7 @@ public class TFLiteHandler extends HardwareDefinitions{
     }
 
     public void detectGold(inferMineral infer, double maxTimeS){
-
+        ElapsedTime timer = new ElapsedTime();
         timer.reset();
 
         if (opModeIsActive()) {
@@ -445,7 +445,7 @@ public class TFLiteHandler extends HardwareDefinitions{
     }
 
     public void driveToMinerals(double maxTimeS){
-
+        ElapsedTime timer = new ElapsedTime();
         int CAMERA_MAX_LEFT = 0;
         int CAMERA_MAX_RIGHT = 1920; //this should be the same as the horizontal number of pixels of the camera
         int ERROR_THRESHOLD = 20; //maximum tolerance for the minerals being off center

@@ -8,7 +8,7 @@ import org.firstinspires.ftc.teamcode.HardwareDefinitions;
 
 @Disabled
 @Autonomous(name="LinearDepotSide2", group="Autonomous")
-public class LinearDepotSide2 extends HardwareDefinitions {
+public class LinearDepotSide2 extends AutonomousDefinitions {
 
 
     @Override

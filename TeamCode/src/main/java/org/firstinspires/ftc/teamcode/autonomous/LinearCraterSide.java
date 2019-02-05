@@ -7,7 +7,7 @@ import org.firstinspires.ftc.teamcode.HardwareDefinitions;
 
 
 @Autonomous(name="LinearCraterSide", group="Autonomous")
-public class LinearCraterSide extends HardwareDefinitions {
+public class LinearCraterSide extends AutonomousDefinitions {
 
     @Override
     public void runOpMode() {

@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Autonomous(name = "VisionCraterSide - With Landing", group = "Vision")
-public class VisionCraterSide extends HardwareDefinitions {
+public class VisionCraterSide extends AutonomousDefinitions {
 
 
     private static final String TFOD_MODEL_ASSET = "RoverRuckus.tflite";
