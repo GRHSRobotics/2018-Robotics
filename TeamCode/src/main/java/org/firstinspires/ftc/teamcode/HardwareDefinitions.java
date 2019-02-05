@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -27,7 +28,7 @@ public class HardwareDefinitions extends LinearOpMode{
     public final double opener2Closed = 0;
     public final double opener2Open = 1;
 
-    public final double markerDropperOuterHold = 0.5;
+    public final double markerDropperOuterHold = 0.4;
     public final double markerDropperOuterRelease = 0;
 
     public final double markerDropperInnerHold = 0.5;
@@ -43,6 +44,7 @@ public class HardwareDefinitions extends LinearOpMode{
     static final double ROBOT_DIAMETER = 18; //in inches
 
     static final double MIN_DRIVE_POWER = 0.1; //minimum threshold for drive power in accelerating drive method
+    static final double powerIncrement = 0.015; //change in power per loop during accel/decel
 
     static final double HEADING_THRESHOLD = 1;      // As tight as we can make it with an integer gyro
     static final double P_TURN_COEFF = 0.03;     // Larger is more responsive, but also less stable
@@ -77,6 +79,9 @@ public class HardwareDefinitions extends LinearOpMode{
 
     //INSTANTIATE IMU
     public BNO055IMU imu;
+
+    //INSTANTIATE OPTICAL DISTANCE SENSOR
+    public ModernRoboticsI2cRangeSensor rangeSensor;
 
     //INSTANTIATE LED CONTROLLER
     public RevBlinkinLedDriver LEDController;
@@ -113,6 +118,9 @@ public class HardwareDefinitions extends LinearOpMode{
 
         //DEFINE LANDER SERVO
         landerLock = robotMap.get(Servo.class, "landerLock");
+
+        //DEFINE Range SENSOR
+        rangeSensor = robotMap.get(ModernRoboticsI2cRangeSensor.class, "rangeSensor");
 
         //DEFINE LED CONTROLLER
         LEDController = hardwareMap.get(RevBlinkinLedDriver.class, "LEDController");
@@ -333,7 +341,6 @@ public class HardwareDefinitions extends LinearOpMode{
         int accelDistance = 0; //in encoder ticks
 
         double motorPower = MIN_DRIVE_POWER;
-        double powerIncrement = 0.05; //change in power per loop during accel/decel
 
         // Ensure that the opmode is still active
         if (opModeIsActive()) {

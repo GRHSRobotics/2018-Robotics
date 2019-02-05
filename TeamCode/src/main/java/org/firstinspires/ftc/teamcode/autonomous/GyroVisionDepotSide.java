@@ -55,10 +55,10 @@ public class GyroVisionDepotSide extends HardwareDefinitions {
         markerDropperOuter.setPosition(markerDropperOuterHold);
 
         dropFromLander(true);
-        encoderDrive(0.4, 14, 14, 5);
+        encoderDriveAccel(0.4, 14, 5);
         //moveLanderWithEncoder((38*4), 8);
         gyroTurn(0.3, 90, 5);
-        encoderDrive(0.4, 7.5, 7.5, 5);
+        encoderDriveAccel(0.4, 7.5, 5);
 
         markerDropperOuter.setPosition(markerDropperOuterRelease);
 

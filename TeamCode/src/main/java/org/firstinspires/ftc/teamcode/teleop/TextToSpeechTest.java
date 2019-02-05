@@ -1,9 +1,9 @@
 package org.firstinspires.ftc.teamcode.teleop;
 
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.android.AndroidTextToSpeech;
-import org.firstinspires.ftc.teamcode.HardwareDefinitions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +11,7 @@ import java.util.Random;
 
 
 @TeleOp(name="TextToSpeechTest", group="Test")
-public class TextToSpeechTest extends HardwareDefinitions {
+public class TextToSpeechTest extends LinearOpMode {
 
 
     float pitch = 1;
@@ -52,8 +52,6 @@ public class TextToSpeechTest extends HardwareDefinitions {
         pickupLines.add("Are you the queuing volunteers because I hope you’ll be coming for me soon");
 
 
-
-        init(hardwareMap);
 
         AndroidTextToSpeech textToSpeech = new AndroidTextToSpeech();
 
