@@ -24,7 +24,7 @@ public class AutonomousDefinitions extends HardwareDefinitions {
     static final double powerIncrement = 0.03; //change in power per loop during accel/decel
 
     static final double HEADING_THRESHOLD = 1;      // As tight as we can make it with an integer gyro
-    static final double P_TURN_COEFF = 0.03;     // Larger is more responsive, but also less stable
+    static final double P_TURN_COEFF = 0.015;     // Larger is more responsive, but also less stable
     static final double P_DRIVE_COEFF = 0.15;     // Larger is more responsive, but also less stable
 
 
@@ -123,12 +123,9 @@ public class AutonomousDefinitions extends HardwareDefinitions {
 
     public void encoderDriveAccel(double maxSpeed, double inches, double maxTimeS){
 
-        int positionDelta; //used to track how far the robot must go to complete the path, in encoder ticks
-        double percentComplete; //used to track what percentage of the path the robot has completed, as a decimal between 0 and 1
-        int initialPosition; //in encoder ticks
-
-        boolean accelDistanceChecked = false; //records whether the accel distance has been recorded
-        int accelDistance = 0; //in encoder ticks
+        int ACCEL_THRESHOLD = (int)(4 * COUNTS_PER_INCH); //number of inches to have the robot accelerate and decelerate in, measured in encoder ticks
+        int initialPosition; //initial position of the encoders
+        int targetPosition;
 
         double motorPower = MIN_DRIVE_POWER;
 
@@ -142,7 +139,7 @@ public class AutonomousDefinitions extends HardwareDefinitions {
 
             ElapsedTime runtime = new ElapsedTime();
 
-            initialPosition = motorL1.getCurrentPosition();
+            initialPosition = getDriveMotorPosition(); //where the motors are at the beginning of the movement, doesn't get updated later
 
             // Determine new target position
             int newL1Target = motorL1.getCurrentPosition() + (int) Math.round(inches * COUNTS_PER_INCH);
@@ -155,6 +152,8 @@ public class AutonomousDefinitions extends HardwareDefinitions {
             motorL2.setTargetPosition(newL2Target);
             motorR1.setTargetPosition(newR1Target);
             motorR2.setTargetPosition(newR2Target);
+
+            targetPosition = (motorL1.getTargetPosition() + motorL2.getTargetPosition() + motorR1.getTargetPosition() + motorR2.getTargetPosition()) / 4;
 
             // Turn On RUN_TO_POSITION
             motorL1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -179,40 +178,24 @@ public class AutonomousDefinitions extends HardwareDefinitions {
                     (runtime.seconds() < maxTimeS) &&
                     (motorL1.isBusy() && motorL2.isBusy() && motorR1.isBusy() && motorR2.isBusy())) {
 
-                positionDelta = newL1Target - motorL1.getCurrentPosition();// change = final - initial , gives how much left there is for the robot to travel
+                if(Math.abs(getDriveMotorPosition() - initialPosition) < ACCEL_THRESHOLD){
 
-                percentComplete = 1 - (positionDelta / (newL1Target - initialPosition) ); //gives the fraction of the path that the robot has completed
+                    motorPower = (Math.abs(getDriveMotorPosition() - initialPosition) / ACCEL_THRESHOLD) * maxSpeed;
 
-                if(percentComplete < 0.5) {
-                    motorPower += powerIncrement;
+                } else if(Math.abs(getDriveMotorPosition() - targetPosition) < ACCEL_THRESHOLD){
 
-                    if(motorPower >= maxSpeed){ //make sure that the robot doesn't go over the max allowed speed
-                        motorPower = maxSpeed;
-                        if(!accelDistanceChecked){
-                            accelDistance = motorL1.getCurrentPosition() - initialPosition;
-                            accelDistanceChecked = true; //make it so that we only check when the robot has just finished accelerating
-                        }
-                    }
+                    motorPower = (Math.abs(getDriveMotorPosition() - targetPosition) / ACCEL_THRESHOLD) * maxSpeed;
 
-                } else{
+                } else {
 
-                    if(!accelDistanceChecked || positionDelta <= accelDistance){
-                        //if the robot never got far enough to finish acceleration or is within the distance it took to accelerate
-                        motorPower -= powerIncrement; //decelerate
-
-                        if(motorPower <= MIN_DRIVE_POWER){
-                            motorPower = MIN_DRIVE_POWER;
-                        }
-
-                    } else {
-                        //do nothing
-                        //stay at current motor power
-                    }
-
+                    motorPower = maxSpeed;
                 }
 
-
-                sleep(50); //makes sure we don't increment too fast
+                //apply the acceleration
+                motorL1.setPower(motorPower);
+                motorL2.setPower(motorPower);
+                motorR1.setPower(motorPower);
+                motorR2.setPower(motorPower);
 
                 // Display it for the driver.
                 telemetry.addData("Path1", "Running to %7d :%7d :%7d :%7d", newL1Target, newL2Target, newR1Target, newR2Target);
@@ -239,6 +222,10 @@ public class AutonomousDefinitions extends HardwareDefinitions {
             sleep(400);
         }
 
+    }
+
+    public int getDriveMotorPosition(){
+        return (motorL1.getCurrentPosition() + motorL2.getCurrentPosition() + motorR1.getCurrentPosition() + motorR2.getCurrentPosition()) / 4;
     }
 
     public void dropFromLander(boolean gyro){
@@ -768,6 +755,7 @@ public class AutonomousDefinitions extends HardwareDefinitions {
     public void driveToMineral(double speed, double maxTimeS){
 
         boolean mineralInRange = false;
+        boolean passedMineral = false;
         double MIN_DISTANCE = 10; //inches
 
         ElapsedTime runtime = new ElapsedTime();
@@ -783,9 +771,18 @@ public class AutonomousDefinitions extends HardwareDefinitions {
         motorR1.setPower(speed);
         motorR2.setPower(speed);
 
-        while(runtime.seconds() > maxTimeS && !mineralInRange){
+
+        //first phase, drive until the sensor can see the center mineral
+        while(opModeIsActive() && runtime.seconds() > maxTimeS && !mineralInRange){
             if(rangeSensor.getDistance(DistanceUnit.INCH) < MIN_DISTANCE){
                 mineralInRange = true;
+            }
+        }
+
+        //second phase, drive until the sensor can no longer see the center mineral, then stop
+        while(opModeIsActive() && runtime.seconds() < maxTimeS && !passedMineral){
+            if(rangeSensor.getDistance(DistanceUnit.INCH) > MIN_DISTANCE){
+                passedMineral = true;
             }
         }
 
@@ -793,7 +790,6 @@ public class AutonomousDefinitions extends HardwareDefinitions {
         motorL2.setPower(0);
         motorR1.setPower(0);
         motorR2.setPower(0);
-
 
     }
 
