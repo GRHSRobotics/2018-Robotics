@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.HardwareDefinitions;
 
 
@@ -20,7 +21,7 @@ public class AutonomousDefinitions extends HardwareDefinitions {
     static final double ROBOT_DIAMETER = 18; //in inches
 
     static final double MIN_DRIVE_POWER = 0.1; //minimum threshold for drive power in accelerating drive method
-    static final double powerIncrement = 0.015; //change in power per loop during accel/decel
+    static final double powerIncrement = 0.03; //change in power per loop during accel/decel
 
     static final double HEADING_THRESHOLD = 1;      // As tight as we can make it with an integer gyro
     static final double P_TURN_COEFF = 0.03;     // Larger is more responsive, but also less stable
@@ -759,7 +760,42 @@ public class AutonomousDefinitions extends HardwareDefinitions {
         }
     }
 
+    /**
+     * Uses the range sensor to align the robot with the mineral to allow object recognition
+     * @param speed
+     * @param maxTimeS
+     */
+    public void driveToMineral(double speed, double maxTimeS){
 
+        boolean mineralInRange = false;
+        double MIN_DISTANCE = 10; //inches
+
+        ElapsedTime runtime = new ElapsedTime();
+        runtime.reset();
+
+        motorL1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorL2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorR1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorR2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        motorL1.setPower(speed);
+        motorL2.setPower(speed);
+        motorR1.setPower(speed);
+        motorR2.setPower(speed);
+
+        while(runtime.seconds() > maxTimeS && !mineralInRange){
+            if(rangeSensor.getDistance(DistanceUnit.INCH) < MIN_DISTANCE){
+                mineralInRange = true;
+            }
+        }
+
+        motorL1.setPower(0);
+        motorL2.setPower(0);
+        motorR1.setPower(0);
+        motorR2.setPower(0);
+
+
+    }
 
 
 }

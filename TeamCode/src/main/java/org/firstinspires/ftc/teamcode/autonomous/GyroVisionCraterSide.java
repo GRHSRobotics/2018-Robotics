@@ -23,7 +23,8 @@ public class GyroVisionCraterSide extends AutonomousDefinitions {
         init(hardwareMap);
         initIMU(hardwareMap);
 
-        TFLiteHandler TF = new TFLiteHandler(hardwareMap, telemetry);
+        ElapsedTime timer = new ElapsedTime();
+        TFLiteHandler TF = new TFLiteHandler(hardwareMap, telemetry, timer);
         TF.initTFodAndVuforia();
 
 

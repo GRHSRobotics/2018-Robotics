@@ -9,6 +9,7 @@ import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
@@ -79,8 +80,6 @@ public class DriverControlledTest extends HardwareDefinitions {
             rightPower = Range.clip(Math.pow(-gamepad1.right_stick_y, 3), -1, 1);
             leftPower = Range.clip(Math.pow(-gamepad1.left_stick_y, 3), -1, 1);
 
-            telemetry.addData("rightPower: ", rightPower);
-            telemetry.addData("leftPower:", leftPower);
 
 
             motorL1.setPower(leftPower); //up on the stick is negative, so for up=forwards we need to
@@ -153,6 +152,9 @@ public class DriverControlledTest extends HardwareDefinitions {
 
 
             telemetry.addData("Gyro heading:", gyroHeading);
+            telemetry.addData("Raw Optical: ", rangeSensor.rawOptical());
+            telemetry.addData("cm Optical: ", rangeSensor.cmOptical());
+            telemetry.addData("Final inches", rangeSensor.getDistance(DistanceUnit.INCH));
             telemetry.update();
 
 
