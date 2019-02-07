@@ -33,12 +33,9 @@ public class GyroVisionDepotSide extends AutonomousDefinitions {
         encoderDrive(0.4, 14, 14, 5);
         //moveLanderWithEncoder((38*4), 8);
         gyroTurn(0.3, 90, 5);
-        driveToMineral(0.25,  5);
-
 
         markerDropperOuter.setPosition(markerDropperOuterRelease);
-
-
+        driveToMineral(0.25,  5);
         detectGold(TFLiteHandler.inferMineral.RIGHT, 2);
 
         //movement stuff

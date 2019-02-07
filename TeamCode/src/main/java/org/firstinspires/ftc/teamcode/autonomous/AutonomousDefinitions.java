@@ -49,7 +49,7 @@ public class AutonomousDefinitions extends HardwareDefinitions {
     static final double powerIncrement = 0.03; //change in power per loop during accel/decel
 
     static final double HEADING_THRESHOLD = 1;      // As tight as we can make it with an integer gyro
-    static final double P_TURN_COEFF = 0.025;     // Larger is more responsive, but also less stable
+    static final double P_TURN_COEFF = 0.03;     // Larger is more responsive, but also less stable
     static final double P_DRIVE_COEFF = 0.15;     // Larger is more responsive, but also less stable
 
 
@@ -268,7 +268,7 @@ public class AutonomousDefinitions extends HardwareDefinitions {
         //moveLanderWithEncoder(-10, 8);
 
         if(gyro){
-            gyroTurn(0.3, 0, 5);
+            gyroTurn(0.3, 0, 3);
         } else {
             encoderTurn(0.4, 55, true, 5);
         }
@@ -787,23 +787,23 @@ public class AutonomousDefinitions extends HardwareDefinitions {
 
         encoderDrive(0.3, 3, 3, 5);
 
-        if(tfod.getUpdatedRecognitions().size() == 2 && !aligned){
+        if(updatedRecognitionsSize(.5) == 2 && !aligned){
             aligned = true;
         }
-        encoderDrive(0.3, 2, 2, 3);
-        if(tfod.getUpdatedRecognitions().size() == 2 && !aligned){
+        encoderDrive(0.3, 2.5, 2.5, 3);
+        if(updatedRecognitionsSize(.5) == 2 && !aligned){
             aligned = true;
         }
-        encoderDrive(0.3, 2, 2, 3);
-        if(tfod.getUpdatedRecognitions().size() == 2 && !aligned){
+        encoderDrive(0.3, 2.5, 2.5, 3);
+        if(updatedRecognitionsSize(.5) == 2 && !aligned){
             aligned = true;
         }
-        encoderDrive(0.3, 2, 2, 3);
-        if(tfod.getUpdatedRecognitions().size() == 2 && !aligned){
+        encoderDrive(0.3, 2.5, 2.5, 3);
+        if(updatedRecognitionsSize(0.5) == 2 && !aligned){
             aligned = true;
         }
-        encoderDrive(0.3, 2, 2, 3);
-        if(tfod.getUpdatedRecognitions().size() == 2 && !aligned){
+        encoderDrive(0.3, 2.5, 2.5, 3);
+        if(updatedRecognitionsSize(.5) == 2 && !aligned){
             aligned = true;
         }
 
@@ -1013,6 +1013,24 @@ public class AutonomousDefinitions extends HardwareDefinitions {
             }
 
         }
+    }
+
+    public int updatedRecognitionsSize(double maxTimeS){
+        ElapsedTime timer = new ElapsedTime();
+
+        List<Integer> recognitionsSizes = new ArrayList<>();
+
+        while(timer.seconds() < maxTimeS){
+            recognitionsSizes.add(tfod.getUpdatedRecognitions().size());
+        }
+
+        int sizesSum = 0;
+        for(int i=0; i < recognitionsSizes.size(); i++){
+            sizesSum += recognitionsSizes.get(i);
+        }
+
+        return sizesSum / recognitionsSizes.size();
+
     }
 
 
