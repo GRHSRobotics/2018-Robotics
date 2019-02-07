@@ -3,15 +3,7 @@ package org.firstinspires.ftc.teamcode.autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.ClassFactory;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
-import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
-import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
-import org.firstinspires.ftc.teamcode.HardwareDefinitions;
 import org.firstinspires.ftc.teamcode.TFLiteHandler;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Autonomous(name = "GyroVisionCraterSide - With Landing", group = "Gyro Vision")
 public class GyroVisionCraterSide extends AutonomousDefinitions {
@@ -24,8 +16,8 @@ public class GyroVisionCraterSide extends AutonomousDefinitions {
         initIMU(hardwareMap);
 
         ElapsedTime timer = new ElapsedTime();
-        TFLiteHandler TF = new TFLiteHandler(hardwareMap, telemetry, timer);
-        TF.initTFodAndVuforia();
+
+        initTFodAndVuforia();
 
 
         telemetry.addData("Robot is initialized", "");
@@ -41,19 +33,19 @@ public class GyroVisionCraterSide extends AutonomousDefinitions {
         dropFromLander(true);
         encoderDrive(0.4 ,14, 14, 5);
         //moveLanderWithEncoder((38*4), 8);
-        gyroTurn(0.35, -90, 5);
+        gyroTurn(0.35, 90, 5);
         encoderDrive(0.4, 3.5, 3.5, 5);
 
         markerDropperOuter.setPosition(markerDropperOuterRelease);
 
-        TF.detectGold(TFLiteHandler.inferMineral.RIGHT, 2);
+        detectGold(TFLiteHandler.inferMineral.RIGHT, 2);
 
         //movement stuff
 
         markerDropperOuter.setPosition(markerDropperOuterHold);
 
 
-        switch(TF.getMineralPosition(false)){
+        switch(getMineralPosition(false)){
 
             case 1:
 
