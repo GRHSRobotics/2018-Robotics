@@ -33,7 +33,7 @@ public class GyroVisionDepotSide extends AutonomousDefinitions {
         encoderDrive(0.4, 14, 14, 5);
         //moveLanderWithEncoder((38*4), 8);
         gyroTurn(0.3, 90, 5);
-        encoderDrive(0.4, 6, 6, 5);
+        encoderDrive(0.4, 7, 7, 5);
         //driveToMineral(0.3, 5, true, false);
 
         markerDropperOuter.setPosition(markerDropperOuterRelease);
@@ -66,7 +66,7 @@ public class GyroVisionDepotSide extends AutonomousDefinitions {
 
             case 2:
 
-                encoderDrive(0.35, -2, -2, 5); //drive straight towards the gold
+                encoderDrive(0.35, -1.5, -1.5, 5); //drive straight towards the gold
                 gyroTurn(0.25, 0, 5);
                 encoderDrive(0.35, 46, 46, 10);
                 gyroTurn(0.25, 90, 5);

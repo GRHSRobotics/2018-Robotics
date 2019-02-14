@@ -50,7 +50,7 @@ public class GyroVisionCraterSide extends AutonomousDefinitions {
             case 1:
 
                 //encoderDrive(0.4, 3, 3, 5);
-                encoderTurn(0.25, 70, true, 5); //turn left and drive towards the gold
+                gyroTurn(0.25, 40, 5); //turn left and drive towards the gold
                 encoderDrive(0.7, 26, 26, 10);
                 moveLeftTread(0.4, 15, 8);
                 //encoderDrive(0.35, -12, -12, 10);
@@ -61,7 +61,7 @@ public class GyroVisionCraterSide extends AutonomousDefinitions {
             case 2:
 
                 encoderDrive(0.35, -9, -9, 5); //drive straight towards the gold
-                encoderTurn(0.25, 105, true, 5);
+                gyroTurn(0.25, 0, 5);
                 encoderDrive(0.7, 26, 26, 10);
                 //encoderDrive(0.35, -15, -15, 10);
                 //encoderTurn(0.25, 105, false, 5);
@@ -72,7 +72,7 @@ public class GyroVisionCraterSide extends AutonomousDefinitions {
             case 3:
 
                 encoderDrive(0.4, -20, -20, 5);
-                encoderTurn(0.25, 128, true, 5); //turn right and drive towards the gold
+                gyroTurn(0.25, -40, 5); //turn right and drive towards the gold
                 encoderDrive(0.7, 26, 26, 10);
                 moveRightTread(0.4, 10, 5);
                 //encoderDrive(0.35, -15, -15, 10);
@@ -84,7 +84,7 @@ public class GyroVisionCraterSide extends AutonomousDefinitions {
             default:
 
                 //encoderDrive(0.4, 3, 3, 5);
-                encoderTurn(0.25, 70, true, 5); //turn left and drive towards the gold
+                gyroTurn(0.25, 40, 5); //turn left and drive towards the gold
                 encoderDrive(0.7, 26, 26, 10);
                 moveLeftTread(0.4, 15, 8);
                 //encoderDrive(0.35, -12, -12, 10);
