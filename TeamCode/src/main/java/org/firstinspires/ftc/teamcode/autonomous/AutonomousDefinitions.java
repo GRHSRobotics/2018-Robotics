@@ -38,6 +38,8 @@ public class AutonomousDefinitions extends HardwareDefinitions {
 
     List<Integer> detectionValues = new ArrayList<>();
 
+    List<Integer> recognitionsSizes = new ArrayList<>();
+
 
     //CONSTANTS FOR DRIVE METHODS
     static final double COUNTS_PER_ROTATION = 560 ;    // REV HD Hex Motor 20:1
@@ -49,7 +51,7 @@ public class AutonomousDefinitions extends HardwareDefinitions {
     static final double powerIncrement = 0.03; //change in power per loop during accel/decel
 
     static final double HEADING_THRESHOLD = 1;      // As tight as we can make it with an integer gyro
-    static final double P_TURN_COEFF = 0.03;     // Larger is more responsive, but also less stable
+    static final double P_TURN_COEFF = 0.035;     // Larger is more responsive, but also less stable
     static final double P_DRIVE_COEFF = 0.15;     // Larger is more responsive, but also less stable
 
 
@@ -325,7 +327,7 @@ public class AutonomousDefinitions extends HardwareDefinitions {
             landerMotor1.setPower(0);
             landerMotor2.setPower(0);
 
-            sleep(400);
+            sleep(100);
 
         }
     }
@@ -376,7 +378,7 @@ public class AutonomousDefinitions extends HardwareDefinitions {
             liftMotor.setPower(0);
 
 
-            sleep(400);
+            //sleep(100);
 
         }
 
@@ -385,7 +387,7 @@ public class AutonomousDefinitions extends HardwareDefinitions {
     public void dropMarker(){
 
         markerDropperOuter.setPosition(markerDropperOuterRelease);
-        sleep(1000);
+        moveBoxMechanism(2, 1);
         markerDropperInner.setPosition(markerDropperInnerRelease);
         sleep(1500);
         markerDropperInner.setPosition(markerDropperInnerHold);
@@ -593,6 +595,7 @@ public class AutonomousDefinitions extends HardwareDefinitions {
             steer = getSteer(error, PCoeff);
             rightSpeed  = speed * steer;
             leftSpeed   = -rightSpeed;
+            
         }
 
         // Send desired speeds to motors.
@@ -773,11 +776,12 @@ public class AutonomousDefinitions extends HardwareDefinitions {
     }
 
     /**
-     * Uses the range sensor to align the robot with the mineral to allow object recognition
+     * Uses tensorflow to align the robot with the mineral to allow object recognition
      * @param speed
      * @param maxTimeS
+     * @param useDefaultTF fill-in until i find which way works better
      */
-    public void driveToMineral(double speed, double maxTimeS){
+    public void driveToMineral(double speed, double maxTimeS, boolean useDefaultTF, boolean useEncoders){
 
         boolean aligned = false;
         double MIN_DISTANCE = 10; //inches
@@ -785,28 +789,148 @@ public class AutonomousDefinitions extends HardwareDefinitions {
         ElapsedTime runtime = new ElapsedTime();
         runtime.reset();
 
-        encoderDrive(0.3, 3, 3, 5);
+        if (tfod != null) {
+            tfod.activate();
+        }
+        if(useDefaultTF){
 
-        if(updatedRecognitionsSize(.5) == 2 && !aligned){
-            aligned = true;
-        }
-        encoderDrive(0.3, 2.5, 2.5, 3);
-        if(updatedRecognitionsSize(.5) == 2 && !aligned){
-            aligned = true;
-        }
-        encoderDrive(0.3, 2.5, 2.5, 3);
-        if(updatedRecognitionsSize(.5) == 2 && !aligned){
-            aligned = true;
-        }
-        encoderDrive(0.3, 2.5, 2.5, 3);
-        if(updatedRecognitionsSize(0.5) == 2 && !aligned){
-            aligned = true;
-        }
-        encoderDrive(0.3, 2.5, 2.5, 3);
-        if(updatedRecognitionsSize(.5) == 2 && !aligned){
-            aligned = true;
-        }
+            if(useEncoders){
 
+                double leftInches = 5;
+                double rightInches = 5;
+
+                // Ensure that the opmode is still active
+                if (opModeIsActive()) {
+
+                    motorL1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+                    motorL2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+                    motorR1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+                    motorR2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+                    ElapsedTime timer = new ElapsedTime();
+
+                    // Determine new target position
+                    int newL1Target = motorL1.getCurrentPosition() + (int) Math.round(leftInches * COUNTS_PER_INCH);
+                    int newL2Target = motorL2.getCurrentPosition() + (int) Math.round(leftInches * COUNTS_PER_INCH);
+                    int newR1Target = motorR1.getCurrentPosition() + (int) Math.round(rightInches * COUNTS_PER_INCH);
+                    int newR2Target = motorR2.getCurrentPosition() + (int) Math.round(rightInches * COUNTS_PER_INCH);
+
+                    //give new target position to motors
+                    motorL1.setTargetPosition(newL1Target);
+                    motorL2.setTargetPosition(newL2Target);
+                    motorR1.setTargetPosition(newR1Target);
+                    motorR2.setTargetPosition(newR2Target);
+
+                    // Turn On RUN_TO_POSITION
+                    motorL1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    motorL2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    motorR1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    motorR2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+                    // reset the timeout time and start motion.
+                    timer.reset();
+                    motorL1.setPower(Math.abs(speed));
+                    motorL2.setPower(Math.abs(speed));
+                    motorR1.setPower(Math.abs(speed));
+                    motorR2.setPower(Math.abs(speed));
+
+                    // keep looping while we are still active, and there is time left, and both motors are running.
+                    // Note: We use (isBusy() && isBusy()) in the loop test, which means that when EITHER motor hits
+                    // its target position, the motion will stopRobot.  This is "safer" in the event that the robot will
+                    // always end the motion as soon as possible.
+                    // However, if you require that BOTH motors have finished their moves before the robot continues
+                    // onto the next step, use (isBusy() || isBusy()) in the loop test.
+                    while (opModeIsActive() &&
+                            (timer.seconds() < maxTimeS) &&
+                            (motorL1.isBusy() && motorL2.isBusy() && motorR1.isBusy() && motorR2.isBusy()) &&
+                            tfod.getUpdatedRecognitions().size() == 2) {
+
+                        // Display it for the driver.
+                        telemetry.addData("Path1", "Running to %7d :%7d :%7d :%7d", newL1Target, newL2Target, newR1Target, newR2Target);
+                        telemetry.addData("Path2", "Running at %7d :%7d :%7d :%7d",
+                                motorL1.getCurrentPosition(),
+                                motorL2.getCurrentPosition(),
+                                motorR1.getCurrentPosition(),
+                                motorR2.getCurrentPosition());
+                        telemetry.update();
+                    }
+
+                    // Stop all motion;
+                    motorL1.setPower(0);
+                    motorL2.setPower(0);
+                    motorR1.setPower(0);
+                    motorR2.setPower(0);
+
+                    // Turn off RUN_TO_POSITION
+                    motorL1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                    motorL2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                    motorR1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                    motorR2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+                    sleep(400);
+                }
+
+            }else {
+
+                encoderDrive(0.3, 3, 3, 5);
+                telemetry.addData("Recognitions size", recognitionsSizes.size());
+                telemetry.update();
+
+                if (tfod.getUpdatedRecognitions().size() == 2 && !aligned) {
+                    aligned = true;
+                }
+                encoderDrive(0.3, 2.5, 2.5, 3);
+                telemetry.addData("Recognitions size", recognitionsSizes.size());
+                telemetry.update();
+                if (tfod.getUpdatedRecognitions().size() == 2 && !aligned) {
+                    aligned = true;
+                }
+                encoderDrive(0.3, 2.5, 2.5, 3);
+                telemetry.addData("Recognitions size", recognitionsSizes.size());
+                telemetry.update();
+                if (tfod.getUpdatedRecognitions().size() == 2 && !aligned) {
+                    aligned = true;
+                }
+                encoderDrive(0.3, 2.5, 2.5, 3);
+                telemetry.addData("Recognitions size", recognitionsSizes.size());
+                telemetry.update();
+                if (tfod.getUpdatedRecognitions().size() == 2 && !aligned) {
+                    aligned = true;
+                }
+                encoderDrive(0.3, 2.5, 2.5, 3);
+                telemetry.addData("Recognitions size", recognitionsSizes.size());
+                telemetry.update();
+                if (tfod.getUpdatedRecognitions().size() == 2 && !aligned) {
+                    aligned = true;
+                }
+
+            }
+
+        }else {
+/*
+            encoderDrive(0.3, 3, 3, 5);
+
+            if (updatedRecognitionsSize(.5) == 2 && !aligned) {
+                aligned = true;
+            }
+            encoderDrive(0.3, 2.5, 2.5, 3);
+            if (updatedRecognitionsSize(.5) == 2 && !aligned) {
+                aligned = true;
+            }
+            encoderDrive(0.3, 2.5, 2.5, 3);
+            if (updatedRecognitionsSize(.5) == 2 && !aligned) {
+                aligned = true;
+            }
+            encoderDrive(0.3, 2.5, 2.5, 3);
+            if (updatedRecognitionsSize(0.5) == 2 && !aligned) {
+                aligned = true;
+            }
+            encoderDrive(0.3, 2.5, 2.5, 3);
+            if (updatedRecognitionsSize(.5) == 2 && !aligned) {
+                aligned = true;
+            }
+            */
+        }
 
         motorL1.setPower(0);
         motorL2.setPower(0);
@@ -964,6 +1088,8 @@ public class AutonomousDefinitions extends HardwareDefinitions {
                                             telemetry.addData("Mineral Position:", "Confused");
                                         }
                                     }
+                                    telemetry.addData("Gold Mineral Position:", goldMineralX);
+                                    telemetry.addData("Silver Mineral Position:", silverMineralX);
                                 }
 
                         }
@@ -1015,10 +1141,12 @@ public class AutonomousDefinitions extends HardwareDefinitions {
         }
     }
 
+
+    // I'm too lazy to figure out how to get the most common value so I just averaged them
     public int updatedRecognitionsSize(double maxTimeS){
         ElapsedTime timer = new ElapsedTime();
 
-        List<Integer> recognitionsSizes = new ArrayList<>();
+
 
         while(timer.seconds() < maxTimeS){
             recognitionsSizes.add(tfod.getUpdatedRecognitions().size());

@@ -33,10 +33,12 @@ public class GyroVisionDepotSide extends AutonomousDefinitions {
         encoderDrive(0.4, 14, 14, 5);
         //moveLanderWithEncoder((38*4), 8);
         gyroTurn(0.3, 90, 5);
+        encoderDrive(0.4, 6, 6, 5);
+        //driveToMineral(0.3, 5, true, false);
 
         markerDropperOuter.setPosition(markerDropperOuterRelease);
-        driveToMineral(0.25,  5);
-        detectGold(TFLiteHandler.inferMineral.RIGHT, 2);
+
+        detectGold(TFLiteHandler.inferMineral.RIGHT, 4);
 
         //movement stuff
 
@@ -46,15 +48,14 @@ public class GyroVisionDepotSide extends AutonomousDefinitions {
         switch (getMineralPosition(false)) {
             case 1:
                 //encoderDrive(0.4, 7, 7, 5);
-                gyroTurn(0.25, 60, 5); //turn left and drive towards the gold
+                gyroTurn(0.25, 50, 5); //turn left and drive towards the gold
                 encoderDrive(0.4, 29, 29, 10);
-                gyroTurn(0.25, -45, 5);
-                encoderDrive(0.4, 25, 25, 5);
-                gyroTurn(0.25, 110, 5);
+                gyroTurn(0.25, -35, 5);
+                encoderDrive(0.4, 28, 28, 5);
+                gyroTurn(0.25, 90, 5);
 
 
                 //drop the marker
-                moveBoxMechanism(2, 2);
                 dropMarker();
                 //moveBoxMechanism(-2, 3);
 
@@ -65,13 +66,12 @@ public class GyroVisionDepotSide extends AutonomousDefinitions {
 
             case 2:
 
-                encoderDrive(0.35, -3, -3, 5); //drive straight towards the gold
-                encoderTurn(0.25, 105, true, 5);
+                encoderDrive(0.35, -2, -2, 5); //drive straight towards the gold
+                gyroTurn(0.25, 0, 5);
                 encoderDrive(0.35, 46, 46, 10);
-                encoderTurn(0.25, 105, false, 5);
+                gyroTurn(0.25, 90, 5);
 
                 //drop the marker
-                moveBoxMechanism(2, 2);
                 dropMarker();
                 //moveBoxMechanism(-2, 3);
 
@@ -83,15 +83,14 @@ public class GyroVisionDepotSide extends AutonomousDefinitions {
             case 3:
 
                 encoderDrive(0.4, -17, -17, 5);
-                encoderTurn(0.25, 130, true, 5); //turn right and drive towards the gold
+                gyroTurn(0.25, -15, 5); //turn right and drive towards the gold
                 encoderDrive(0.35, 28, 28, 10);
-                encoderTurn(0.25, 75, false, 5);
+                gyroTurn(0.25, 45, 5);
 
-                encoderDrive(0.4, 29, 29, 5);
-                encoderTurn(0.25, 80, false, 5);
+                encoderDrive(0.4, 32, 32, 5);
+                gyroTurn(0.25, 90, 5);
 
                 //drop the marker
-                moveBoxMechanism(2, 2);
                 dropMarker();
                 //moveBoxMechanism(-2, 3);
 
@@ -101,17 +100,20 @@ public class GyroVisionDepotSide extends AutonomousDefinitions {
 
             default:
 
-                encoderDrive(0.4, 7, 7, 5);
-                encoderTurn(0.25, 90, true, 5); //turn left and drive towards the gold
-                encoderDrive(0.35, 23, 23, 10);
-                encoderTurn(0.25, 75, true, 5);
-                encoderDrive(0.4, 21, 21, 5);
-                encoderTurn(0.25, 105, false, 5);
+                //encoderDrive(0.4, 7, 7, 5);
+                gyroTurn(0.25, 50, 5); //turn left and drive towards the gold
+                encoderDrive(0.4, 29, 29, 10);
+                gyroTurn(0.25, -35, 5);
+                encoderDrive(0.4, 28, 28, 5);
+                gyroTurn(0.25, 90, 5);
+
 
                 //drop the marker
-                moveBoxMechanism(2, 2);
                 dropMarker();
                 //moveBoxMechanism(-2, 3);
+
+
+                //encoderTurn(0.25, 100, false, 5);
 
                 break;
         }
