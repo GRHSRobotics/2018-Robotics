@@ -47,7 +47,7 @@ public class AutonomousDefinitions extends HardwareDefinitions {
     static final double COUNTS_PER_INCH = (COUNTS_PER_ROTATION) / (WHEEL_CIRCUMFERENCE_INCHES);
     static final double ROBOT_DIAMETER = 18; //in inches
 
-    static final double MIN_DRIVE_POWER = 0.1; //minimum threshold for drive power in accelerating drive method
+    static final double MIN_DRIVE_POWER = 0.2; //minimum threshold for drive power in accelerating drive and gyro turn method
     static final double powerIncrement = 0.03; //change in power per loop during accel/decel
 
     static final double HEADING_THRESHOLD = 1;      // As tight as we can make it with an integer gyro
@@ -595,7 +595,15 @@ public class AutonomousDefinitions extends HardwareDefinitions {
             steer = getSteer(error, PCoeff);
             rightSpeed  = speed * steer;
             leftSpeed   = -rightSpeed;
-            
+
+            //give the motor power a minimum to prevent stalling
+            if(Math.abs(rightSpeed) < MIN_DRIVE_POWER && rightSpeed > 0){
+                rightSpeed = MIN_DRIVE_POWER;
+                leftSpeed = -1 * MIN_DRIVE_POWER;
+            } else if(Math.abs(rightSpeed) < MIN_DRIVE_POWER && rightSpeed < 0){
+                rightSpeed = -1 * MIN_DRIVE_POWER;
+                leftSpeed = MIN_DRIVE_POWER;
+            }
         }
 
         // Send desired speeds to motors.
