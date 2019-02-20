@@ -1,6 +1,5 @@
-package org.firstinspires.ftc.teamcode.autonomous;
+package org.firstinspires.ftc.teamcode.autonomous.old;
 
-import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -9,13 +8,13 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.firstinspires.ftc.teamcode.HardwareDefinitions;
-import org.firstinspires.ftc.teamcode.TFLiteHandler;
+import org.firstinspires.ftc.teamcode.autonomous.AutonomousDefinitions;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Autonomous(name = "VisionCraterSide - With Landing", group = "Vision")
-public class VisionCraterSide extends AutonomousDefinitions {
+@Autonomous(name = "VisionCraterSide - No Landing", group = "Vision")
+public class VisionCraterSideNoLand extends AutonomousDefinitions {
 
 
     private static final String TFOD_MODEL_ASSET = "RoverRuckus.tflite";
@@ -38,7 +37,6 @@ public class VisionCraterSide extends AutonomousDefinitions {
     public void runOpMode() {
 
         init(hardwareMap);
-
         //initIMU(hardwareMap);
 
         initTFodAndVuforia();
@@ -48,30 +46,28 @@ public class VisionCraterSide extends AutonomousDefinitions {
         telemetry.update();
         waitForStart();
 
-        autonLEDPattern = RevBlinkinLedDriver.BlinkinPattern.HOT_PINK;
-        LEDController.setPattern(autonLEDPattern);
+
 
         //add movement to
 
         markerDropperOuter.setPosition(markerDropperOuterHold);
 
-        dropFromLander(false);
-        encoderTurn(0.4, 10, true, 3);
+        //dropFromLander();
         encoderDrive(0.4 ,14, 14, 5);
         //moveLanderWithEncoder((38*4), 8);
         encoderTurn(0.25, 105, false, 5);
-        encoderDrive(0.4, 5, 5, 5);
+        encoderDrive(0.4, 7, 7, 5);
 
         markerDropperOuter.setPosition(markerDropperOuterRelease);
 
-        detectGold_inferRight(2);
+        detectGold_inferRight(5);
 
         //movement stuff
 
         markerDropperOuter.setPosition(markerDropperOuterHold);
 
 
-        switch(getMineralPosition(false)){
+        switch(getMineralPosition(true)){
 
             case 1:
 
@@ -98,7 +94,7 @@ public class VisionCraterSide extends AutonomousDefinitions {
             case 3:
 
                 encoderDrive(0.4, -20, -20, 5);
-                encoderTurn(0.25, 128, true, 5); //turn right and drive towards the gold
+                encoderTurn(0.25, 115, true, 5); //turn right and drive towards the gold
                 encoderDrive(0.7, 26, 26, 10);
                 moveRightTread(0.4, 10, 5);
                 //encoderDrive(0.35, -15, -15, 10);
@@ -120,7 +116,7 @@ public class VisionCraterSide extends AutonomousDefinitions {
         }
 
         //finesse the robot over the crater boundary
-        intakeMotor.setPower(-1);
+        intakeMotor.setPower(1);
         sleep(3000);
         intakeMotor.setPower(0);
 
@@ -214,7 +210,7 @@ public class VisionCraterSide extends AutonomousDefinitions {
                     }
                 }
 
-                if(timer.seconds() >= 0.5){ //give the robot a little bit of time to come to a stop before recording values
+                if(timer.seconds() >= 2){ //give the robot a little bit of time to come to a stop before recording values
                     detectionValues.add(currentDetectionValue);
                 }
             }

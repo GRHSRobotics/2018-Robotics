@@ -1,13 +1,15 @@
-package org.firstinspires.ftc.teamcode.autonomous;
+package org.firstinspires.ftc.teamcode.autonomous.old;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.HardwareDefinitions;
+import org.firstinspires.ftc.teamcode.autonomous.AutonomousDefinitions;
 
-
-@Autonomous(name="LinearDepotSide", group="Autonomous")
-public class LinearDepotSide extends AutonomousDefinitions {
+@Disabled
+@Autonomous(name="LinearDepotSide2", group="Autonomous")
+public class LinearDepotSide2 extends AutonomousDefinitions {
 
 
     @Override
@@ -15,6 +17,7 @@ public class LinearDepotSide extends AutonomousDefinitions {
 
         //INITIALIZATION PERIOD
         init(hardwareMap);
+        initIMU(hardwareMap);
 
         setDriveEncoderMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         setDriveEncoderMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -30,7 +33,15 @@ public class LinearDepotSide extends AutonomousDefinitions {
         markerDropperOuter.setPosition(markerDropperOuterHold);
         markerDropperInner.setPosition(markerDropperInnerHold);
 
-        dropFromLander(false);
+
+        gyroTurn(0.3, 90, 5);
+
+        sleep(3000);
+
+        gyroTurn(0.3, -90, 5);
+
+
+        //dropFromLander();
 
         //START PERIOD
 
@@ -46,6 +57,13 @@ public class LinearDepotSide extends AutonomousDefinitions {
         markerDropperInner.setPosition(markerDropperInnerHold);
         sleep(1000);
         markerDropperOuter.setPosition(markerDropperOuterHold);
+
+
+        encoderDrive(0.4, -4, -4, 5);
+
+        encoderTurn(0.4, 45, false, 5);
+
+        encoderDrive(0.4, -45, -45, 10);
 
 /*
         //move back from depot to clear marker

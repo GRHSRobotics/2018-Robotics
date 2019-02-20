@@ -40,6 +40,8 @@ public class AutonomousDefinitions extends HardwareDefinitions {
 
     List<Integer> recognitionsSizes = new ArrayList<>();
 
+    boolean isGoldPresent = false;
+
 
     //CONSTANTS FOR DRIVE METHODS
     static final double COUNTS_PER_ROTATION = 560 ;    // REV HD Hex Motor 20:1
@@ -1116,6 +1118,59 @@ public class AutonomousDefinitions extends HardwareDefinitions {
 
     }
 
+    public void checkGoldInFrame(double maxTimeS){
+
+
+
+        ElapsedTime timer = new ElapsedTime();
+        timer.reset();
+
+        if (opModeIsActive()) {
+            /* Activate Tensor Flow Object Detection. */
+            if (tfod != null) {
+                tfod.activate();
+            }
+
+            while (opModeIsActive() && timer.seconds() < maxTimeS) {
+                if (tfod != null) {
+                    // getUpdatedRecognitions() will return null if no new information is available since
+                    // the last time that call was made.
+                    List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
+                    if (updatedRecognitions != null) {
+                        telemetry.addData("# Object Detected", updatedRecognitions.size());
+
+                        boolean isGold = false;
+
+                        if(timer.seconds() > 0.5){
+                            for (Recognition recognition : updatedRecognitions) {
+                                if (recognition.getLabel().equals(LABEL_GOLD_MINERAL)) {
+                                    isGold = true;
+
+                                } else {
+                                    isGold=false;
+                                }
+                            }
+                        }
+                        if(isGold){
+                            isGoldPresent = true;
+                        } else{
+                            isGoldPresent = false;
+                        }
+
+                        telemetry.addData("Is Gold Present: ", isGoldPresent);
+                        telemetry.update();
+                    }
+                }
+
+            }
+        }
+
+    }
+
+    public boolean isGoldInFrame(){
+        return isGoldPresent;
+
+    }
     public int getMineralPosition(boolean useAveragingSystem){
 
         if(!useAveragingSystem){

@@ -1,22 +1,21 @@
-package org.firstinspires.ftc.teamcode.autonomous;
+package org.firstinspires.ftc.teamcode.autonomous.old;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.HardwareDefinitions;
+import org.firstinspires.ftc.teamcode.autonomous.AutonomousDefinitions;
 
 @Disabled
-@Autonomous(name="LinearDepotSide2", group="Autonomous")
-public class LinearDepotSide2 extends AutonomousDefinitions {
-
+@Autonomous(name="LinearCraterSide", group="Autonomous")
+public class LinearCraterSide extends AutonomousDefinitions {
 
     @Override
     public void runOpMode() {
 
         //INITIALIZATION PERIOD
         init(hardwareMap);
-        initIMU(hardwareMap);
 
         setDriveEncoderMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         setDriveEncoderMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -28,27 +27,34 @@ public class LinearDepotSide2 extends AutonomousDefinitions {
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
+        moveBoxMechanism(3,3);
 
         markerDropperOuter.setPosition(markerDropperOuterHold);
         markerDropperInner.setPosition(markerDropperInnerHold);
 
-
-        gyroTurn(0.3, 90, 5);
-
-        sleep(3000);
-
-        gyroTurn(0.3, -90, 5);
-
-
-        //dropFromLander();
+        dropFromLander(false);
 
         //START PERIOD
 
-        //move to depot and push mineral in
-        encoderDrive(0.5, -52, -52, 15);
+        //drive to crater, push center mineral
+        encoderDrive(0.5, -35, -35, 15);
+/*
+        //back to in front of minerals
+        encoderDrive(0.5 ,-23, -23, 10);
 
-        encoderTurn(0.25, 100, false, 5);
+        //turn 90 degrees
+        encoderTurn(0.25, 110, false, 10);
 
+        //move towards the game wall
+        encoderDrive(0.5, 45, 45, 10);
+
+        //turn so that the robot is parallel to the wall
+        encoderTurn(0.25, 73, false, 5);
+
+        //move to the depot
+        encoderDrive(0.5, 50, 50, 10);
+
+        //release team marker
         markerDropperOuter.setPosition(markerDropperOuterRelease);
         sleep(1000);
         markerDropperInner.setPosition(markerDropperInnerRelease);
@@ -58,31 +64,16 @@ public class LinearDepotSide2 extends AutonomousDefinitions {
         markerDropperOuter.setPosition(markerDropperOuterHold);
 
 
-        encoderDrive(0.4, -4, -4, 5);
+        //make sure that we don't hit crater side ball/mineral
+        encoderTurn(0.25, 8, false, 5);
 
-        encoderTurn(0.4, 45, false, 5);
+        encoderDrive(0.5, -78, -78, 10);
 
-        encoderDrive(0.4, -45, -45, 10);
-
-/*
-        //move back from depot to clear marker
-        encoderDrive(0.5, -36, -36, 10);
-
-        //turn towards crater
-        encoderTurn(0.25, 90, false, 10);
-
-        //drive towards wall
-        encoderDrive(0.5, 35, 35, 10);
-
-        //turn so that the robot is parallel to the wall
-        encoderTurn(0.25, 120, false, 5);
-
-        //move forward towards the crater
-        encoderDrive(0.5, 36, 36, 10);
 */
-
-
         telemetry.addData("Completed Autonomous","");
 
     }
+
+
 }
+
