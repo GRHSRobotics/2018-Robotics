@@ -3,8 +3,8 @@ package org.firstinspires.ftc.teamcode.autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 
-@Autonomous(name="TFTest", group="Test")
-public class TFTest extends AutonomousDefinitions {
+@Autonomous(name="SingleMineralScanTest", group="Test")
+public class SingleMineralScanTest extends AutonomousDefinitions {
 
     @Override
     public void runOpMode(){

@@ -34,9 +34,9 @@ public class AutonomousDefinitions extends HardwareDefinitions {
 
 
 
-    int currentDetectionValue = 0; //1 is left, 2 is center, 3 is right. Holds the current guess on the position of the mineral
+    public int currentDetectionValue = 0; //1 is left, 2 is center, 3 is right. Holds the current guess on the position of the mineral
 
-    List<Integer> detectionValues = new ArrayList<>();
+    public List<Integer> detectionValues = new ArrayList<>();
 
     List<Integer> recognitionsSizes = new ArrayList<>();
 
@@ -1017,11 +1017,11 @@ public class AutonomousDefinitions extends HardwareDefinitions {
                                     int silverMineral2X = -1;
                                     for (Recognition recognition : updatedRecognitions) {
                                         if (recognition.getLabel().equals(LABEL_GOLD_MINERAL)) {
-                                            goldMineralX = (int) recognition.getLeft();
+                                            goldMineralX = (int) recognition.getBottom();
                                         } else if (silverMineral1X == -1) {
-                                            silverMineral1X = (int) recognition.getLeft();
+                                            silverMineral1X = (int) recognition.getBottom();
                                         } else {
-                                            silverMineral2X = (int) recognition.getLeft();
+                                            silverMineral2X = (int) recognition.getBottom();
                                         }
                                     }
                                     if (goldMineralX != -1 && silverMineral1X != -1 && silverMineral2X != -1) {
@@ -1045,15 +1045,15 @@ public class AutonomousDefinitions extends HardwareDefinitions {
                                     int silverMineralX = -1;
                                     for (Recognition recognition : updatedRecognitions) {
                                         if (recognition.getLabel().equals(LABEL_GOLD_MINERAL)) {
-                                            goldMineralX = (int) recognition.getLeft();
+                                            goldMineralX = (int) recognition.getBottom();
                                         } else if (silverMineralX == -1) {
-                                            silverMineralX = (int) recognition.getLeft();
+                                            silverMineralX = (int) recognition.getBottom();
                                         }
                                     }
                                     if (goldMineralX == -1) {
                                         telemetry.addData("Mineral Position:", "Left");
                                         currentDetectionValue = 1;
-                                    } else if (goldMineralX != -1){
+                                    } else {
                                         if(goldMineralX > silverMineralX){
                                             telemetry.addData("Mineral Position:", "Center");
                                             currentDetectionValue = 2;
@@ -1073,9 +1073,9 @@ public class AutonomousDefinitions extends HardwareDefinitions {
                                     int silverMineralX = -1;
                                     for (Recognition recognition : updatedRecognitions) {
                                         if (recognition.getLabel().equals(LABEL_GOLD_MINERAL)) {
-                                            goldMineralX = (int) recognition.getLeft();
+                                            goldMineralX = (int) recognition.getBottom();
                                         } else if (silverMineralX == -1) {
-                                            silverMineralX = (int) recognition.getLeft();
+                                            silverMineralX = (int) recognition.getBottom();
                                         }
                                     }
                                     if (goldMineralX == -1) {
@@ -1083,13 +1083,13 @@ public class AutonomousDefinitions extends HardwareDefinitions {
                                         telemetry.addData("Mineral Position:", "Right");
                                         //currentDetectionValue = 1;
                                         currentDetectionValue = 3;
-                                    } else if (goldMineralX != -1){
-                                        if(goldMineralX > silverMineralX){
+                                    } else {
+                                        if(goldMineralX < silverMineralX){
                                             //telemetry.addData("Mineral Position:", "Center");
                                             telemetry.addData("Mineral Position:", "Left");
                                             //currentDetectionValue = 2;
                                             currentDetectionValue = 1;
-                                        } else if(goldMineralX < silverMineralX){
+                                        } else if(goldMineralX > silverMineralX){
                                             //telemetry.addData("Mineral Position:", "Right");
                                             telemetry.addData("Mineral Position:", "Center");
                                             //currentDetectionValue = 3;
@@ -1117,6 +1117,7 @@ public class AutonomousDefinitions extends HardwareDefinitions {
         }
 
     }
+
 
     public void checkGoldInFrame(double maxTimeS){
 
