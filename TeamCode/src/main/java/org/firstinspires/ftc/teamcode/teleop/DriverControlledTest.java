@@ -87,7 +87,7 @@ public class DriverControlledTest extends AutonomousDefinitions {
 
             //MARKER DROPPER SYSTEM
             if(gamepad1.a){
-                detectGold(TFLiteHandler.inferMineral.RIGHT, 5000);
+                detectGold(inferMineral.RIGHT, 5000);
             }
             if(gamepad1.b){
                 markerDropperOuter.setPosition(markerDropperOuterRelease);

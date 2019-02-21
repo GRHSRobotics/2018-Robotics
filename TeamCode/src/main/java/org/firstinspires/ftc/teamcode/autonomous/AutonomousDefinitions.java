@@ -150,112 +150,6 @@ public class AutonomousDefinitions extends HardwareDefinitions {
         encoderDrive(speed, leftInches, rightInches, maxTimeS);
     }
 
-    public void encoderDriveAccel(double maxSpeed, double inches, double maxTimeS){
-
-        int ACCEL_THRESHOLD = (int)(4 * COUNTS_PER_INCH); //number of inches to have the robot accelerate and decelerate in, measured in encoder ticks
-        int initialPosition; //initial position of the encoders
-        int targetPosition;
-
-        double motorPower = MIN_DRIVE_POWER;
-
-        // Ensure that the opmode is still active
-        if (opModeIsActive()) {
-
-            motorL1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            motorL2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            motorR1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            motorR2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-            ElapsedTime runtime = new ElapsedTime();
-
-            initialPosition = getDriveMotorPosition(); //where the motors are at the beginning of the movement, doesn't get updated later
-
-            // Determine new target position
-            int newL1Target = motorL1.getCurrentPosition() + (int) Math.round(inches * COUNTS_PER_INCH);
-            int newL2Target = motorL2.getCurrentPosition() + (int) Math.round(inches * COUNTS_PER_INCH);
-            int newR1Target = motorR1.getCurrentPosition() + (int) Math.round(inches * COUNTS_PER_INCH);
-            int newR2Target = motorR2.getCurrentPosition() + (int) Math.round(inches * COUNTS_PER_INCH);
-
-            //give new target position to motors
-            motorL1.setTargetPosition(newL1Target);
-            motorL2.setTargetPosition(newL2Target);
-            motorR1.setTargetPosition(newR1Target);
-            motorR2.setTargetPosition(newR2Target);
-
-            targetPosition = (motorL1.getTargetPosition() + motorL2.getTargetPosition() + motorR1.getTargetPosition() + motorR2.getTargetPosition()) / 4;
-
-            // Turn On RUN_TO_POSITION
-            motorL1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            motorL2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            motorR1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            motorR2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-            // reset the timeout time and start motion.
-            runtime.reset();
-            motorL1.setPower(motorPower); //initially this power will be the minimum motor power
-            motorL2.setPower(motorPower);
-            motorR1.setPower(motorPower);
-            motorR2.setPower(motorPower);
-
-            // keep looping while we are still active, and there is time left, and both motors are running.
-            // Note: We use (isBusy() && isBusy()) in the loop test, which means that when EITHER motor hits
-            // its target position, the motion will stopRobot.  This is "safer" in the event that the robot will
-            // always end the motion as soon as possible.
-            // However, if you require that BOTH motors have finished their moves before the robot continues
-            // onto the next step, use (isBusy() || isBusy()) in the loop test.
-            while (opModeIsActive() &&
-                    (runtime.seconds() < maxTimeS) &&
-                    (motorL1.isBusy() && motorL2.isBusy() && motorR1.isBusy() && motorR2.isBusy())) {
-
-                if(Math.abs(getDriveMotorPosition() - initialPosition) < ACCEL_THRESHOLD){
-
-                    motorPower = (Math.abs(getDriveMotorPosition() - initialPosition) / ACCEL_THRESHOLD) * maxSpeed;
-
-                } else if(Math.abs(getDriveMotorPosition() - targetPosition) < ACCEL_THRESHOLD){
-
-                    motorPower = (Math.abs(getDriveMotorPosition() - targetPosition) / ACCEL_THRESHOLD) * maxSpeed;
-
-                } else {
-
-                    motorPower = maxSpeed;
-                }
-
-                //apply the acceleration
-                motorL1.setPower(motorPower);
-                motorL2.setPower(motorPower);
-                motorR1.setPower(motorPower);
-                motorR2.setPower(motorPower);
-
-                // Display it for the driver.
-                telemetry.addData("Path1", "Running to %7d :%7d :%7d :%7d", newL1Target, newL2Target, newR1Target, newR2Target);
-                telemetry.addData("Path2", "Running at %7d :%7d :%7d :%7d",
-                        motorL1.getCurrentPosition(),
-                        motorL2.getCurrentPosition(),
-                        motorR1.getCurrentPosition(),
-                        motorR2.getCurrentPosition());
-                telemetry.update();
-            }
-
-            // Stop all motion;
-            motorL1.setPower(0);
-            motorL2.setPower(0);
-            motorR1.setPower(0);
-            motorR2.setPower(0);
-
-            // Turn off RUN_TO_POSITION
-            motorL1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            motorL2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            motorR1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            motorR2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-            sleep(400);
-        }
-
-    }
-
-    public int getDriveMotorPosition(){
-        return (motorL1.getCurrentPosition() + motorL2.getCurrentPosition() + motorR1.getCurrentPosition() + motorR2.getCurrentPosition()) / 4;
-    }
 
     public void dropFromLander(boolean gyro){
 
@@ -538,45 +432,6 @@ public class AutonomousDefinitions extends HardwareDefinitions {
         }
     }
 
-    /**
-     *  Method to obtain & hold a heading for a finite amount of time
-     *  Move will stop once the requested time has elapsed
-     *
-     * @param speed      Desired speed of turn.
-     * @param angle      Absolute Angle (in Degrees) relative to last gyro reset.
-     *                   0 = fwd. +ve is CCW from fwd. -ve is CW from forward.
-     *                   If a relative angle is required, add/subtract from current heading.
-     * @param holdTime   Length of time (in seconds) to hold the specified heading.
-     */
-    public void gyroHold( double speed, double angle, double holdTime) {
-
-        ElapsedTime holdTimer = new ElapsedTime();
-
-        // keep looping while we have time remaining.
-        holdTimer.reset();
-        while (opModeIsActive() && (holdTimer.time() < holdTime)) {
-            // Update telemetry & Allow time for other processes to run.
-            onHeading(speed, angle, P_TURN_COEFF);
-            telemetry.update();
-        }
-
-        // Stop all motion;
-        motorL1.setPower(0);
-        motorL2.setPower(0);
-        motorR1.setPower(0);
-        motorR2.setPower(0);
-    }
-
-    /**
-     * Perform one cycle of closed loop heading control.
-     *
-     * @param speed     Desired speed of turn.
-     * @param angle     Absolute Angle (in Degrees) relative to last gyro reset.
-     *                  0 = fwd. +ve is CCW from fwd. -ve is CW from forward.
-     *                  If a relative angle is required, add/subtract from current heading.
-     * @param PCoeff    Proportional Gain coefficient
-     * @return
-     */
     boolean onHeading(double speed, double angle, double PCoeff) {
         double   error ;
         double   steer ;
@@ -785,172 +640,21 @@ public class AutonomousDefinitions extends HardwareDefinitions {
         }
     }
 
-    /**
-     * Uses tensorflow to align the robot with the mineral to allow object recognition
-     * @param speed
-     * @param maxTimeS
-     * @param useDefaultTF fill-in until i find which way works better
-     */
-    public void driveToMineral(double speed, double maxTimeS, boolean useDefaultTF, boolean useEncoders){
 
-        boolean aligned = false;
-        double MIN_DISTANCE = 10; //inches
-
-        ElapsedTime runtime = new ElapsedTime();
-        runtime.reset();
-
-        if (tfod != null) {
-            tfod.activate();
-        }
-        if(useDefaultTF){
-
-            if(useEncoders){
-
-                double leftInches = 5;
-                double rightInches = 5;
-
-                // Ensure that the opmode is still active
-                if (opModeIsActive()) {
-
-                    motorL1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-                    motorL2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-                    motorR1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-                    motorR2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-                    ElapsedTime timer = new ElapsedTime();
-
-                    // Determine new target position
-                    int newL1Target = motorL1.getCurrentPosition() + (int) Math.round(leftInches * COUNTS_PER_INCH);
-                    int newL2Target = motorL2.getCurrentPosition() + (int) Math.round(leftInches * COUNTS_PER_INCH);
-                    int newR1Target = motorR1.getCurrentPosition() + (int) Math.round(rightInches * COUNTS_PER_INCH);
-                    int newR2Target = motorR2.getCurrentPosition() + (int) Math.round(rightInches * COUNTS_PER_INCH);
-
-                    //give new target position to motors
-                    motorL1.setTargetPosition(newL1Target);
-                    motorL2.setTargetPosition(newL2Target);
-                    motorR1.setTargetPosition(newR1Target);
-                    motorR2.setTargetPosition(newR2Target);
-
-                    // Turn On RUN_TO_POSITION
-                    motorL1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                    motorL2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                    motorR1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                    motorR2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-                    // reset the timeout time and start motion.
-                    timer.reset();
-                    motorL1.setPower(Math.abs(speed));
-                    motorL2.setPower(Math.abs(speed));
-                    motorR1.setPower(Math.abs(speed));
-                    motorR2.setPower(Math.abs(speed));
-
-                    // keep looping while we are still active, and there is time left, and both motors are running.
-                    // Note: We use (isBusy() && isBusy()) in the loop test, which means that when EITHER motor hits
-                    // its target position, the motion will stopRobot.  This is "safer" in the event that the robot will
-                    // always end the motion as soon as possible.
-                    // However, if you require that BOTH motors have finished their moves before the robot continues
-                    // onto the next step, use (isBusy() || isBusy()) in the loop test.
-                    while (opModeIsActive() &&
-                            (timer.seconds() < maxTimeS) &&
-                            (motorL1.isBusy() && motorL2.isBusy() && motorR1.isBusy() && motorR2.isBusy()) &&
-                            tfod.getUpdatedRecognitions().size() == 2) {
-
-                        // Display it for the driver.
-                        telemetry.addData("Path1", "Running to %7d :%7d :%7d :%7d", newL1Target, newL2Target, newR1Target, newR2Target);
-                        telemetry.addData("Path2", "Running at %7d :%7d :%7d :%7d",
-                                motorL1.getCurrentPosition(),
-                                motorL2.getCurrentPosition(),
-                                motorR1.getCurrentPosition(),
-                                motorR2.getCurrentPosition());
-                        telemetry.update();
-                    }
-
-                    // Stop all motion;
-                    motorL1.setPower(0);
-                    motorL2.setPower(0);
-                    motorR1.setPower(0);
-                    motorR2.setPower(0);
-
-                    // Turn off RUN_TO_POSITION
-                    motorL1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                    motorL2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                    motorR1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                    motorR2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-                    sleep(400);
-                }
-
-            }else {
-
-                encoderDrive(0.3, 3, 3, 5);
-                telemetry.addData("Recognitions size", recognitionsSizes.size());
-                telemetry.update();
-
-                if (tfod.getUpdatedRecognitions().size() == 2 && !aligned) {
-                    aligned = true;
-                }
-                encoderDrive(0.3, 2.5, 2.5, 3);
-                telemetry.addData("Recognitions size", recognitionsSizes.size());
-                telemetry.update();
-                if (tfod.getUpdatedRecognitions().size() == 2 && !aligned) {
-                    aligned = true;
-                }
-                encoderDrive(0.3, 2.5, 2.5, 3);
-                telemetry.addData("Recognitions size", recognitionsSizes.size());
-                telemetry.update();
-                if (tfod.getUpdatedRecognitions().size() == 2 && !aligned) {
-                    aligned = true;
-                }
-                encoderDrive(0.3, 2.5, 2.5, 3);
-                telemetry.addData("Recognitions size", recognitionsSizes.size());
-                telemetry.update();
-                if (tfod.getUpdatedRecognitions().size() == 2 && !aligned) {
-                    aligned = true;
-                }
-                encoderDrive(0.3, 2.5, 2.5, 3);
-                telemetry.addData("Recognitions size", recognitionsSizes.size());
-                telemetry.update();
-                if (tfod.getUpdatedRecognitions().size() == 2 && !aligned) {
-                    aligned = true;
-                }
-
-            }
-
-        }else {
-/*
-            encoderDrive(0.3, 3, 3, 5);
-
-            if (updatedRecognitionsSize(.5) == 2 && !aligned) {
-                aligned = true;
-            }
-            encoderDrive(0.3, 2.5, 2.5, 3);
-            if (updatedRecognitionsSize(.5) == 2 && !aligned) {
-                aligned = true;
-            }
-            encoderDrive(0.3, 2.5, 2.5, 3);
-            if (updatedRecognitionsSize(.5) == 2 && !aligned) {
-                aligned = true;
-            }
-            encoderDrive(0.3, 2.5, 2.5, 3);
-            if (updatedRecognitionsSize(0.5) == 2 && !aligned) {
-                aligned = true;
-            }
-            encoderDrive(0.3, 2.5, 2.5, 3);
-            if (updatedRecognitionsSize(.5) == 2 && !aligned) {
-                aligned = true;
-            }
-            */
-        }
-
-        motorL1.setPower(0);
-        motorL2.setPower(0);
-        motorR1.setPower(0);
-        motorR2.setPower(0);
-
+    //used as a parameter for the inferMineral method
+    public enum inferMineral {
+        LEFT,
+        RIGHT,
+        NONE
     }
 
-
-
+    //may eventually be used instead of integers for mineral position tracking
+    public enum mineralPosition {
+        LEFT,
+        RIGHT,
+        CENTER,
+        UNKNOWN
+    }
 
 
 
@@ -991,7 +695,7 @@ public class AutonomousDefinitions extends HardwareDefinitions {
         }
     }
 
-    public void detectGold(TFLiteHandler.inferMineral infer, double maxTimeS){
+    public void detectGold(inferMineral infer, double maxTimeS){
         ElapsedTime timer = new ElapsedTime();
         timer.reset();
 
@@ -1079,20 +783,14 @@ public class AutonomousDefinitions extends HardwareDefinitions {
                                         }
                                     }
                                     if (goldMineralX == -1) {
-                                        //telemetry.addData("Mineral Position:", "Left");
                                         telemetry.addData("Mineral Position:", "Right");
-                                        //currentDetectionValue = 1;
                                         currentDetectionValue = 3;
                                     } else {
                                         if(goldMineralX < silverMineralX){
-                                            //telemetry.addData("Mineral Position:", "Center");
                                             telemetry.addData("Mineral Position:", "Left");
-                                            //currentDetectionValue = 2;
                                             currentDetectionValue = 1;
                                         } else if(goldMineralX > silverMineralX){
-                                            //telemetry.addData("Mineral Position:", "Right");
                                             telemetry.addData("Mineral Position:", "Center");
-                                            //currentDetectionValue = 3;
                                             currentDetectionValue = 2;
                                         } else {
                                             telemetry.addData("Mineral Position:", "Confused");
@@ -1172,10 +870,20 @@ public class AutonomousDefinitions extends HardwareDefinitions {
         return isGoldPresent;
 
     }
-    public int getMineralPosition(boolean useAveragingSystem){
+    public mineralPosition getMineralPosition(boolean useAveragingSystem){
 
         if(!useAveragingSystem){
-            return currentDetectionValue;
+
+            switch(currentDetectionValue){
+                case 1:
+                    return mineralPosition.LEFT;
+                case 2:
+                    return mineralPosition.CENTER;
+                case 3:
+                    return mineralPosition.RIGHT;
+                default:
+                    return mineralPosition.UNKNOWN;
+            }
 
         } else { //average all detection values to try to lower the chance of a fluke reading messing up the final result
 
@@ -1192,37 +900,17 @@ public class AutonomousDefinitions extends HardwareDefinitions {
             telemetry.update();
 
             if(detectionAverage < 1.5){
-                return 1;
+                return mineralPosition.LEFT;
 
             } else if(detectionAverage > 2.5){
-                return 3;
+                return mineralPosition.RIGHT;
 
             } else {
-                return 2;
+                return mineralPosition.CENTER;
 
             }
 
         }
-    }
-
-
-    // I'm too lazy to figure out how to get the most common value so I just averaged them
-    public int updatedRecognitionsSize(double maxTimeS){
-        ElapsedTime timer = new ElapsedTime();
-
-
-
-        while(timer.seconds() < maxTimeS){
-            recognitionsSizes.add(tfod.getUpdatedRecognitions().size());
-        }
-
-        int sizesSum = 0;
-        for(int i=0; i < recognitionsSizes.size(); i++){
-            sizesSum += recognitionsSizes.get(i);
-        }
-
-        return sizesSum / recognitionsSizes.size();
-
     }
 
 

@@ -69,7 +69,7 @@ public class VisionCraterSideNoLand extends AutonomousDefinitions {
 
         switch(getMineralPosition(true)){
 
-            case 1:
+            case LEFT:
 
                 //encoderDrive(0.4, 3, 3, 5);
                 encoderTurn(0.25, 70, true, 5); //turn left and drive towards the gold
@@ -80,7 +80,7 @@ public class VisionCraterSideNoLand extends AutonomousDefinitions {
 
                 break;
 
-            case 2:
+            case CENTER:
 
                 encoderDrive(0.35, -5, -5, 5); //drive straight towards the gold
                 encoderTurn(0.25, 105, true, 5);
@@ -91,7 +91,7 @@ public class VisionCraterSideNoLand extends AutonomousDefinitions {
 
                 break;
 
-            case 3:
+            case RIGHT:
 
                 encoderDrive(0.4, -20, -20, 5);
                 encoderTurn(0.25, 115, true, 5); //turn right and drive towards the gold
@@ -220,38 +220,6 @@ public class VisionCraterSideNoLand extends AutonomousDefinitions {
         }
     }
 
-    public int getMineralPosition(boolean useAveragingSystem){
-
-        if(!useAveragingSystem){
-            return currentDetectionValue;
-
-        } else { //average all detection values to try to lower the chance of a fluke reading messing up the final result
-
-            int detectionSum = 0;
-            for(int i = 0; i < detectionValues.size(); i++){
-                detectionSum += detectionValues.get(i);
-            }
-
-            double detectionAverage = detectionSum / detectionValues.size(); //should come out to a decimal between 1 and 3
-
-            telemetry.addData("List Size: ", detectionValues.size()); //allows us to manually check if things are working properly
-            telemetry.addData("List Sum: ", detectionSum);
-            telemetry.addData("Calculated Average: ", detectionAverage);
-            telemetry.update();
-
-            if(detectionAverage < 1.5){
-                return 1;
-
-            } else if(detectionAverage > 2.5){
-                return 3;
-
-            } else {
-                return 2;
-
-            }
-
-        }
-    }
 
 
 }

@@ -38,7 +38,7 @@ public class GyroVisionCraterSide extends AutonomousDefinitions {
 
         markerDropperOuter.setPosition(markerDropperOuterRelease);
 
-        detectGold(TFLiteHandler.inferMineral.RIGHT, 2);
+        detectGold(inferMineral.RIGHT, 2);
 
         //movement stuff
 
@@ -47,7 +47,7 @@ public class GyroVisionCraterSide extends AutonomousDefinitions {
 
         switch(getMineralPosition(false)){
 
-            case 1:
+            case LEFT:
 
                 //encoderDrive(0.4, 3, 3, 5);
                 gyroTurn(0.25, 40, 5); //turn left and drive towards the gold
@@ -58,7 +58,7 @@ public class GyroVisionCraterSide extends AutonomousDefinitions {
 
                 break;
 
-            case 2:
+            case CENTER:
 
                 encoderDrive(0.35, -9, -9, 5); //drive straight towards the gold
                 gyroTurn(0.25, 0, 5);
@@ -69,7 +69,7 @@ public class GyroVisionCraterSide extends AutonomousDefinitions {
 
                 break;
 
-            case 3:
+            case RIGHT:
 
                 encoderDrive(0.4, -20, -20, 5);
                 gyroTurn(0.25, -40, 5); //turn right and drive towards the gold

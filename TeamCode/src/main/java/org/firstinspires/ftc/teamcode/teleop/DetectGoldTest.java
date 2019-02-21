@@ -22,7 +22,7 @@ public class DetectGoldTest extends AutonomousDefinitions {
         telemetry.addData("Robot is started", "");
         telemetry.update();
 
-        detectGold(TFLiteHandler.inferMineral.RIGHT, 10000);
+        detectGold(inferMineral.RIGHT, 10000);
 
 /*
         if(gamepad1.a){
