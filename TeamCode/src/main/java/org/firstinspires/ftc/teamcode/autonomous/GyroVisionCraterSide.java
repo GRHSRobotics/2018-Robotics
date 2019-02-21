@@ -3,8 +3,6 @@ package org.firstinspires.ftc.teamcode.autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.TFLiteHandler;
-
 @Autonomous(name = "GyroVisionCraterSide - With Landing", group = "Gyro Vision")
 public class GyroVisionCraterSide extends AutonomousDefinitions {
 
@@ -13,12 +11,12 @@ public class GyroVisionCraterSide extends AutonomousDefinitions {
     public void runOpMode() {
 
         init(hardwareMap);
+        telemetry.update();
         initIMU(hardwareMap);
-
-        ElapsedTime timer = new ElapsedTime();
+        telemetry.update();
 
         initTFodAndVuforia();
-
+        telemetry.update();
 
         telemetry.addData("Robot is initialized", "");
         telemetry.update();
@@ -28,13 +26,11 @@ public class GyroVisionCraterSide extends AutonomousDefinitions {
 
         //add movement to
 
-        markerDropperOuter.setPosition(markerDropperOuterHold);
-
         dropFromLander(true);
         encoderDrive(0.4 ,14, 14, 5);
         //moveLanderWithEncoder((38*4), 8);
         gyroTurn(0.35, 90, 5);
-        encoderDrive(0.4, 3.5, 3.5, 5);
+        encoderDrive(0.4, 7, 7, 5);
 
         markerDropperOuter.setPosition(markerDropperOuterRelease);
 
@@ -60,7 +56,7 @@ public class GyroVisionCraterSide extends AutonomousDefinitions {
 
             case CENTER:
 
-                encoderDrive(0.35, -9, -9, 5); //drive straight towards the gold
+                encoderDrive(0.35, -2, -2, 5); //drive straight towards the gold
                 gyroTurn(0.25, 0, 5);
                 encoderDrive(0.7, 26, 26, 10);
                 //encoderDrive(0.35, -15, -15, 10);
@@ -71,8 +67,8 @@ public class GyroVisionCraterSide extends AutonomousDefinitions {
 
             case RIGHT:
 
-                encoderDrive(0.4, -20, -20, 5);
-                gyroTurn(0.25, -40, 5); //turn right and drive towards the gold
+                encoderDrive(0.4, -10, -10, 5);
+                gyroTurn(0.25, -20, 5); //turn right and drive towards the gold
                 encoderDrive(0.7, 26, 26, 10);
                 moveRightTread(0.4, 10, 5);
                 //encoderDrive(0.35, -15, -15, 10);

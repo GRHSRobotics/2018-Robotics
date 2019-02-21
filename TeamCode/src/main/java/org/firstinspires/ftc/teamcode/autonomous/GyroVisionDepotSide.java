@@ -2,8 +2,6 @@ package org.firstinspires.ftc.teamcode.autonomous;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-import org.firstinspires.ftc.teamcode.TFLiteHandler;
-
 
 @Autonomous(name = "GyroVisionDepotSide - With Landing", group = "Gyro Vision")
 public class GyroVisionDepotSide extends AutonomousDefinitions {

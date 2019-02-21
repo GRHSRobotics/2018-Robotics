@@ -6,18 +6,11 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.robotcore.external.Func;
-import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.robotcore.external.navigation.Position;
-import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
 
 public class HardwareDefinitions extends LinearOpMode{
 
@@ -28,7 +21,7 @@ public class HardwareDefinitions extends LinearOpMode{
     public final double opener2Closed = 0;
     public final double opener2Open = 1;
 
-    public final double markerDropperOuterHold = 0.4;
+    public final double markerDropperOuterHold = 0.5;
     public final double markerDropperOuterRelease = 0;
 
     public final double markerDropperInnerHold = 0.5;
