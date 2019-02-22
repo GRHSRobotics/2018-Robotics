@@ -1,5 +1,6 @@
-package org.firstinspires.ftc.teamcode.autonomous;
+package org.firstinspires.ftc.teamcode.autonomous.old;
 
+import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -7,14 +8,14 @@ import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
-import org.firstinspires.ftc.teamcode.HardwareDefinitions;
-import org.firstinspires.ftc.teamcode.TFLiteHandler;
+import org.firstinspires.ftc.teamcode.autonomous.AutonomousDefinitions;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Autonomous(name = "VisionDepotSide - With Landing", group = "Vision")
-public class VisionDepotSide extends HardwareDefinitions {
+@Autonomous(name = "VisionCraterSide - With Landing", group = "Vision")
+public class VisionCraterSide extends AutonomousDefinitions {
+
 
     private static final String TFOD_MODEL_ASSET = "RoverRuckus.tflite";
     private static final String LABEL_GOLD_MINERAL = "Gold Mineral";
@@ -36,25 +37,29 @@ public class VisionDepotSide extends HardwareDefinitions {
     public void runOpMode() {
 
         init(hardwareMap);
+
         //initIMU(hardwareMap);
 
         initTFodAndVuforia();
+
 
         telemetry.addData("Robot is initialized", "");
         telemetry.update();
         waitForStart();
 
-
+        autonLEDPattern = RevBlinkinLedDriver.BlinkinPattern.HOT_PINK;
+        LEDController.setPattern(autonLEDPattern);
 
         //add movement to
 
         markerDropperOuter.setPosition(markerDropperOuterHold);
 
-        dropFromLander();
+        dropFromLander(false);
+        encoderTurn(0.4, 10, true, 3);
         encoderDrive(0.4 ,14, 14, 5);
         //moveLanderWithEncoder((38*4), 8);
         encoderTurn(0.25, 105, false, 5);
-        encoderDrive(0.4, 6, 6, 5);
+        encoderDrive(0.4, 5, 5, 5);
 
         markerDropperOuter.setPosition(markerDropperOuterRelease);
 
@@ -66,77 +71,57 @@ public class VisionDepotSide extends HardwareDefinitions {
 
 
         switch(getMineralPosition(false)){
-            case 1:
-                //encoderDrive(0.4, 7, 7, 5);
+
+            case LEFT:
+
+                //encoderDrive(0.4, 3, 3, 5);
                 encoderTurn(0.25, 70, true, 5); //turn left and drive towards the gold
-                encoderDrive(0.4, 27, 27, 10);
-                encoderTurn(0.25, 70, true, 5);
-                encoderDrive(0.4, 25, 21, 5);
-                encoderTurn(0.25, 130, false, 5);
-
-                //drop the marker
-                moveBoxMechanism(2, 2);
-                dropMarker();
-                //moveBoxMechanism(-2, 3);
-
-
-                //encoderTurn(0.25, 100, false, 5);
+                encoderDrive(0.7, 26, 26, 10);
+                moveLeftTread(0.4, 15, 8);
+                //encoderDrive(0.35, -12, -12, 10);
+                //encoderTurn(0.25, 105, false, 5);
 
                 break;
 
-            case 2:
+            case CENTER:
 
-                encoderDrive(0.35, -5.5, -5.5, 5); //drive straight towards the gold
+                encoderDrive(0.35, -5, -5, 5); //drive straight towards the gold
                 encoderTurn(0.25, 105, true, 5);
-                encoderDrive(0.35, 46, 46, 10);
-                encoderTurn(0.25, 105, false, 5);
-
-                //drop the marker
-                moveBoxMechanism(2, 2);
-                dropMarker();
-                //moveBoxMechanism(-2, 3);
-
-                encoderDrive(0.4, 10, 10, 5);
+                encoderDrive(0.7, 26, 26, 10);
+                //encoderDrive(0.35, -15, -15, 10);
+                //encoderTurn(0.25, 105, false, 5);
+                //encoderDrive(0.4, 14, 14, 10);
 
                 break;
 
+            case RIGHT:
 
-            case 3:
-
-                encoderDrive(0.4, -17, -17, 5);
-                encoderTurn(0.25, 130, true, 5); //turn right and drive towards the gold
-                encoderDrive(0.35, 28, 28, 10);
-                encoderTurn(0.25, 75, false, 5);
-
-                encoderDrive(0.4, 29, 29, 5);
-                encoderTurn(0.25, 80, false, 5);
-
-                //drop the marker
-                moveBoxMechanism(2, 2);
-                dropMarker();
-                //moveBoxMechanism(-2, 3);
-
-                encoderDrive(0.4, 10, 10, 5);
+                encoderDrive(0.4, -20, -20, 5);
+                encoderTurn(0.25, 128, true, 5); //turn right and drive towards the gold
+                encoderDrive(0.7, 26, 26, 10);
+                moveRightTread(0.4, 10, 5);
+                //encoderDrive(0.35, -15, -15, 10);
+                //encoderTurn(0.25, 105, false, 5);
+                //encoderDrive(0.4, 29, 29, 10);
 
                 break;
 
             default:
 
-                encoderDrive(0.4, 7, 7, 5);
-                encoderTurn(0.25, 90, true, 5); //turn left and drive towards the gold
-                encoderDrive(0.35, 23, 23, 10);
-                encoderTurn(0.25, 75, true, 5);
-                encoderDrive(0.4, 21, 21, 5);
-                encoderTurn(0.25, 105, false, 5);
-
-                //drop the marker
-                moveBoxMechanism(2, 2);
-                dropMarker();
-                //moveBoxMechanism(-2, 3);
+                //encoderDrive(0.4, 3, 3, 5);
+                encoderTurn(0.25, 70, true, 5); //turn left and drive towards the gold
+                encoderDrive(0.7, 26, 26, 10);
+                moveLeftTread(0.4, 15, 8);
+                //encoderDrive(0.35, -12, -12, 10);
+                //encoderTurn(0.25, 105, false, 5);
 
                 break;
         }
 
+        //finesse the robot over the crater boundary
+        intakeMotor.setPower(-1);
+        sleep(3000);
+        intakeMotor.setPower(0);
 
 
     }
@@ -238,38 +223,6 @@ public class VisionDepotSide extends HardwareDefinitions {
         }
     }
 
-    public int getMineralPosition(boolean useAveragingSystem){
-
-        if(!useAveragingSystem){
-            return currentDetectionValue;
-
-        } else { //average all detection values to try to lower the chance of a fluke reading messing up the final result
-
-            int detectionSum = 0;
-            for(int i = 0; i < detectionValues.size(); i++){
-                detectionSum += detectionValues.get(i);
-            }
-
-            double detectionAverage = detectionSum / detectionValues.size(); //should come out to a decimal between 1 and 3
-
-            telemetry.addData("List Size: ", detectionValues.size()); //allows us to manually check if things are working properly
-            telemetry.addData("List Sum: ", detectionSum);
-            telemetry.addData("Calculated Average: ", detectionAverage);
-            telemetry.update();
-
-            if(detectionAverage < 1.5){
-                return 1;
-
-            } else if(detectionAverage > 2.5){
-                return 3;
-
-            } else {
-                return 2;
-
-            }
-
-        }
-    }
 
 
 }

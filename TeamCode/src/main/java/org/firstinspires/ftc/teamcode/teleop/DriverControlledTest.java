@@ -7,16 +7,13 @@ import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.teamcode.HardwareDefinitions;
-
-//import com.qualcomm.robotcore.hardware.CRServo;
-//import com.qualcomm.robotcore.hardware.GyroSensor;
+import org.firstinspires.ftc.teamcode.autonomous.AutonomousDefinitions;
 
 
 //See Google Drive for TODO
 
 @TeleOp(name="DriverControlledTest", group="Test")
-public class DriverControlledTest extends HardwareDefinitions {
+public class DriverControlledTest extends AutonomousDefinitions {
 
     //LIFT SERVO VARIABLES
     boolean opener1Changed = false;
@@ -30,10 +27,15 @@ public class DriverControlledTest extends HardwareDefinitions {
     double leftPower;
 
 
+
     @Override
     public void runOpMode(){
         init(hardwareMap);
         initIMU(hardwareMap);
+
+        initTFodAndVuforia();
+
+
         telemetry.addData("Robot is initialized", "");
 
         waitForStart();
@@ -43,6 +45,7 @@ public class DriverControlledTest extends HardwareDefinitions {
         landerMotor2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
 
+
         while(opModeIsActive()){
 
             //TANK DRIVE
@@ -50,9 +53,7 @@ public class DriverControlledTest extends HardwareDefinitions {
             rightPower = Range.clip(Math.pow(-gamepad1.right_stick_y, 3), -1, 1);
             leftPower = Range.clip(Math.pow(-gamepad1.left_stick_y, 3), -1, 1);
 
-            telemetry.addData("rightPower: ", rightPower);
-            telemetry.addData("leftPower:", leftPower);
-            telemetry.update();
+
 
             motorL1.setPower(leftPower); //up on the stick is negative, so for up=forwards we need to
             motorL2.setPower(leftPower); //take the negative value of the stick
@@ -69,15 +70,16 @@ public class DriverControlledTest extends HardwareDefinitions {
             if(gamepad1.dpad_left){
                 intakeMotor.setPower(1); //REVERSE
             }
-/*
+
             //MARKER DROPPER SYSTEM
-            if(gamepad1.x){
-                markerDropperOuter.setPosition(markerDropperOuterHold);
+            if(gamepad1.a){
+                detectGold(inferMineral.RIGHT, 5000);
             }
-            if(gamepad1.y){
+            if(gamepad1.b){
                 markerDropperOuter.setPosition(markerDropperOuterRelease);
+                telemetry.addData("MDOuterRelease", "");
             }
-*/
+
             //LIFT MOTOR
             if(gamepad1.left_trigger > 0){
                 liftMotor.setPower(-Range.clip(gamepad1.left_trigger, 0, 1)); //clip method limits value to between 0 and 1
@@ -118,14 +120,22 @@ public class DriverControlledTest extends HardwareDefinitions {
             }
 
             gyroHeading = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
+
+
+/*
             telemetry.addData("Gyro heading:", gyroHeading);
-
-
+            telemetry.addData("Raw Optical: ", rangeSensor.rawOptical());
+            telemetry.addData("cm Optical: ", rangeSensor.cmOptical());
+            telemetry.addData("Final inches", rangeSensor.getDistance(DistanceUnit.INCH));
+            telemetry.update();
+*/
 
         }
         stopRobot();
         telemetry.addData("Robot is stopped", "" );
     }
+
+
 
 
 }

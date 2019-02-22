@@ -1,122 +1,110 @@
 package org.firstinspires.ftc.teamcode.autonomous;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
-import org.firstinspires.ftc.teamcode.HardwareDefinitions;
-import org.firstinspires.ftc.teamcode.TFLiteHandler;
-@Disabled
-@Autonomous(name = "GyroVisionDepotSide", group = "Vision")
-public class GyroVisionDepotSide extends HardwareDefinitions {
+
+@Autonomous(name = "GyroVisionDepotSide - With Landing", group = "Gyro Vision")
+public class GyroVisionDepotSide extends AutonomousDefinitions {
 
 
     @Override
     public void runOpMode() {
 
         init(hardwareMap);
-        //initIMU(hardwareMap);
-/*
-        TFLiteHandler TF = new TFLiteHandler();
+        telemetry.update();
 
-        TF.initTFodAndVuforia();
+        initIMU(hardwareMap);
+        telemetry.update();
+
+        initTFodAndVuforia();
 
         telemetry.addData("Robot is initialized", "");
         telemetry.update();
-        */
         waitForStart();
 
 
-
         //add movement to
-/*
+
         markerDropperOuter.setPosition(markerDropperOuterHold);
 
-        //dropFromLander();
-        gyroDrive(0.4 ,14, 0, 5);
-        //moveLanderWithEncoder((38*4), 8);
-        gyroTurn(0.25, 90,5);
-        gyroDrive(0.4, 7, 0, 5);
+        dropFromLander(true);
+        encoderDrive(0.4, 14, 14, 5);
+        gyroTurn(0.3, 90, 5);
+        encoderDrive(0.4, 7, 7, 5);
 
-        markerDropperOuter.setPosition(markerDropperOuterRelease);
+        markerDropperOuter.setPosition(markerDropperOuterRelease); //get the marker holder out of the way for vision
 
-        TF.detectGold_inferRight(5);
-
-        //movement stuff
+        detectGold(inferMineral.RIGHT, 4);
 
         markerDropperOuter.setPosition(markerDropperOuterHold);
 
 
-        switch(TF.getMineralPosition(true)){
-            case 1:
-                //encoderDrive(0.4, 7, 7, 5);
-                gyroTurn(0.25, -60, 5); //turn left and drive towards the gold
-                gyroDrive(0.4, 27, 0, 10);
-                gyroTurn(0.25, -85,  5);
-                gyroDrive(0.4, 21, 0, 5);
-                gyroTurn(0.25, 140, 5);
+        switch (getMineralPosition(false)) {
+            case LEFT:
 
-                //drop the marker
-                moveBoxMechanism(3, 3);
-                dropMarker();
-
-
+                gyroTurn(0.25, 50, 5); //turn left and drive towards the gold
+                encoderDrive(0.4, 29, 29, 10);
+                gyroTurn(0.25, -35, 5);
+                encoderDrive(0.4, 28, 28, 5);
                 gyroTurn(0.25, 90, 5);
 
-                break;
-
-            case 2:
-
-                gyroDrive(0.35, -5.5, 0, 5); //drive straight towards the gold
-                gyroTurn(0.25, -90, 5);
-                gyroDrive(0.35, 42, 0, 10);
-                gyroTurn(0.25, 95, 5);
-
-                //drop the marker
-                moveBoxMechanism(3, 3);
                 dropMarker();
 
                 break;
 
+            case CENTER:
 
-            case 3:
-
-                gyroDrive(0.4, -17, 0, 5);
-                gyroTurn(0.25, -110, 5); //turn right and drive towards the gold
-                gyroDrive(0.35, 25, 0, 10);
-                gyroTurn(0.25, 65, 5);
-
-                gyroDrive(0.4, 25, 0, 5);
+                encoderDrive(0.35, -1.5, -1.5, 5); //drive straight towards the gold
+                gyroTurn(0.25, 5, 5);
+                encoderDrive(0.35, 46, 46, 10);
                 gyroTurn(0.25, 90, 5);
 
-                //drop the marker
-                moveBoxMechanism(3, 3);
                 dropMarker();
+
+                encoderDrive(0.4, 10, 10, 5);
+
+                break;
+
+
+            case RIGHT:
+
+                encoderDrive(0.4, -13, -13, 5);
+                gyroTurn(0.25, -15, 5); //turn right and drive towards the gold
+                encoderDrive(0.35, 28, 28, 10);
+                gyroTurn(0.25, 45, 5);
+
+                encoderDrive(0.4, 32, 32, 5);
+                gyroTurn(0.25, 90, 5);
+
+                dropMarker();
+
+                encoderDrive(0.4, 10, 10, 5);
 
                 break;
 
             default:
 
-                //encoderDrive(0.4, 7, 7, 5);
-                gyroTurn(0.25, -60, 5); //turn left and drive towards the gold
-                gyroDrive(0.4, 27, 0, 10);
-                gyroTurn(0.25, -85,  5);
-                gyroDrive(0.4, 21, 0, 5);
-                gyroTurn(0.25, 140, 5);
-
-                //drop the marker
-                moveBoxMechanism(3, 3);
-                dropMarker();
-
-
+                gyroTurn(0.25, 50, 5); //turn left and drive towards the gold
+                encoderDrive(0.4, 29, 29, 10);
+                gyroTurn(0.25, -35, 5);
+                encoderDrive(0.4, 28, 28, 5);
                 gyroTurn(0.25, 90, 5);
+
+                dropMarker();
 
                 break;
         }
 
-*/
 
     }
 
 
+
+
+
+
+
 }
+
+
 

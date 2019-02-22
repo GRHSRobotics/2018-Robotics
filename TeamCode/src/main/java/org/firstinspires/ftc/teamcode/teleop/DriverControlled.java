@@ -1,13 +1,13 @@
 package org.firstinspires.ftc.teamcode.teleop;
 
+import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.HardwareDefinitions;
-
-//import com.qualcomm.robotcore.hardware.CRServo;
-//import com.qualcomm.robotcore.hardware.GyroSensor;
+import org.firstinspires.ftc.teamcode.TextToSpeechHandler;
 
 
 //See Google Drive for TODO
@@ -26,14 +26,30 @@ public class DriverControlled extends HardwareDefinitions{
     double rightPower;
     double leftPower;
 
+    // LED STUFF
+    boolean switchedToEndgame = false;
+    ElapsedTime timer = new ElapsedTime();
+
 
     @Override
     public void runOpMode(){
+
+
         init(hardwareMap);
         telemetry.addData("Robot is initialized", "");
+        telemetry.update();
+
+        //LED init stuff
+        blueLEDPattern = RevBlinkinLedDriver.BlinkinPattern.BLUE;
+        redLEDPattern = RevBlinkinLedDriver.BlinkinPattern.RED;
+        endgameLEDPattern = RevBlinkinLedDriver.BlinkinPattern.RAINBOW_WITH_GLITTER;
+
+
+        TextToSpeechHandler textToSpeech = new TextToSpeechHandler();
 
         waitForStart();
         telemetry.addData("Robot is started", "" );
+        telemetry.update();
 
         markerDropperInner.setPosition(0.8);
 
@@ -41,6 +57,8 @@ public class DriverControlled extends HardwareDefinitions{
         landerMotor1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         landerMotor2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
+
+        timer.reset();
 
         while(opModeIsActive()){
 
@@ -61,18 +79,10 @@ public class DriverControlled extends HardwareDefinitions{
             if(gamepad1.dpad_down){
                 intakeMotor.setPower(0); //TURN OFF
             }
-            if(gamepad1.dpad_left){
+            if(gamepad1.dpad_right){
                 intakeMotor.setPower(1); //REVERSE
             }
-/*
-            //MARKER DROPPER SYSTEM
-            if(gamepad1.x){
-                markerDropperOuter.setPosition(markerDropperOuterHold);
-            }
-            if(gamepad1.y){
-                markerDropperOuter.setPosition(markerDropperOuterRelease);
-            }
-*/
+
             //LIFT MOTOR
             if(gamepad1.left_trigger > 0){
                 liftMotor.setPower(-Range.clip(gamepad1.left_trigger, 0, 1)); //clip method limits value to between 0 and 1
@@ -112,11 +122,37 @@ public class DriverControlled extends HardwareDefinitions{
                 landerMotor2.setPower(0);
             }
 
+            //GAMEPAD 2
+            if(timer.seconds() > 90 && !switchedToEndgame){
+                LEDController.setPattern(endgameLEDPattern);
+                switchedToEndgame = true;
+                telemetry.addData("Now in Endgame", "");
 
+
+            } else if(timer.seconds() <= 90){
+
+                if(gamepad2.b) {
+                    LEDController.setPattern(redLEDPattern);
+                    telemetry.addData("LED Color:", "Red");
+
+
+                }
+                if(gamepad2.x) {
+                    LEDController.setPattern(blueLEDPattern);
+                    telemetry.addData("LED Color:", "Blue");
+                }
+            }
+            if (gamepad2.a && !textToSpeech.isSpeaking()) {
+                textToSpeech.speakRandomLine();
+
+            }
+
+            telemetry.update();
 
         }
         stopRobot();
         telemetry.addData("Robot is stopped", "" );
+        telemetry.update();
     }
 
 
