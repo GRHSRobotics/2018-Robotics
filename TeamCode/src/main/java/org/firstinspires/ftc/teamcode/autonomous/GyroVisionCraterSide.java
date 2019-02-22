@@ -78,6 +78,8 @@ public class GyroVisionCraterSide extends AutonomousDefinitions {
         sleep(3000);
         intakeMotor.setPower(0);
 
+        moveLanderWithEncoder(-82, 8);
+
 
     }
 

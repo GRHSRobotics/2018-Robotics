@@ -55,7 +55,7 @@ public class GyroVisionDepotSide extends AutonomousDefinitions {
             case CENTER:
 
                 encoderDrive(0.35, -1.5, -1.5, 5); //drive straight towards the gold
-                gyroTurn(0.25, 0, 5);
+                gyroTurn(0.25, 5, 5);
                 encoderDrive(0.35, 46, 46, 10);
                 gyroTurn(0.25, 90, 5);
 
@@ -68,7 +68,7 @@ public class GyroVisionDepotSide extends AutonomousDefinitions {
 
             case RIGHT:
 
-                encoderDrive(0.4, -17, -17, 5);
+                encoderDrive(0.4, -13, -13, 5);
                 gyroTurn(0.25, -15, 5); //turn right and drive towards the gold
                 encoderDrive(0.35, 28, 28, 10);
                 gyroTurn(0.25, 45, 5);
