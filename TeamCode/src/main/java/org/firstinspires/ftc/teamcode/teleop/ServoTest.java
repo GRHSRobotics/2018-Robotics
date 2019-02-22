@@ -1,10 +1,12 @@
 package org.firstinspires.ftc.teamcode.teleop;
 
 import org.firstinspires.ftc.teamcode.HardwareDefinitions;
+
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.Range;
-
+@Disabled
 @TeleOp(name = "ServoTest", group = "Test")
 public class ServoTest extends HardwareDefinitions {
 

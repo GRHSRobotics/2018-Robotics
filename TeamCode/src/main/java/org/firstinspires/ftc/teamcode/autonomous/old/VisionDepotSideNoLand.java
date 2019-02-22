@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.autonomous.old;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
@@ -12,7 +13,7 @@ import org.firstinspires.ftc.teamcode.autonomous.AutonomousDefinitions;
 
 import java.util.ArrayList;
 import java.util.List;
-
+@Disabled
 @Autonomous(name = "VisionDepotSide - No Landing", group = "Vision")
 public class VisionDepotSideNoLand extends AutonomousDefinitions {
 

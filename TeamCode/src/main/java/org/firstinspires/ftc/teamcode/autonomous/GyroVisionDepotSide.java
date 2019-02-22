@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 
-@Autonomous(name = "GyroVisionDepotSide - With Landing", group = "Gyro Vision")
+@Autonomous(name = "GyroVisionDepotSide", group = "Gyro Vision")
 public class GyroVisionDepotSide extends AutonomousDefinitions {
 
 
