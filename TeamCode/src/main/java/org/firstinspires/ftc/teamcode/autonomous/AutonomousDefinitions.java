@@ -36,7 +36,6 @@ public class AutonomousDefinitions extends HardwareDefinitions {
 
     public List<Integer> detectionValues = new ArrayList<>();
 
-    List<Integer> recognitionsSizes = new ArrayList<>();
 
     boolean isGoldPresent = false;
 
@@ -48,7 +47,6 @@ public class AutonomousDefinitions extends HardwareDefinitions {
     static final double ROBOT_DIAMETER = 18; //in inches
 
     static final double MIN_DRIVE_POWER = 0.1; //minimum threshold for drive power in accelerating drive and gyro turn method
-    static final double powerIncrement = 0.02; //change in power per loop during accel/decel
 
     static final double HEADING_THRESHOLD = 1;      // As tight as we can make it with an integer gyro
     static final double P_TURN_COEFF = 0.03;     // Larger is more responsive, but also less stable

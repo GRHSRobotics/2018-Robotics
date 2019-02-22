@@ -29,36 +29,26 @@ public class GyroVisionDepotSide extends AutonomousDefinitions {
 
         dropFromLander(true);
         encoderDrive(0.4, 14, 14, 5);
-        //moveLanderWithEncoder((38*4), 8);
         gyroTurn(0.3, 90, 5);
         encoderDrive(0.4, 7, 7, 5);
-        //driveToMineral(0.3, 5, true, false);
 
-        markerDropperOuter.setPosition(markerDropperOuterRelease);
+        markerDropperOuter.setPosition(markerDropperOuterRelease); //get the marker holder out of the way for vision
 
         detectGold(inferMineral.RIGHT, 4);
-
-        //movement stuff
 
         markerDropperOuter.setPosition(markerDropperOuterHold);
 
 
         switch (getMineralPosition(false)) {
             case LEFT:
-                //encoderDrive(0.4, 7, 7, 5);
+
                 gyroTurn(0.25, 50, 5); //turn left and drive towards the gold
                 encoderDrive(0.4, 29, 29, 10);
                 gyroTurn(0.25, -35, 5);
                 encoderDrive(0.4, 28, 28, 5);
                 gyroTurn(0.25, 90, 5);
 
-
-                //drop the marker
                 dropMarker();
-                //moveBoxMechanism(-2, 3);
-
-
-                //encoderTurn(0.25, 100, false, 5);
 
                 break;
 
@@ -69,9 +59,7 @@ public class GyroVisionDepotSide extends AutonomousDefinitions {
                 encoderDrive(0.35, 46, 46, 10);
                 gyroTurn(0.25, 90, 5);
 
-                //drop the marker
                 dropMarker();
-                //moveBoxMechanism(-2, 3);
 
                 encoderDrive(0.4, 10, 10, 5);
 
@@ -88,9 +76,7 @@ public class GyroVisionDepotSide extends AutonomousDefinitions {
                 encoderDrive(0.4, 32, 32, 5);
                 gyroTurn(0.25, 90, 5);
 
-                //drop the marker
                 dropMarker();
-                //moveBoxMechanism(-2, 3);
 
                 encoderDrive(0.4, 10, 10, 5);
 
@@ -98,20 +84,13 @@ public class GyroVisionDepotSide extends AutonomousDefinitions {
 
             default:
 
-                //encoderDrive(0.4, 7, 7, 5);
                 gyroTurn(0.25, 50, 5); //turn left and drive towards the gold
                 encoderDrive(0.4, 29, 29, 10);
                 gyroTurn(0.25, -35, 5);
                 encoderDrive(0.4, 28, 28, 5);
                 gyroTurn(0.25, 90, 5);
 
-
-                //drop the marker
                 dropMarker();
-                //moveBoxMechanism(-2, 3);
-
-
-                //encoderTurn(0.25, 100, false, 5);
 
                 break;
         }
