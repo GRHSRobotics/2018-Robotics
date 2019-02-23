@@ -62,9 +62,6 @@ public class HardwareDefinitions extends LinearOpMode{
     //INSTANTIATE IMU
     public BNO055IMU imu;
 
-    //INSTANTIATE OPTICAL DISTANCE SENSOR
-    public ModernRoboticsI2cRangeSensor rangeSensor;
-
     //INSTANTIATE LED CONTROLLER
     public RevBlinkinLedDriver LEDController;
     public RevBlinkinLedDriver.BlinkinPattern redLEDPattern;
@@ -100,9 +97,6 @@ public class HardwareDefinitions extends LinearOpMode{
 
         //DEFINE LANDER SERVO
         landerLock = robotMap.get(Servo.class, "landerLock");
-
-        //DEFINE Range SENSOR
-        rangeSensor = robotMap.get(ModernRoboticsI2cRangeSensor.class, "rangeSensor");
 
         //DEFINE LED CONTROLLER
         LEDController = hardwareMap.get(RevBlinkinLedDriver.class, "LEDController");
@@ -194,6 +188,10 @@ public class HardwareDefinitions extends LinearOpMode{
         gyroHeading = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;
 
         telemetry.addData("imu calib status", imu.getCalibrationStatus().toString());
+
+        //put LED stuff here because it only gets called in autonomous
+        autonLEDPattern = RevBlinkinLedDriver.BlinkinPattern.GREEN;
+        LEDController.setPattern(autonLEDPattern);
     }
 
     public void stopRobot(){
