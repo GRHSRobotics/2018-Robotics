@@ -123,7 +123,7 @@ public class DriverControlled extends HardwareDefinitions{
             }
 
             //GAMEPAD 2
-            if(timer.seconds() > 90 && !switchedToEndgame){
+            if(timer.seconds() > 93 && !switchedToEndgame){
                 LEDController.setPattern(endgameLEDPattern);
                 switchedToEndgame = true;
                 telemetry.addData("Now in Endgame", "");

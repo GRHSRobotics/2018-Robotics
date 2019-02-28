@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode.autonomous;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-@Autonomous(name = "GyroVisionCraterSide - With Landing", group = "Gyro Vision")
+@Autonomous(name = "GyroVisionCraterSide", group = "Gyro Vision")
 public class GyroVisionCraterSide extends AutonomousDefinitions {
 
 
@@ -26,9 +26,9 @@ public class GyroVisionCraterSide extends AutonomousDefinitions {
         //add movement to
 
         dropFromLander(true);
-        encoderDrive(0.4 ,14, 14, 5);
-        gyroTurn(0.35, 90, 5);
-        encoderDrive(0.4, 7, 7, 5);
+        encoderDrive(0.4 ,13, 13, 5);
+        gyroTurn(0.35, 85, 5);
+        encoderDrive(0.4, 10, 10, 5);
 
         markerDropperOuter.setPosition(markerDropperOuterRelease); //get the marker holder out of the way for vision
 
@@ -49,7 +49,7 @@ public class GyroVisionCraterSide extends AutonomousDefinitions {
 
             case CENTER:
 
-                encoderDrive(0.35, -2, -2, 5); //drive straight towards the gold
+                encoderDrive(0.35, -3, -3, 5); //drive straight towards the gold
                 gyroTurn(0.25, 0, 5);
                 encoderDrive(0.7, 26, 26, 10);
 
@@ -57,7 +57,7 @@ public class GyroVisionCraterSide extends AutonomousDefinitions {
 
             case RIGHT:
 
-                encoderDrive(0.4, -10, -10, 5);
+                encoderDrive(0.4, -13, -13, 5);
                 gyroTurn(0.25, -20, 5); //turn right and drive towards the gold
                 encoderDrive(0.7, 26, 26, 10);
                 moveRightTread(0.4, 10, 5);

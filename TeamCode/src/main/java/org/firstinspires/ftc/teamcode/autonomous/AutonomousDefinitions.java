@@ -279,7 +279,7 @@ public class AutonomousDefinitions extends HardwareDefinitions {
     public void dropMarker(){
 
         markerDropperOuter.setPosition(markerDropperOuterRelease);
-        moveBoxMechanism(2, 1);
+        moveBoxMechanism(3, 2);
         markerDropperInner.setPosition(markerDropperInnerRelease);
         sleep(1500);
         markerDropperInner.setPosition(markerDropperInnerHold);
