@@ -29,8 +29,8 @@ public class GyroVisionDepotSide extends AutonomousDefinitions {
 
         dropFromLander(true);
         encoderDrive(0.4, 14, 14, 5);
-        gyroTurn(0.3, 90, 5);
-        encoderDrive(0.4, 7, 7, 5);
+        gyroTurn(0.3, 85, 5);
+        encoderDrive(0.4, 10, 10, 5);
 
         markerDropperOuter.setPosition(markerDropperOuterRelease); //get the marker holder out of the way for vision
 
@@ -54,31 +54,31 @@ public class GyroVisionDepotSide extends AutonomousDefinitions {
 
             case CENTER:
 
-                encoderDrive(0.35, -1.5, -1.5, 5); //drive straight towards the gold
+                encoderDrive(0.35, -4, -4, 5); //drive straight towards the gold
                 gyroTurn(0.25, 5, 5);
                 encoderDrive(0.35, 46, 46, 10);
                 gyroTurn(0.25, 90, 5);
 
                 dropMarker();
 
-                encoderDrive(0.4, 10, 10, 5);
+                //encoderDrive(0.4, 10, 10, 5);
 
                 break;
 
 
             case RIGHT:
 
-                encoderDrive(0.4, -13, -13, 5);
+                encoderDrive(0.4, -15, -15, 5);
                 gyroTurn(0.25, -15, 5); //turn right and drive towards the gold
                 encoderDrive(0.35, 28, 28, 10);
                 gyroTurn(0.25, 45, 5);
 
-                encoderDrive(0.4, 32, 32, 5);
+                encoderDrive(0.4, 28, 28, 5);
                 gyroTurn(0.25, 90, 5);
 
                 dropMarker();
 
-                encoderDrive(0.4, 10, 10, 5);
+                //encoderDrive(0.4, 10, 10, 5);
 
                 break;
 
