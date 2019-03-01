@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -42,10 +41,9 @@ public class HardwareDefinitions extends LinearOpMode{
     public DcMotor motorL2;
     public DcMotor motorR1;
     public DcMotor motorR2;
-    public DcMotor intakeMotor;
-    public DcMotor liftMotor;
-    public DcMotor landerMotor1;
-    public DcMotor landerMotor2;
+    public DcMotor liftMotor1;
+    public DcMotor liftMotor2;
+    public DcMotor landerMotor;
 
     //INSTANTIANTE TEAM MARKER SERVO
     public Servo markerDropperOuter;
@@ -82,10 +80,9 @@ public class HardwareDefinitions extends LinearOpMode{
         motorL2 = robotMap.get(DcMotor.class, "motorL2");
         motorR1 = robotMap.get(DcMotor.class, "motorR1");
         motorR2 = robotMap.get(DcMotor.class, "motorR2");
-        intakeMotor = robotMap.get(DcMotor.class, "intakeMotor");
-        liftMotor = robotMap.get(DcMotor.class, "liftMotor");
-        landerMotor1 = robotMap.get(DcMotor.class, "landerMotor1");
-        landerMotor2 = robotMap.get(DcMotor.class, "landerMotor2");
+        liftMotor1 = robotMap.get(DcMotor.class, "liftMotor1");
+        liftMotor2 = robotMap.get(DcMotor.class, "liftMotor2");
+        landerMotor = robotMap.get(DcMotor.class, "landerMotor");
 
         //DEFINE TEAM MARKER SERVO
         markerDropperOuter = robotMap.get(Servo.class, "markerDropperOuter");
@@ -111,38 +108,35 @@ public class HardwareDefinitions extends LinearOpMode{
         motorL2.setPower(0);
         motorR1.setPower(0);
         motorR2.setPower(0);
-        intakeMotor.setPower(0);
-        liftMotor.setPower(0);
+        liftMotor1.setPower(0);
+        liftMotor2.setPower(0);
 
         // RESET MOTOR ENCODERS
         motorL1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorL2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorR1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorR2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        intakeMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        landerMotor1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        landerMotor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        liftMotor1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        liftMotor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        landerMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         // SET MOTOR MODE
         motorL1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motorL2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motorR1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motorR2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        intakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        liftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        landerMotor1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        landerMotor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        liftMotor1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        liftMotor2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        landerMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         // SET MOTOR ZeroPowerBehavior
         motorL1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         motorL2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         motorR1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         motorR2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        landerMotor1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        landerMotor2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        liftMotor1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        liftMotor2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        landerMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         //REVERSE RIGHT DRIVE MOTORS
         motorL1.setDirection(DcMotor.Direction.FORWARD);
@@ -201,8 +195,7 @@ public class HardwareDefinitions extends LinearOpMode{
         motorL2.setPower(0);
         motorR1.setPower(0);
         motorR2.setPower(0);
-        intakeMotor.setPower(0);
-        liftMotor.setPower(0);
+        liftMotor1.setPower(0);
 
     }
 

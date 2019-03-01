@@ -73,11 +73,6 @@ public class GyroVisionCraterSide extends AutonomousDefinitions {
                 break;
         }
 
-        //finesse the robot over the crater boundary
-        intakeMotor.setPower(-1);
-        sleep(3000);
-        intakeMotor.setPower(0);
-
         moveLanderWithEncoder(-82, 8);
 
 

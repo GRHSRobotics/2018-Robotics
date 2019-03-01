@@ -180,20 +180,16 @@ public class AutonomousDefinitions extends HardwareDefinitions {
 
             ElapsedTime landerRuntime = new ElapsedTime();
 
-            int targetPositionUp1 = landerMotor1.getCurrentPosition() + (int)(counts_per_rotation * rotationsUp);
-            int targetPositionUp2 = landerMotor2.getCurrentPosition() + (int)(counts_per_rotation * rotationsUp);
+            int targetPositionUp1 = landerMotor.getCurrentPosition() + (int)(counts_per_rotation * rotationsUp);
 
-            landerMotor1.setTargetPosition(targetPositionUp1);
-            landerMotor2.setTargetPosition(targetPositionUp2);
+            landerMotor.setTargetPosition(targetPositionUp1);
 
             // Turn On RUN_TO_POSITION
-            landerMotor1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            landerMotor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            landerMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
             // reset the timeout time and start motion.
             landerRuntime.reset();
-            landerMotor1.setPower(1);
-            landerMotor2.setPower(1);
+            landerMotor.setPower(1);
 
 
             // keep looping while we are still active, and there is time left, and both motors are running.
@@ -203,21 +199,19 @@ public class AutonomousDefinitions extends HardwareDefinitions {
             // However, if you require that BOTH motors have finished their moves before the robot continues
             // onto the next step, use (isBusy() || isBusy()) in the loop test.
             while (opModeIsActive() &&
-                    (landerMotor1.isBusy() && landerMotor2.isBusy())
+                    (landerMotor.isBusy())
                     && landerRuntime.seconds() < maxTimeS) {
 
                 // Display it for the driver.
-                telemetry.addData("Path1", "Running to %7d :%7d", targetPositionUp1, targetPositionUp2);
-                telemetry.addData("Path2", "Running at %7d :%7d",
-                        landerMotor1.getCurrentPosition(),
-                        landerMotor2.getCurrentPosition()
+                telemetry.addData("Path1", "Running to %7d", targetPositionUp1);
+                telemetry.addData("Path2", "Running at %7d",
+                        landerMotor.getCurrentPosition()
                 );
                 telemetry.update();
             }
 
             // Stop all motion;
-            landerMotor1.setPower(0);
-            landerMotor2.setPower(0);
+            landerMotor.setPower(0);
 
             sleep(100);
 
@@ -233,17 +227,20 @@ public class AutonomousDefinitions extends HardwareDefinitions {
 
             ElapsedTime liftRuntime = new ElapsedTime();
 
-            int liftTarget = liftMotor.getCurrentPosition() + (int)(counts_per_rotation * rotationsUp);
+            int liftTarget1 = liftMotor1.getCurrentPosition() + (int)(counts_per_rotation * rotationsUp);
+            int liftTarget2 = liftMotor2.getCurrentPosition() + (int)(counts_per_rotation * rotationsUp);
 
-            liftMotor.setTargetPosition(liftTarget);
-
+            liftMotor1.setTargetPosition(liftTarget1);
+            liftMotor2.setTargetPosition(liftTarget2);
 
             // Turn On RUN_TO_POSITION
-            liftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            liftMotor1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            liftMotor2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
             // reset the timeout time and start motion.
             liftRuntime.reset();
-            liftMotor.setPower(0.8);
+            liftMotor1.setPower(0.8);
+            liftMotor2.setPower(0.8);
 
 
 
@@ -254,20 +251,21 @@ public class AutonomousDefinitions extends HardwareDefinitions {
             // However, if you require that BOTH motors have finished their moves before the robot continues
             // onto the next step, use (isBusy() || isBusy()) in the loop test.
             while (opModeIsActive() &&
-                    liftMotor.isBusy()
+                    liftMotor1.isBusy() && liftMotor2.isBusy()
                     && liftRuntime.seconds() < maxTimeS) {
 
                 // Display it for the driver.
-                telemetry.addData("Path1", "Running to %7d", liftTarget);
+                telemetry.addData("Path1", "Running to %7d", liftTarget1);
                 telemetry.addData("Path2", "Running at %7d",
-                        liftMotor.getCurrentPosition()
+                        liftMotor1.getCurrentPosition()
 
                 );
                 telemetry.update();
             }
 
             // Stop all motion;
-            liftMotor.setPower(0);
+            liftMotor1.setPower(0);
+            liftMotor2.setPower(0);
 
 
             //sleep(100);

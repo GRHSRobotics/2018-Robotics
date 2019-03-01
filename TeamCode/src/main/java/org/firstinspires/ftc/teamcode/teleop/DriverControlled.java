@@ -53,9 +53,9 @@ public class DriverControlled extends HardwareDefinitions{
 
         markerDropperInner.setPosition(0.8);
 
-        liftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        landerMotor1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        landerMotor2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        liftMotor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        liftMotor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        landerMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
 
         timer.reset();
@@ -72,24 +72,17 @@ public class DriverControlled extends HardwareDefinitions{
             motorR1.setPower(rightPower);
             motorR2.setPower(rightPower);
 
-            //INTAKE SYSTEM TOGGLE
-            if(gamepad1.dpad_up){
-                intakeMotor.setPower(-1); //INTAKE
-            }
-            if(gamepad1.dpad_down){
-                intakeMotor.setPower(0); //TURN OFF
-            }
-            if(gamepad1.dpad_right){
-                intakeMotor.setPower(1); //REVERSE
-            }
 
             //LIFT MOTOR
             if(gamepad1.left_trigger > 0){
-                liftMotor.setPower(-Range.clip(gamepad1.left_trigger, 0, 1)); //clip method limits value to between 0 and 1
+                liftMotor1.setPower(-Range.clip(gamepad1.left_trigger, 0, 1)); //clip method limits value to between 0 and 1
+                liftMotor2.setPower(-Range.clip(gamepad1.left_trigger, 0, 1));
             } else if(gamepad1.right_trigger > 0){
-                liftMotor.setPower(Range.clip(gamepad1.right_trigger, 0, 1));
+                liftMotor1.setPower(Range.clip(gamepad1.right_trigger, 0, 1));
+                liftMotor2.setPower(Range.clip(gamepad1.right_trigger, 0, 1));
             } else {
-                liftMotor.setPower(0);
+                liftMotor1.setPower(0);
+                liftMotor2.setPower(0);
             }
 
             //DOOR OPENER 1 SYSTEM
@@ -112,14 +105,14 @@ public class DriverControlled extends HardwareDefinitions{
 
             //LANDING SYSTEM
             if(gamepad1.x){
-                landerMotor1.setPower(-1); //bring the lift down
-                landerMotor2.setPower(-1);
+                //bring the lift down
+                landerMotor.setPower(-1);
             } else if(gamepad1.y){
-                landerMotor1.setPower(1); //bring the lift up
-                landerMotor2.setPower(1);
+                //bring the lift up
+                landerMotor.setPower(1);
             } else {
-                landerMotor1.setPower(0); //stop the lift
-                landerMotor2.setPower(0);
+                //stop the lift
+                landerMotor.setPower(0);
             }
 
             //GAMEPAD 2
