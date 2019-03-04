@@ -1,13 +1,12 @@
 package org.firstinspires.ftc.teamcode.teleop;
 
-import org.firstinspires.ftc.teamcode.HardwareDefinitions;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.HardwareDefinitions;
 
-@TeleOp(name = "ServoTest", group = "Test")
-public class ServoTest extends HardwareDefinitions {
-
+@TeleOp(name = "IntakeTest", group = "Test")
+public class IntakeTest extends HardwareDefinitions {
 
     @Override
     public void runOpMode(){
@@ -44,11 +43,22 @@ public class ServoTest extends HardwareDefinitions {
                 intakeActuator.setPower(0);
             }
 
+            if(gamepad1.left_trigger > 0){
+                intakeHinge.setPower(1);
+            } else if (gamepad1.left_bumper){
+                intakeHinge.setPower(-1);
+            } else{
+                intakeHinge.setPower(0);
+            }
+
             if(gamepad1.dpad_down){
+                intakeSpinner.setPower(-1);
             }
             if(gamepad1.dpad_up){
+                intakeSpinner.setPower(1);
             }
             if(gamepad1.dpad_right){
+                intakeSpinner.setPower(0);
             }
 
             telemetry.update();

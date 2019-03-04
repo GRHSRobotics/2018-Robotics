@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
+import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -29,8 +31,17 @@ public class HardwareDefinitions extends LinearOpMode{
     public final double landerLockHold = 0.5;
     public final double landerLockRelease = 1;
 
+    public final double intakeHingeLeftDown = 1;
+    public final double intakeHingeLeftUp = 0;
 
+    public final double intakeHingeRightDown = 0;
+    public final double intakeHingeRightUp = 1;
 
+    public final double intakeLinearLeftExtended = 0.9;
+    public final double intakeLinearLeftRetracted = 0;
+
+    public final double intakeLinearRightExtended = 1;
+    public final double intakeLinearRightRetracted = 0;
 
 
     //GYRO HEADING
@@ -38,12 +49,13 @@ public class HardwareDefinitions extends LinearOpMode{
 
     //INSTANTIATE MOTORS
     public DcMotor motorL1;
-    public DcMotor motorL2;
     public DcMotor motorR1;
-    public DcMotor motorR2;
     public DcMotor liftMotor1;
     public DcMotor liftMotor2;
     public DcMotor landerMotor;
+    public DcMotor intakeActuator;
+    public DcMotor intakeHinge;
+    public DcMotor intakeSpinner;
 
     //INSTANTIANTE TEAM MARKER SERVO
     public Servo markerDropperOuter;
@@ -55,7 +67,6 @@ public class HardwareDefinitions extends LinearOpMode{
 
     //INSTATIATE LANDER LOCK SERVO
     public Servo landerLock;
-
 
     //INSTANTIATE IMU
     public BNO055IMU imu;
@@ -77,12 +88,13 @@ public class HardwareDefinitions extends LinearOpMode{
 
         //DEFINE MOTORS
         motorL1 = robotMap.get(DcMotor.class, "motorL1");
-        motorL2 = robotMap.get(DcMotor.class, "motorL2");
         motorR1 = robotMap.get(DcMotor.class, "motorR1");
-        motorR2 = robotMap.get(DcMotor.class, "motorR2");
         liftMotor1 = robotMap.get(DcMotor.class, "liftMotor1");
         liftMotor2 = robotMap.get(DcMotor.class, "liftMotor2");
         landerMotor = robotMap.get(DcMotor.class, "landerMotor");
+        intakeActuator = robotMap.get(DcMotor.class, "intakeActuator");
+        intakeHinge = robotMap.get(DcMotor.class, "intakeHinge");
+        intakeSpinner = robotMap.get(DcMotor.class, "intakeSpinner");
 
         //DEFINE TEAM MARKER SERVO
         markerDropperOuter = robotMap.get(Servo.class, "markerDropperOuter");
@@ -105,44 +117,51 @@ public class HardwareDefinitions extends LinearOpMode{
 */
         //SET MOTOR POWER TO 0
         motorL1.setPower(0);
-        motorL2.setPower(0);
         motorR1.setPower(0);
-        motorR2.setPower(0);
         liftMotor1.setPower(0);
         liftMotor2.setPower(0);
 
         // RESET MOTOR ENCODERS
         motorL1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motorL2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorR1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motorR2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         liftMotor1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         liftMotor2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         landerMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        intakeActuator.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        intakeHinge.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        intakeSpinner.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         // SET MOTOR MODE
         motorL1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        motorL2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motorR1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        motorR2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         liftMotor1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         liftMotor2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         landerMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        intakeActuator.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        intakeHinge.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        intakeSpinner.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         // SET MOTOR ZeroPowerBehavior
         motorL1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        motorL2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         motorR1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        motorR2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         liftMotor1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         liftMotor2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         landerMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        intakeActuator.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        intakeHinge.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        intakeSpinner.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
         //REVERSE RIGHT DRIVE MOTORS
         motorL1.setDirection(DcMotor.Direction.FORWARD);
-        motorL2.setDirection(DcMotor.Direction.FORWARD);
         motorR1.setDirection(DcMotor.Direction.REVERSE);
-        motorR2.setDirection(DcMotor.Direction.REVERSE);
+
+        //SET OTHER MOTOR DIRECTIONS
+        liftMotor1.setDirection(DcMotor.Direction.FORWARD);
+        liftMotor2.setDirection(DcMotor.Direction.FORWARD);
+        landerMotor.setDirection(DcMotor.Direction.REVERSE);
+        intakeActuator.setDirection(DcMotor.Direction.REVERSE);
+        intakeHinge.setDirection(DcMotor.Direction.FORWARD);
+        intakeSpinner.setDirection(DcMotor.Direction.FORWARD);
 
         //SET TEAM MARKER SERVO START POSITION
         markerDropperOuter.setPosition(markerDropperOuterRelease);
@@ -192,9 +211,7 @@ public class HardwareDefinitions extends LinearOpMode{
 
         //END GAME, TURN OFF MOTORS
         motorL1.setPower(0);
-        motorL2.setPower(0);
         motorR1.setPower(0);
-        motorR2.setPower(0);
         liftMotor1.setPower(0);
 
     }
@@ -204,9 +221,7 @@ public class HardwareDefinitions extends LinearOpMode{
 
         //RESET ENCODERS
         motorL1.setMode(RunMode);
-        motorL2.setMode(RunMode);
         motorR1.setMode(RunMode);
-        motorR2.setMode(RunMode);
 
     }
 

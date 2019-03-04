@@ -68,9 +68,7 @@ public class DriverControlled extends HardwareDefinitions{
             rightPower = Range.clip(Math.pow(gamepad1.left_stick_y, 3), -1, 1);
 
             motorL1.setPower(leftPower); //up on the stick is negative, so for up=forwards we need to
-            motorL2.setPower(leftPower); //take the negative value of the stick
             motorR1.setPower(rightPower);
-            motorR2.setPower(rightPower);
 
 
             //LIFT MOTOR

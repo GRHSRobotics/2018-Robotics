@@ -56,9 +56,7 @@ public class DriverControlledTest extends AutonomousDefinitions {
 
 
             motorL1.setPower(leftPower); //up on the stick is negative, so for up=forwards we need to
-            motorL2.setPower(leftPower); //take the negative value of the stick
             motorR1.setPower(rightPower);
-            motorR2.setPower(rightPower);
 
             //MARKER DROPPER SYSTEM
             if(gamepad1.a){

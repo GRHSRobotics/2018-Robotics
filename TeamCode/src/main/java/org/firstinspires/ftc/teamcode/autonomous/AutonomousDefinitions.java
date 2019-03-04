@@ -62,36 +62,26 @@ public class AutonomousDefinitions extends HardwareDefinitions {
         if (opModeIsActive()) {
 
             motorL1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            motorL2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             motorR1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            motorR2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
             ElapsedTime runtime = new ElapsedTime();
 
             // Determine new target position
             int newL1Target = motorL1.getCurrentPosition() + (int) Math.round(leftInches * COUNTS_PER_INCH);
-            int newL2Target = motorL2.getCurrentPosition() + (int) Math.round(leftInches * COUNTS_PER_INCH);
             int newR1Target = motorR1.getCurrentPosition() + (int) Math.round(rightInches * COUNTS_PER_INCH);
-            int newR2Target = motorR2.getCurrentPosition() + (int) Math.round(rightInches * COUNTS_PER_INCH);
 
             //give new target position to motors
             motorL1.setTargetPosition(newL1Target);
-            motorL2.setTargetPosition(newL2Target);
             motorR1.setTargetPosition(newR1Target);
-            motorR2.setTargetPosition(newR2Target);
 
             // Turn On RUN_TO_POSITION
             motorL1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            motorL2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             motorR1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            motorR2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
             // reset the timeout time and start motion.
             runtime.reset();
             motorL1.setPower(Math.abs(speed));
-            motorL2.setPower(Math.abs(speed));
             motorR1.setPower(Math.abs(speed));
-            motorR2.setPower(Math.abs(speed));
 
             // keep looping while we are still active, and there is time left, and both motors are running.
             // Note: We use (isBusy() && isBusy()) in the loop test, which means that when EITHER motor hits
@@ -101,29 +91,23 @@ public class AutonomousDefinitions extends HardwareDefinitions {
             // onto the next step, use (isBusy() || isBusy()) in the loop test.
             while (opModeIsActive() &&
                     (runtime.seconds() < maxTimeS) &&
-                    (motorL1.isBusy() && motorL2.isBusy() && motorR1.isBusy() && motorR2.isBusy())) {
+                    (motorL1.isBusy() && motorR1.isBusy())) {
 
                 // Display it for the driver.
-                telemetry.addData("Path1", "Running to %7d :%7d :%7d :%7d", newL1Target, newL2Target, newR1Target, newR2Target);
-                telemetry.addData("Path2", "Running at %7d :%7d :%7d :%7d",
+                telemetry.addData("Path1", "Running to %7d :%7d", newL1Target, newR1Target);
+                telemetry.addData("Path2", "Running at %7d :%7d",
                         motorL1.getCurrentPosition(),
-                        motorL2.getCurrentPosition(),
-                        motorR1.getCurrentPosition(),
-                        motorR2.getCurrentPosition());
+                        motorR1.getCurrentPosition());
                 telemetry.update();
             }
 
             // Stop all motion;
             motorL1.setPower(0);
-            motorL2.setPower(0);
             motorR1.setPower(0);
-            motorR2.setPower(0);
 
             // Turn off RUN_TO_POSITION
             motorL1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            motorL2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             motorR1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            motorR2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
             sleep(400);
         }
@@ -313,36 +297,26 @@ public class AutonomousDefinitions extends HardwareDefinitions {
         if (opModeIsActive()) {
 
             motorL1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            motorL2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             motorR1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            motorR2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
             ElapsedTime runtime = new ElapsedTime();
 
             // Determine new target position
             int newL1Target = motorL1.getCurrentPosition() + (int) Math.round(distance * COUNTS_PER_INCH);
-            int newL2Target = motorL2.getCurrentPosition() + (int) Math.round(distance * COUNTS_PER_INCH);
             int newR1Target = motorR1.getCurrentPosition() + (int) Math.round(distance * COUNTS_PER_INCH);
-            int newR2Target = motorR2.getCurrentPosition() + (int) Math.round(distance * COUNTS_PER_INCH);
 
             //give new target position to motors
             motorL1.setTargetPosition(newL1Target);
-            motorL2.setTargetPosition(newL2Target);
             motorR1.setTargetPosition(newR1Target);
-            motorR2.setTargetPosition(newR2Target);
 
             // Turn On RUN_TO_POSITION
             motorL1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            motorL2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             motorR1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            motorR2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
             // reset the timeout time and start motion.
             runtime.reset();
             motorL1.setPower(Math.abs(speed));
-            motorL2.setPower(Math.abs(speed));
             motorR1.setPower(Math.abs(speed));
-            motorR2.setPower(Math.abs(speed));
 
             // keep looping while we are still active, and there is time left, and both motors are running.
             // Note: We use (isBusy() && isBusy()) in the loop test, which means that when EITHER motor hits
@@ -352,7 +326,7 @@ public class AutonomousDefinitions extends HardwareDefinitions {
             // onto the next step, use (isBusy() || isBusy()) in the loop test.
             while (opModeIsActive() &&
                     (runtime.seconds() < maxTimeS) &&
-                    ((motorL1.isBusy() && motorL2.isBusy()) || (motorR1.isBusy() && motorR2.isBusy()))) { //looking at each tread individually allows single tread motion
+                    (motorL1.isBusy() || motorR1.isBusy())) { //looking at each tread individually allows single tread motion
 
                 // adjust relative speed based on heading error.
                 error = getError(angle);
@@ -374,33 +348,25 @@ public class AutonomousDefinitions extends HardwareDefinitions {
                 }
 
                 motorL1.setPower(leftSpeed);
-                motorL2.setPower(leftSpeed);
                 motorR1.setPower(rightSpeed);
-                motorR2.setPower(rightSpeed);
 
                 // Display drive status for the driver.
                 telemetry.addData("Err/St",  "%5.1f/%5.1f",  error, steer);
-                telemetry.addData("Path1", "Running to %7d :%7d :%7d :%7d", newL1Target, newL2Target, newR1Target, newR2Target);
-                telemetry.addData("Path2", "Running at %7d :%7d :%7d :%7d",
+                telemetry.addData("Path1", "Running to %7d :%7d", newL1Target, newR1Target);
+                telemetry.addData("Path2", "Running at %7d :%7d",
                         motorL1.getCurrentPosition(),
-                        motorL2.getCurrentPosition(),
-                        motorR1.getCurrentPosition(),
-                        motorR2.getCurrentPosition());
+                        motorR1.getCurrentPosition());
                 telemetry.addData("Speed",   "%5.2f:%5.2f",  leftSpeed, rightSpeed);
                 telemetry.update();
             }
 
             // Stop all motion;
             motorL1.setPower(0);
-            motorL2.setPower(0);
             motorR1.setPower(0);
-            motorR2.setPower(0);
 
             // Turn off RUN_TO_POSITION
             motorL1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            motorL2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             motorR1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            motorR2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
             sleep(100);
         }
@@ -459,9 +425,7 @@ public class AutonomousDefinitions extends HardwareDefinitions {
 
         // Send desired speeds to motors.
         motorL1.setPower(leftSpeed);
-        motorL2.setPower(leftSpeed);
         motorR1.setPower(rightSpeed);
-        motorR2.setPower(rightSpeed);
 
         // Display it for the driver.
         telemetry.addData("Target", "%5.2f", angle);
@@ -508,28 +472,22 @@ public class AutonomousDefinitions extends HardwareDefinitions {
         if (opModeIsActive()) {
 
             motorL1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            motorL2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             motorR1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            motorR2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
             ElapsedTime runtime = new ElapsedTime();
 
             // Determine new target position
             int newR1Target = motorR1.getCurrentPosition() + (int) Math.round(rightInches * COUNTS_PER_INCH);
-            int newR2Target = motorR2.getCurrentPosition() + (int) Math.round(rightInches * COUNTS_PER_INCH);
 
             //give new target position to motors
             motorR1.setTargetPosition(newR1Target);
-            motorR2.setTargetPosition(newR2Target);
 
             // Turn On RUN_TO_POSITION
             motorR1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            motorR2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
             // reset the timeout time and start motion.
             runtime.reset();
             motorR1.setPower(Math.abs(speed));
-            motorR2.setPower(Math.abs(speed));
 
             // keep looping while we are still active, and there is time left, and both motors are running.
             // Note: We use (isBusy() && isBusy()) in the loop test, which means that when EITHER motor hits
@@ -539,27 +497,22 @@ public class AutonomousDefinitions extends HardwareDefinitions {
             // onto the next step, use (isBusy() || isBusy()) in the loop test.
             while (opModeIsActive() &&
                     (runtime.seconds() < maxTimeS) &&
-                    (motorR1.isBusy() && motorR2.isBusy())) {
+                    (motorR1.isBusy())) {
 
                 // Display it for the driver.
-                telemetry.addData("Path1", "Running to :%7d :%7d", newR1Target, newR2Target);
-                telemetry.addData("Path2", "Running at %7d :%7d :%7d :%7d",
+                telemetry.addData("Path1", "Running to :%7d", newR1Target);
+                telemetry.addData("Path2", "Running at %7d :%7d",
                         motorL1.getCurrentPosition(),
-                        motorL2.getCurrentPosition(),
-                        motorR1.getCurrentPosition(),
-                        motorR2.getCurrentPosition());
+                        motorR1.getCurrentPosition());
                 telemetry.update();
             }
 
             // Stop all motion;
             motorR1.setPower(0);
-            motorR2.setPower(0);
 
             // Turn off RUN_TO_POSITION
             motorL1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            motorL2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             motorR1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            motorR2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
             sleep(400);
         }
@@ -574,30 +527,23 @@ public class AutonomousDefinitions extends HardwareDefinitions {
         if (opModeIsActive()) {
 
             motorL1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            motorL2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             motorR1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            motorR2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
             ElapsedTime runtime = new ElapsedTime();
 
             // Determine new target position
             int newL1Target = motorL1.getCurrentPosition() + (int) Math.round(leftInches * COUNTS_PER_INCH);
-            int newL2Target = motorL2.getCurrentPosition() + (int) Math.round(leftInches * COUNTS_PER_INCH);
 
             //give new target position to motors
             motorL1.setTargetPosition(newL1Target);
-            motorL2.setTargetPosition(newL2Target);
 
             // Turn On RUN_TO_POSITION
             motorL1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            motorL2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             motorR1.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            motorR2.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
             // reset the timeout time and start motion.
             runtime.reset();
             motorL1.setPower(Math.abs(speed));
-            motorL2.setPower(Math.abs(speed));
 
             // keep looping while we are still active, and there is time left, and both motors are running.
             // Note: We use (isBusy() && isBusy()) in the loop test, which means that when EITHER motor hits
@@ -607,28 +553,22 @@ public class AutonomousDefinitions extends HardwareDefinitions {
             // onto the next step, use (isBusy() || isBusy()) in the loop test.
             while (opModeIsActive() &&
                     (runtime.seconds() < maxTimeS) &&
-                    (motorL1.isBusy() && motorL2.isBusy())) {
+                    (motorL1.isBusy())) {
 
                 // Display it for the driver.
-                telemetry.addData("Path1", "Running to :%7d :%7d", newL1Target, newL2Target);
-                telemetry.addData("Path2", "Running at %7d :%7d :%7d :%7d",
+                telemetry.addData("Path1", "Running to :%7d", newL1Target);
+                telemetry.addData("Path2", "Running at %7d :%7d",
                         motorL1.getCurrentPosition(),
-                        motorL2.getCurrentPosition(),
-                        motorR1.getCurrentPosition(),
-                        motorR2.getCurrentPosition());
+                        motorR1.getCurrentPosition());
                 telemetry.update();
             }
 
             // Stop all motion;
             motorL1.setPower(0);
-            motorL2.setPower(0);
-
 
             // Turn off RUN_TO_POSITION
             motorL1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            motorL2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             motorR1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            motorR2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
             sleep(400);
         }
