@@ -1,17 +1,18 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
-import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.teamcode.teleop.IntakeTest;
 
 public class HardwareDefinitions extends LinearOpMode{
 
@@ -31,17 +32,14 @@ public class HardwareDefinitions extends LinearOpMode{
     public final double landerLockHold = 0.5;
     public final double landerLockRelease = 1;
 
-    public final double intakeHingeLeftDown = 1;
-    public final double intakeHingeLeftUp = 0;
+    //INTAKE
+    public final double INTAKE_P_COEFF = 2;
+    public final double intakeUpPosition = 0.90; //upper limit as a reading of the potentiometer voltage
+    public final double intakeDownPosition = 2.1; //lower limit as read from the potentiometer
+    public final double intakeHingeMaxPowerUp = 1;
+    public final double intakeHingeMaxPowerDown = 0.35;
+    public final double intakeMinPower = 0.3;
 
-    public final double intakeHingeRightDown = 0;
-    public final double intakeHingeRightUp = 1;
-
-    public final double intakeLinearLeftExtended = 0.9;
-    public final double intakeLinearLeftRetracted = 0;
-
-    public final double intakeLinearRightExtended = 1;
-    public final double intakeLinearRightRetracted = 0;
 
 
     //GYRO HEADING
@@ -70,6 +68,9 @@ public class HardwareDefinitions extends LinearOpMode{
 
     //INSTANTIATE IMU
     public BNO055IMU imu;
+
+    //INTAKE POTENTIOMETER
+    public AnalogInput intakePotentiometer;
 
     //INSTANTIATE LED CONTROLLER
     public RevBlinkinLedDriver LEDController;
@@ -106,6 +107,9 @@ public class HardwareDefinitions extends LinearOpMode{
 
         //DEFINE LANDER SERVO
         landerLock = robotMap.get(Servo.class, "landerLock");
+
+        //INTAKE POTENTIOMETER
+        intakePotentiometer = robotMap.get(AnalogInput.class, "intakePotentiometer");
 
         //DEFINE LED CONTROLLER
         LEDController = hardwareMap.get(RevBlinkinLedDriver.class, "LEDController");
@@ -160,7 +164,7 @@ public class HardwareDefinitions extends LinearOpMode{
         liftMotor2.setDirection(DcMotor.Direction.FORWARD);
         landerMotor.setDirection(DcMotor.Direction.REVERSE);
         intakeActuator.setDirection(DcMotor.Direction.REVERSE);
-        intakeHinge.setDirection(DcMotor.Direction.FORWARD);
+        intakeHinge.setDirection(DcMotor.Direction.REVERSE);
         intakeSpinner.setDirection(DcMotor.Direction.FORWARD);
 
         //SET TEAM MARKER SERVO START POSITION
@@ -225,6 +229,53 @@ public class HardwareDefinitions extends LinearOpMode{
 
     }
 
+    public enum HingePosition{
+        UP,
+        DOWN
+    }
+
+    public double getIntakePower(HingePosition position){
+        double intakeHingeMaxPower;
+        double targetPosition;
+        if(position == HingePosition.DOWN){
+            intakeHingeMaxPower = intakeHingeMaxPowerDown;
+            targetPosition = intakeDownPosition;
+        } else {
+            intakeHingeMaxPower = intakeHingeMaxPowerUp;
+            targetPosition = intakeUpPosition;
+        }
+
+        int powerSign; //whether the power is positive or negative
+        if(targetPosition > intakePotentiometer.getVoltage()){
+            powerSign = -1;
+        } else {
+            powerSign = 1;
+        }
+
+
+        //what percent of the total path the arm is from the target position
+        double error = Math.abs((targetPosition-intakePotentiometer.getVoltage()) / (intakeDownPosition - intakeUpPosition));
+
+        //final modifier to the intake power
+        double adjustment = Range.clip(error * powerSign * INTAKE_P_COEFF, -1, 1);
+        /*
+        if(position == HingePosition.UP){
+            adjustment = Range.clip(error * powerSign * INTAKE_P_COEFF, -1, 1);
+        } else {
+            adjustment = Range.clip(error * powerSign * INTAKE_P_COEFF, -1, 1);
+            if(adjustment < intakeMinPower && adjustment > 0){
+                adjustment = intakeMinPower * powerSign;
+            }
+        }
+    */
+
+        //only runs motor if predicted power is above a certain threshold to prevent stalling
+        if(Math.abs(adjustment * intakeHingeMaxPower) > 0.1){
+            return adjustment * intakeHingeMaxPower;
+        } else{
+            return 0;
+        }
+    }
 
 
     @Override

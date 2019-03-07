@@ -1,9 +1,11 @@
 package org.firstinspires.ftc.teamcode.teleop;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.autonomous.AutonomousDefinitions;
 
+@Disabled
 @TeleOp(name="DetectGoldTest", group="Test")
 public class DetectGoldTest extends AutonomousDefinitions {
 
