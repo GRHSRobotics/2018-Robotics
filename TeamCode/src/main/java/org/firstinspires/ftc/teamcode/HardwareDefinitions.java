@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.hardware.AnalogInput;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -33,11 +34,11 @@ public class HardwareDefinitions extends LinearOpMode{
     public final double landerLockRelease = 1;
 
     //INTAKE
-    public final double INTAKE_P_COEFF = 2;
-    public final double intakeUpPosition = 0.90; //upper limit as a reading of the potentiometer voltage
-    public final double intakeDownPosition = 2.1; //lower limit as read from the potentiometer
+    public final double INTAKE_P_COEFF = 2.25;
+    public final double intakeUpPosition = 0.9; //upper limit as a reading of the potentiometer voltage
+    public final double intakeDownPosition = 2.0; //lower limit as read from the potentiometer
     public final double intakeHingeMaxPowerUp = 1;
-    public final double intakeHingeMaxPowerDown = 0.35;
+    public final double intakeHingeMaxPowerDown = 0.55;
     public final double intakeMinPower = 0.3;
 
 
@@ -69,8 +70,9 @@ public class HardwareDefinitions extends LinearOpMode{
     //INSTANTIATE IMU
     public BNO055IMU imu;
 
-    //INTAKE POTENTIOMETER
+    //INTAKE SENSORS
     public AnalogInput intakePotentiometer;
+    public DigitalChannel intakeLimitSwitch;
 
     //INSTANTIATE LED CONTROLLER
     public RevBlinkinLedDriver LEDController;
@@ -108,8 +110,9 @@ public class HardwareDefinitions extends LinearOpMode{
         //DEFINE LANDER SERVO
         landerLock = robotMap.get(Servo.class, "landerLock");
 
-        //INTAKE POTENTIOMETER
+        //INTAKE SENSORS
         intakePotentiometer = robotMap.get(AnalogInput.class, "intakePotentiometer");
+        intakeLimitSwitch = robotMap.get(DigitalChannel.class, "intakeLimitSwitch");
 
         //DEFINE LED CONTROLLER
         LEDController = hardwareMap.get(RevBlinkinLedDriver.class, "LEDController");
@@ -268,6 +271,10 @@ public class HardwareDefinitions extends LinearOpMode{
             }
         }
     */
+
+        if(position == HingePosition.DOWN){
+            adjustment /= 2;
+        }
 
         //only runs motor if predicted power is above a certain threshold to prevent stalling
         if(Math.abs(adjustment * intakeHingeMaxPower) > 0.1){

@@ -14,11 +14,13 @@ public class IntakeTest extends HardwareDefinitions {
 
     public HingePosition hingePosition = HingePosition.UP;
 
-    public boolean autoHinge = false;
+    public boolean autoHinge = true;
 
-    public int actuatorInitialPosition;
+    public boolean actuatorReachedBottom = false;
 
-    public int actuatorLowerLimit; //absolute lower encoder limit for the actuator
+    public int actuatorZeroPosition;
+
+    public int actuatorLowerPosition; //absolute lower encoder limit for the actuator
 
     public int actuatorMinimumUp = 900; //minimum delta above the starting position the actuator must be
 
@@ -30,8 +32,9 @@ public class IntakeTest extends HardwareDefinitions {
         telemetry.update();
 
         waitForStart();
-        actuatorInitialPosition = intakeActuator.getCurrentPosition();
-        actuatorLowerLimit = actuatorInitialPosition + actuatorMinimumUp;
+
+        //actuatorZeroPosition = intakeActuator.getCurrentPosition();
+        //actuatorLowerPosition = actuatorZeroPosition + actuatorMinimumUp;
         telemetry.addData("Robot is started", "" );
 
 
@@ -53,22 +56,34 @@ public class IntakeTest extends HardwareDefinitions {
             if(gamepad1.b){
                 hingePosition = HingePosition.UP;
             }
-            if(intakeActuator.getCurrentPosition() - actuatorLowerLimit > 100){
-                if(gamepad1.right_trigger > 0){
-                    intakeActuator.setPower(1);
 
-                } else if(gamepad1.right_bumper){
-                    intakeActuator.setPower(-1);
-                } else{
-                    intakeActuator.setPower(0);
+            if(!actuatorReachedBottom){
+                intakeActuator.setPower(-0.5);
+
+                if(intakeLimitSwitch.getState()){
+                    actuatorReachedBottom = true;
+                    actuatorZeroPosition = intakeActuator.getCurrentPosition();
+                    actuatorLowerPosition = actuatorZeroPosition + actuatorMinimumUp;
                 }
             } else {
-                if(gamepad1.right_trigger > 0){
-                    intakeActuator.setPower(1);
+                if(intakeActuator.getCurrentPosition() - actuatorLowerPosition > 100){
+                    if(gamepad1.right_trigger > 0){
+                        intakeActuator.setPower(1);
+
+                    } else if(gamepad1.right_bumper){
+                        intakeActuator.setPower(-1);
+                    } else{
+                        intakeActuator.setPower(0);
+                    }
                 } else {
-                    intakeActuator.setPower(0.5);
+                    if(gamepad1.right_trigger > 0){
+                        intakeActuator.setPower(1);
+                    } else {
+                        intakeActuator.setPower(0.5);
+                    }
                 }
             }
+
 
 
 
@@ -105,7 +120,7 @@ public class IntakeTest extends HardwareDefinitions {
             }
 
             telemetry.addData("potentiometer position: ", intakePotentiometer.getVoltage());
-            telemetry.addData("actuator initial position: ", actuatorInitialPosition);
+            telemetry.addData("actuator initial position: ", actuatorZeroPosition);
             telemetry.addData("actuator current position: ", intakeActuator.getCurrentPosition());
             telemetry.update();
 
