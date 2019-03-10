@@ -95,6 +95,9 @@ public class GyroVisionDepotSide extends AutonomousDefinitions {
                 break;
         }
 
+        moveBoxMechanism(-1, 1);
+        moveLanderWithEncoder(-82, 8);
+
 
     }
 

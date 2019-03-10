@@ -26,7 +26,7 @@ public class GyroVisionCraterSide extends AutonomousDefinitions {
         //add movement to
 
         dropFromLander(true);
-        encoderDrive(0.4 ,13, 13, 5);
+        encoderDrive(0.4 ,11, 11, 5);
         gyroTurn(0.35, 85, 5);
         encoderDrive(0.4, 10, 10, 5);
 
@@ -42,7 +42,7 @@ public class GyroVisionCraterSide extends AutonomousDefinitions {
             case LEFT:
 
                 gyroTurn(0.25, 40, 5); //turn left and drive towards the gold
-                encoderDrive(0.7, 26, 26, 10);
+                encoderDrive(0.7, 22, 22, 10);
                 moveLeftTread(0.4, 15, 8);
 
                 break;
@@ -59,7 +59,7 @@ public class GyroVisionCraterSide extends AutonomousDefinitions {
 
                 encoderDrive(0.4, -13, -13, 5);
                 gyroTurn(0.25, -20, 5); //turn right and drive towards the gold
-                encoderDrive(0.7, 26, 26, 10);
+                encoderDrive(0.7, 20, 20, 10);
                 moveRightTread(0.4, 10, 5);
 
                 break;
@@ -67,7 +67,7 @@ public class GyroVisionCraterSide extends AutonomousDefinitions {
             default:
 
                 gyroTurn(0.25, 40, 5); //turn left and drive towards the gold
-                encoderDrive(0.7, 26, 26, 10);
+                encoderDrive(0.7, 20, 20, 10);
                 moveLeftTread(0.4, 15, 8);
 
                 break;
@@ -75,7 +75,7 @@ public class GyroVisionCraterSide extends AutonomousDefinitions {
 
         //finesse the robot over the crater boundary
         intakeMotor.setPower(-1);
-        sleep(3000);
+        sleep(1000);
         intakeMotor.setPower(0);
 
         moveLanderWithEncoder(-82, 8);

@@ -42,8 +42,7 @@ public class DriverControlledTest extends AutonomousDefinitions {
         waitForStart();
         telemetry.addData("Robot is started", "" );
 
-        landerMotor1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        landerMotor2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        landerMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
 
 
@@ -83,11 +82,14 @@ public class DriverControlledTest extends AutonomousDefinitions {
 
             //LIFT MOTOR
             if(gamepad1.left_trigger > 0){
-                liftMotor.setPower(-Range.clip(gamepad1.left_trigger, 0, 1)); //clip method limits value to between 0 and 1
+                liftMotor1.setPower(-Range.clip(gamepad1.left_trigger, 0, 1)); //clip method limits value to between 0 and 1
+                liftMotor2.setPower(-Range.clip(gamepad1.left_trigger, 0, 1));
             } else if(gamepad1.right_trigger > 0){
-                liftMotor.setPower(Range.clip(gamepad1.right_trigger, 0, 1));
+                liftMotor1.setPower(Range.clip(gamepad1.right_trigger, 0, 1));
+                liftMotor2.setPower(Range.clip(gamepad1.right_trigger, 0, 1));
             } else {
-                liftMotor.setPower(0);
+                liftMotor1.setPower(0);
+                liftMotor2.setPower(0);
             }
 
             //DOOR OPENER 1 SYSTEM
@@ -110,14 +112,11 @@ public class DriverControlledTest extends AutonomousDefinitions {
 
             //LANDING SYSTEM
             if(gamepad1.x){
-                landerMotor1.setPower(-1); //bring the lift down
-                landerMotor2.setPower(-1);
+                landerMotor.setPower(-1); //bring the lift down
             } else if(gamepad1.y){
-                landerMotor1.setPower(1); //bring the lift up
-                landerMotor2.setPower(1);
+                landerMotor.setPower(1); //bring the lift up
             } else {
-                landerMotor1.setPower(0); //stop the lift
-                landerMotor2.setPower(0);
+                landerMotor.setPower(0); //stop the lift
             }
 
             gyroHeading = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle;

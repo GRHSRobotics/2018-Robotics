@@ -31,12 +31,12 @@ public class LEDTest extends HardwareDefinitions {
                 telemetry.addData("LED Pattern:", "COLOR_WAVES_LAVA_PALETTE");
             }
             if(gamepad1.dpad_right){
-                LEDController.setPattern(RevBlinkinLedDriver.BlinkinPattern.BEATS_PER_MINUTE_FOREST_PALETTE);
-                telemetry.addData("LED Pattern:", "BEATS_PER_MINUTE_FOREST_PALETTE");
+                LEDController.setPattern(RevBlinkinLedDriver.BlinkinPattern.COLOR_WAVES_FOREST_PALETTE);
+                telemetry.addData("LED Pattern:", "COLOR_WAVES_FOREST_PALETTE");
             }
             if(gamepad1.dpad_down){
-                LEDController.setPattern(RevBlinkinLedDriver.BlinkinPattern.SINELON_OCEAN_PALETTE);
-                telemetry.addData("LED Pattern:", "SINELON_OCEAN_PALETTE");
+                LEDController.setPattern(RevBlinkinLedDriver.BlinkinPattern.COLOR_WAVES_OCEAN_PALETTE);
+                telemetry.addData("LED Pattern:", "COLOR_WAVES_OCEAN_PALETTE");
             }
 
             //front buttons
@@ -63,16 +63,16 @@ public class LEDTest extends HardwareDefinitions {
                 telemetry.addData("LED Pattern:", "RED");
             }
             if(gamepad1.right_trigger > 0){
-                LEDController.setPattern(RevBlinkinLedDriver.BlinkinPattern.DARK_RED);
-                telemetry.addData("LED Pattern:", "DARK_RED");
+                LEDController.setPattern(RevBlinkinLedDriver.BlinkinPattern.BREATH_RED);
+                telemetry.addData("LED Pattern:", "BREATH_RED");
             }
             if(gamepad1.left_bumper){
                 LEDController.setPattern(RevBlinkinLedDriver.BlinkinPattern.BLUE);
                 telemetry.addData("LED Pattern:", "BLUE");
             }
             if(gamepad1.left_trigger > 0){
-                LEDController.setPattern(RevBlinkinLedDriver.BlinkinPattern.DARK_BLUE);
-                telemetry.addData("LED Pattern:", "DARK_BLUE");
+                LEDController.setPattern(RevBlinkinLedDriver.BlinkinPattern.CP1_2_TWINKLES);
+                telemetry.addData("LED Pattern:", "CP1_2_TWINKLES");
 
             }
 
