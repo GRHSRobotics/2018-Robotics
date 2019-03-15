@@ -28,7 +28,7 @@ public class GyroVisionCraterSide extends AutonomousDefinitions {
         dropFromLander(true);
         encoderDrive(0.4 ,11, 11, 5);
         gyroTurn(0.35, 85, 5);
-        encoderDrive(0.4, 10, 10, 5);
+        encoderDrive(0.4, 6.5, 6.5, 5);
 
         markerDropperOuter.setPosition(markerDropperOuterRelease); //get the marker holder out of the way for vision
 
